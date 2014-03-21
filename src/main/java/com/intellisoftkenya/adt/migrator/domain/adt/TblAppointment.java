@@ -1,37 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.intellisoftkenya.adt.migrator.domain.adt;
 
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 /**
  *
  * @author gitahi
  */
-@Entity
-@Table(name = "tblAppointment")
-@NamedQueries({
-    @NamedQuery(name = "TblAppointment.findAll", query = "SELECT t FROM TblAppointment t")})
 public class TblAppointment implements Serializable {
     private static final long serialVersionUID = 1L;
-    @Id
-    @Column(name = "AppDate")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date appDate;
-    @Column(name = "NumAppointed")
     private Integer numAppointed;
 
     public TblAppointment() {
@@ -66,7 +44,6 @@ public class TblAppointment implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof TblAppointment)) {
             return false;
         }

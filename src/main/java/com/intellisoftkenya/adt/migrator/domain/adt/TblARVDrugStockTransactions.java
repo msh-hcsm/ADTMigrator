@@ -1,77 +1,34 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.intellisoftkenya.adt.migrator.domain.adt;
 
 import com.intellisoftkenya.adt.migrator.domain.adt.TblARVDrugStockMain;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 /**
  *
  * @author gitahi
  */
-@Entity
-@Table(name = "tblARVDrugStockTransactions")
-@NamedQueries({
-    @NamedQuery(name = "TblARVDrugStockTransactions.findAll", query = "SELECT t FROM TblARVDrugStockTransactions t")})
 public class TblARVDrugStockTransactions implements Serializable {
     private static final long serialVersionUID = 1L;
-    @Column(name = "Unit")
     private String unit;
-    @Column(name = "TranDate")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date tranDate;
-    @Column(name = "RefOrderNo")
     private String refOrderNo;
-    @Column(name = "BatchNo")
     private String batchNo;
-    @Column(name = "TransactionType")
     private Integer transactionType;
-    @Column(name = "SourceorDestination")
     private String sourceorDestination;
-    @Column(name = "CollectedBy")
     private String collectedBy;
-    @Column(name = "Expirydate")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date expirydate;
-    @Column(name = "PackSize")
     private Integer packSize;
-    @Column(name = "Npacks")
     private Integer npacks;
-    @Column(name = "UnitCost")
     private BigInteger unitCost;
-    @Column(name = "Qty")
     private Integer qty;
-    @Column(name = "Amount")
     private BigInteger amount;
-    @Column(name = "Remarks")
     private String remarks;
-    @Column(name = "operator")
     private String operator;
-    @Column(name = "RunningStock")
     private Integer runningStock;
-    @Column(name = "StockTranNo")
     private Integer stockTranNo;
-    @Id
-    @Column(name = "pk")
     private Integer pk;
-    @JoinColumn(name = "ARVDrugsID", referencedColumnName = "ARVDrugsID")
-    @ManyToOne
     private TblARVDrugStockMain tblARVDrugStockMain;
 
     public TblARVDrugStockTransactions() {
@@ -242,7 +199,6 @@ public class TblARVDrugStockTransactions implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof TblARVDrugStockTransactions)) {
             return false;
         }

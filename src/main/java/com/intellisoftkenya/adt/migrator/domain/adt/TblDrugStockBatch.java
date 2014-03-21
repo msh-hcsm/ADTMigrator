@@ -1,57 +1,23 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.intellisoftkenya.adt.migrator.domain.adt;
 
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 /**
  *
  * @author gitahi
  */
-@Entity
-@Table(name = "tblDrugStockBatch")
-@NamedQueries({
-    @NamedQuery(name = "TblDrugStockBatch.findAll", query = "SELECT t FROM TblDrugStockBatch t")})
 public class TblDrugStockBatch implements Serializable {
     private static final long serialVersionUID = 1L;
-    @Column(name = "ARVDrugsID")
     private String aRVDrugsID;
-    @Column(name = "BatchNo")
     private String batchNo;
-    @Column(name = "Unit")
     private String unit;
-    @Column(name = "ExpiryDate")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date expiryDate;
-    @Column(name = "PackSize")
     private Integer packSize;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "UnitCost")
     private Float unitCost;
-    @Column(name = "Quantity")
     private Float quantity;
-    @Lob
-    @Column(name = "upsize_ts")
     private byte[] upsizeTs;
-    @Column(name = "TranDate")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date tranDate;
-    @Id
-    @Column(name = "pk")
     private Integer pk;
 
     public TblDrugStockBatch() {
@@ -150,7 +116,6 @@ public class TblDrugStockBatch implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof TblDrugStockBatch)) {
             return false;
         }

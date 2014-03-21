@@ -1,37 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.intellisoftkenya.adt.migrator.domain.adt;
 
 import java.io.Serializable;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
 
 /**
  *
  * @author gitahi
  */
-@Entity
-@Table(name = "tblSourceOfClient")
-@NamedQueries({
-    @NamedQuery(name = "TblSourceOfClient.findAll", query = "SELECT t FROM TblSourceOfClient t")})
 public class TblSourceOfClient implements Serializable {
     private static final long serialVersionUID = 1L;
-    @Id
-    @Column(name = "SourceID")
     private Short sourceID;
-    @Column(name = "SourceOfClient")
     private String sourceOfClient;
-    @OneToMany(mappedBy = "tblSourceOfClient")
     private List<TblARTPatientMasterInformation> tblARTPatientMasterInformationList;
 
     public TblSourceOfClient() {
@@ -74,7 +53,6 @@ public class TblSourceOfClient implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof TblSourceOfClient)) {
             return false;
         }

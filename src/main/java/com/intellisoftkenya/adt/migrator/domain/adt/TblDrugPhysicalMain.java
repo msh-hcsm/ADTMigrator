@@ -1,53 +1,21 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.intellisoftkenya.adt.migrator.domain.adt;
 
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 /**
  *
  * @author gitahi
  */
-@Entity
-@Table(name = "tblDrugPhysicalMain")
-@NamedQueries({
-    @NamedQuery(name = "TblDrugPhysicalMain.findAll", query = "SELECT t FROM TblDrugPhysicalMain t")})
 public class TblDrugPhysicalMain implements Serializable {
     private static final long serialVersionUID = 1L;
-    @Column(name = "PhyID")
     private Integer phyID;
-    @Column(name = "PhyYear")
     private Short phyYear;
-    @Column(name = "PhyMonth")
     private Short phyMonth;
-    @Column(name = "PhyFromDate")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date phyFromDate;
-    @Column(name = "PhyToDate")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date phyToDate;
-    @Column(name = "BFStatus")
     private String bFStatus;
-    @Lob
-    @Column(name = "Remarks")
     private String remarks;
-    @Id
-    @Column(name = "TranDate")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date tranDate;
 
     public TblDrugPhysicalMain() {
@@ -130,7 +98,6 @@ public class TblDrugPhysicalMain implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof TblDrugPhysicalMain)) {
             return false;
         }

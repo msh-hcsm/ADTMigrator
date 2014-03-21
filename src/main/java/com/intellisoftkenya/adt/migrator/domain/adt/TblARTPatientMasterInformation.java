@@ -1,148 +1,64 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.intellisoftkenya.adt.migrator.domain.adt;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 /**
  *
  * @author gitahi
  */
-@Entity
-@Table(name = "tblARTPatientMasterInformation")
-@NamedQueries({
-    @NamedQuery(name = "TblARTPatientMasterInformation.findAll", query = "SELECT t FROM TblARTPatientMasterInformation t")})
 public class TblARTPatientMasterInformation implements Serializable {
-    @OneToMany(mappedBy = "tblARTPatientMasterInformation")
     private List<TblARTPatientTransactions> tblARTPatientTransactionsList;
     private static final long serialVersionUID = 1L;
-    @Id
-    @Column(name = "ArtID")
     private String artID;
-    @Column(name = "Firstname")
     private String firstname;
-    @Column(name = "Surname")
     private String surname;
-    @Column(name = "Sex")
     private String sex;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "Age")
     private Float age;
-    @Column(name = "Pregnant")
     private Boolean pregnant;
-    @Column(name = "DateTherapyStarted")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date dateTherapyStarted;
-    @Column(name = "WeightOnStart")
     private Float weightOnStart;
-    @Column(name = "ClientSupportedBy")
     private Integer clientSupportedBy;
-    @Lob
-    @Column(name = "OtherDeaseConditions")
     private String otherDeaseConditions;
-    @Lob
-    @Column(name = "ADRorSideEffects")
     private String aDRorSideEffects;
-    @Lob
-    @Column(name = "ReasonsforChanges")
     private String reasonsforChanges;
-    @Lob
-    @Column(name = "OtherDrugs")
     private String otherDrugs;
-    @Column(name = "TypeOfService")
     private Integer typeOfService;
-    @Column(name = "DaysToNextAppointment")
     private Integer daysToNextAppointment;
-    @Column(name = "DateOfNextAppointment")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date dateOfNextAppointment;
-    @Column(name = "CurrentStatus")
     private Integer currentStatus;
-    @Column(name = "CurrentRegimen")
     private String currentRegimen;
-    @Column(name = "RegimenStarted")
     private String regimenStarted;
-    @Column(name = "Address")
     private String address;
-    @Column(name = "CurrentWeight")
     private Float currentWeight;
-    @Column(name = "startBSA")
     private Float startBSA;
-    @Column(name = "currentBSA")
     private Float currentBSA;
-    @Column(name = "ischild")
     private Boolean ischild;
-    @Column(name = "isadult")
     private Boolean isadult;
-    @Column(name = "StartHeight")
     private Float startHeight;
-    @Column(name = "CurrentHeight")
     private Float currentHeight;
-    @Column(name = "Naive")
     private Boolean naive;
-    @Column(name = "NonNaive")
     private Boolean nonNaive;
-    @Column(name = "Cotrimoxazole")
     private Boolean cotrimoxazole;
-    @Column(name = "TB")
     private Boolean tb;
-    @Column(name = "NoCotrimoxazole")
     private Boolean noCotrimoxazole;
-    @Column(name = "NoTB")
     private Boolean noTB;
-    @Column(name = "DateStartedonART")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date dateStartedonART;
-    @Column(name = "DateChangedStatus")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date dateChangedStatus;
-    @Column(name = "NcurrentAge")
     private Integer ncurrentAge;
-    @Column(name = "OPIPNO")
     private String opipno;
-    @Column(name = "LastName")
     private String lastName;
-    @Column(name = "DateofBirth")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date dateofBirth;
-    @Column(name = "PlaceofBirth")
     private String placeofBirth;
-    @Column(name = "PatientCellphone")
     private Integer patientCellphone;
-    @Column(name = "AlternateContact")
     private String alternateContact;
-    @Column(name = "PatientSmoke")
     private Boolean patientSmoke;
-    @Column(name = "PatientDrinkAlcohol")
     private Boolean patientDrinkAlcohol;
-    @Column(name = "PatientDontSmoke")
     private Boolean patientDontSmoke;
-    @Column(name = "PatientDontDrinkAlcohol")
     private Boolean patientDontDrinkAlcohol;
-    @Column(name = "InactiveDays")
     private Integer inactiveDays;
-    @Column(name = "TransferFrom")
     private String transferFrom;
-    @JoinColumn(name = "SourceofClient", referencedColumnName = "SourceID")
-    @ManyToOne
     private TblSourceOfClient tblSourceOfClient;
 
     public TblARTPatientMasterInformation() {
@@ -553,7 +469,6 @@ public class TblARTPatientMasterInformation implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof TblARTPatientMasterInformation)) {
             return false;
         }

@@ -1,87 +1,40 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.intellisoftkenya.adt.migrator.domain.adt;
 
 import java.io.Serializable;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
 
 /**
  *
  * @author gitahi
  */
-@Entity
-@Table(name = "tblARVDrugStockMain")
-@NamedQueries({
-    @NamedQuery(name = "TblARVDrugStockMain.findAll", query = "SELECT t FROM TblARVDrugStockMain t")})
 public class TblARVDrugStockMain implements Serializable {
-    @OneToMany(mappedBy = "tblARVDrugStockMain")
     private List<TblARVDrugStockTransactions> tblARVDrugStockTransactionsList;
-    @OneToMany(mappedBy = "tblARVDrugStockMain")
     private List<TblARTPatientTransactions> tblARTPatientTransactionsList;
     private static final long serialVersionUID = 1L;
-    @Id
-    @Column(name = "ARVDrugsID")
     private String aRVDrugsID;
-    @Column(name = "DrugCategory")
     private Integer drugCategory;
-    @Column(name = "ToolOrder")
     private Integer toolOrder;
-    @Column(name = "Packsizes")
     private Integer packsizes;
-    @Column(name = "Unit")
     private String unit;
-    @Column(name = "GenericName")
     private String genericName;
-    @Column(name = "MiximumLevel")
     private Integer miximumLevel;
-    @Column(name = "MinimumLevel")
     private Integer minimumLevel;
-    @Column(name = "ReorderLevel")
     private Integer reorderLevel;
-    @Column(name = "AMC")
     private Integer amc;
-    @Column(name = "SaftyStock")
     private Integer saftyStock;
-    @Lob
-    @Column(name = "Comment")
     private String comment;
-    @Column(name = "StockonHand")
     private Integer stockonHand;
-    @Column(name = "IsProphyDrug")
     private Boolean isProphyDrug;
-    @Column(name = "SupportedBy")
     private Integer supportedBy;
-    @Column(name = "SupportedBy1")
     private Integer supportedBy1;
-    @Column(name = "SupportedBy2")
     private Integer supportedBy2;
-    @Column(name = "SupportedBy3")
     private Integer supportedBy3;
-    @Column(name = "SupportedBy4")
     private Integer supportedBy4;
-    @Column(name = "StdDose")
     private String stdDose;
-    @Column(name = "StdDuration")
     private Short stdDuration;
-    @Column(name = "StdQty")
     private Integer stdQty;
-    @Column(name = "InRegimen")
     private String inRegimen;
-    @Column(name = "InUse")
     private String inUse;
-    @Column(name = "TBDrug")
     private Boolean tBDrug;
 
     public TblARVDrugStockMain() {
@@ -300,7 +253,6 @@ public class TblARVDrugStockMain implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof TblARVDrugStockMain)) {
             return false;
         }

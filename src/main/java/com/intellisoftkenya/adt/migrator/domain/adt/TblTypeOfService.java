@@ -1,35 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.intellisoftkenya.adt.migrator.domain.adt;
 
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
 
 /**
  *
  * @author gitahi
  */
-@Entity
-@Table(name = "tblTypeOfService")
-@NamedQueries({
-    @NamedQuery(name = "TblTypeOfService.findAll", query = "SELECT t FROM TblTypeOfService t")})
 public class TblTypeOfService implements Serializable {
     private static final long serialVersionUID = 1L;
-    @Column(name = "TypeOfServiceID")
     private Short typeOfServiceID;
-    @Column(name = "TypeofService")
     private String typeofService;
-    @Id
-    @Column(name = "pk")
     private Integer pk;
 
     public TblTypeOfService() {
@@ -72,7 +52,6 @@ public class TblTypeOfService implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof TblTypeOfService)) {
             return false;
         }

@@ -1,37 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.intellisoftkenya.adt.migrator.domain.adt;
 
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
 
 /**
  *
  * @author gitahi
  */
-@Entity
-@Table(name = "tblDrugsInRegimen")
-@NamedQueries({
-    @NamedQuery(name = "TblDrugsInRegimen.findAll", query = "SELECT t FROM TblDrugsInRegimen t")})
 public class TblDrugsInRegimen implements Serializable {
     private static final long serialVersionUID = 1L;
-    @Column(name = "Regimencode")
     private String regimencode;
-    @Column(name = "Regimen")
     private String regimen;
-    @Column(name = "Combinations")
     private String combinations;
-    @Id
-    @Column(name = "pk")
     private Integer pk;
 
     public TblDrugsInRegimen() {
@@ -82,7 +61,6 @@ public class TblDrugsInRegimen implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof TblDrugsInRegimen)) {
             return false;
         }

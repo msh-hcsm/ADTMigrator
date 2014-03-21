@@ -1,55 +1,25 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.intellisoftkenya.adt.migrator.domain.adt;
 
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
 
 /**
  *
  * @author gitahi
  */
-@Entity
-@Table(name = "tblOrganization")
-@NamedQueries({
-    @NamedQuery(name = "TblOrganization.findAll", query = "SELECT t FROM TblOrganization t")})
 public class TblOrganization implements Serializable {
     private static final long serialVersionUID = 1L;
-    @Column(name = "OrganizationCode")
     private Integer organizationCode;
-    @Column(name = "Organization")
     private String organization;
-    @Column(name = "Adultage")
     private Short adultage;
-    @Column(name = "MaxPatientperday")
     private Integer maxPatientperday;
-    @Column(name = "District")
     private String district;
-    @Column(name = "Region")
     private String region;
-    @Column(name = "GokSupport")
     private Boolean gokSupport;
-    @Column(name = "MSFSupport")
     private Boolean mSFSupport;
-    @Column(name = "PEPFARSupport")
     private Boolean pEPFARSupport;
-    @Column(name = "ARTService")
     private Boolean aRTService;
-    @Column(name = "PMTCTService")
     private Boolean pMTCTService;
-    @Column(name = "PEPService")
     private Boolean pEPService;
-    @Id
-    @Column(name = "pk")
     private Integer pk;
 
     public TblOrganization() {
@@ -172,7 +142,6 @@ public class TblOrganization implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof TblOrganization)) {
             return false;
         }

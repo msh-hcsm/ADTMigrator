@@ -1,89 +1,39 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.intellisoftkenya.adt.migrator.domain.adt;
 
 import com.intellisoftkenya.adt.migrator.domain.adt.TblARTPatientMasterInformation;
 import com.intellisoftkenya.adt.migrator.domain.adt.TblARVDrugStockMain;
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 /**
  *
  * @author gitahi
  */
-@Entity
-@Table(name = "tblARTPatientTransactions")
-@NamedQueries({
-    @NamedQuery(name = "TblARTPatientTransactions.findAll", query = "SELECT t FROM TblARTPatientTransactions t")})
 public class TblARTPatientTransactions implements Serializable {
     private static final long serialVersionUID = 1L;
-    @Column(name = "DateofVisit")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date dateofVisit;
-    @Column(name = "BrandName")
     private String brandName;
-    @Column(name = "TransactionCode")
     private Integer transactionCode;
-    @Column(name = "unit")
     private String unit;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "ARVQty")
     private Float aRVQty;
-    @Column(name = "Dose")
     private String dose;
-    @Column(name = "duration")
     private Float duration;
-    @Column(name = "Regimen")
     private String regimen;
-    @Column(name = "LastRegimen")
     private String lastRegimen;
-    @Column(name = "Comment")
     private String comment;
-    @Column(name = "Operator")
     private String operator;
-    @Column(name = "Indication")
     private String indication;
-    @Column(name = "Weight")
     private Float weight;
-    @Column(name = "pillCount")
     private Short pillCount;
-    @Column(name = "Adherence")
     private Double adherence;
-    @Column(name = "DaysLate")
     private Integer daysLate;
-    @Column(name = "ReasonsForChange")
     private String reasonsForChange;
-    @Column(name = "RefOrderNo")
     private String refOrderNo;
-    @Column(name = "BatchNo")
     private String batchNo;
-    @Column(name = "ExpiryDate")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date expiryDate;
-    @Column(name = "PatientTranNo")
     private Integer patientTranNo;
-    @Id
-    @Column(name = "pk")
     private Integer pk;
-    @JoinColumn(name = "Drugname", referencedColumnName = "ARVDrugsID")
-    @ManyToOne
     private TblARVDrugStockMain tblARVDrugStockMain;
-    @JoinColumn(name = "ARTID", referencedColumnName = "ArtID")
-    @ManyToOne
     private TblARTPatientMasterInformation tblARTPatientMasterInformation;
 
     public TblARTPatientTransactions() {
@@ -294,7 +244,6 @@ public class TblARTPatientTransactions implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof TblARTPatientTransactions)) {
             return false;
         }
