@@ -1,8 +1,9 @@
 package com.intellisoftkenya.adt.migrator.business;
 
+import com.intellisoftkenya.adt.migrator.Main;
 import com.intellisoftkenya.adt.migrator.dao.AdtSqlExecutor;
 import com.intellisoftkenya.adt.migrator.dao.FdtSqlExcecutor;
-import com.intellisoftkenya.adt.migrator.Main;
+import com.intellisoftkenya.adt.migrator.dao.SqlExecutor;
 import com.intellisoftkenya.adt.migrator.data.OneToOne;
 import com.intellisoftkenya.adt.migrator.data.User;
 import com.intellisoftkenya.adt.migrator.exceptions.UnsupportedDataTypeException;
@@ -25,14 +26,16 @@ import java.util.logging.Logger;
  */
 public class OneToOneMigrator {
 
-    private final AdtSqlExecutor ase = AdtSqlExecutor.getInstance();
-    private final Connection connection = FdtSqlExcecutor.connection();
+    private final SqlExecutor ase = AdtSqlExecutor.getInstance();
+    private final SqlExecutor fse = FdtSqlExcecutor.getInstance();
+    private final Connection connection = fse.getConnection();
 
     /**
      * Migrate all tables that have a one-to-one relationship between ADT and
      * FDT.
-     * 
-     * @throws com.intellisoftkenya.adt.migrator.exceptions.UnsupportedDataTypeException
+     *
+     * @throws
+     * com.intellisoftkenya.adt.migrator.exceptions.UnsupportedDataTypeException
      */
     public void migrateOneToOnes() throws UnsupportedDataTypeException {
         {
@@ -48,6 +51,30 @@ public class OneToOneMigrator {
             migrateOneToOne(oto);
         }
         {
+            OneToOne oto = new OneToOne("tblClientSupportDetails", "supporting_organization");
+            Map<OneToOne.Column, OneToOne.Column> columnMappings = new HashMap<OneToOne.Column, OneToOne.Column>();
+            columnMappings.put(
+                    new OneToOne.Column("ClientSupportDesciption", String.class), new OneToOne.Column("name", String.class));
+            oto.setColumnMappings(columnMappings);
+            migrateOneToOne(oto);
+        }
+        {
+            OneToOne oto = new OneToOne("tblGenericName", "generic_name");
+            Map<OneToOne.Column, OneToOne.Column> columnMappings = new HashMap<OneToOne.Column, OneToOne.Column>();
+            columnMappings.put(
+                    new OneToOne.Column("GenericName", String.class), new OneToOne.Column("name", String.class));
+            oto.setColumnMappings(columnMappings);
+            migrateOneToOne(oto);
+        }
+        {
+            OneToOne oto = new OneToOne("tblReasonforChange", "regimen_change_reason");
+            Map<OneToOne.Column, OneToOne.Column> columnMappings = new HashMap<OneToOne.Column, OneToOne.Column>();
+            columnMappings.put(
+                    new OneToOne.Column("ReasonforChange", String.class), new OneToOne.Column("name", String.class));
+            oto.setColumnMappings(columnMappings);
+            migrateOneToOne(oto);
+        }
+        {
             OneToOne oto = new OneToOne("tblRegimenCategory", "regimen_type");
             Map<OneToOne.Column, OneToOne.Column> columnMappings = new HashMap<OneToOne.Column, OneToOne.Column>();
             columnMappings.put(
@@ -55,7 +82,40 @@ public class OneToOneMigrator {
             oto.setColumnMappings(columnMappings);
             migrateOneToOne(oto);
         }
-        //close both connections once done?
+        {
+            OneToOne oto = new OneToOne("tblSourceOfClient", "patient_source");
+            Map<OneToOne.Column, OneToOne.Column> columnMappings = new HashMap<OneToOne.Column, OneToOne.Column>();
+            columnMappings.put(
+                    new OneToOne.Column("SourceOfClient", String.class), new OneToOne.Column("name", String.class));
+            oto.setColumnMappings(columnMappings);
+            migrateOneToOne(oto);
+        }
+        {
+            OneToOne oto = new OneToOne("tblTypeOfService", "service_type");
+            Map<OneToOne.Column, OneToOne.Column> columnMappings = new HashMap<OneToOne.Column, OneToOne.Column>();
+            columnMappings.put(
+                    new OneToOne.Column("TypeofService", String.class), new OneToOne.Column("name", String.class));
+            oto.setColumnMappings(columnMappings);
+            migrateOneToOne(oto);
+        }
+        {
+            OneToOne oto = new OneToOne("tblUnit", "dispensing_unit");
+            Map<OneToOne.Column, OneToOne.Column> columnMappings = new HashMap<OneToOne.Column, OneToOne.Column>();
+            columnMappings.put(
+                    new OneToOne.Column("Unit", String.class), new OneToOne.Column("name", String.class));
+            oto.setColumnMappings(columnMappings);
+            migrateOneToOne(oto);
+        }
+        {
+            OneToOne oto = new OneToOne("tblVisitTransaction", "visit_type");
+            Map<OneToOne.Column, OneToOne.Column> columnMappings = new HashMap<OneToOne.Column, OneToOne.Column>();
+            columnMappings.put(
+                    new OneToOne.Column("VisitTranName", String.class), new OneToOne.Column("name", String.class));
+            oto.setColumnMappings(columnMappings);
+            migrateOneToOne(oto);
+        }
+        ase.close();
+        fse.close();
     }
 
     private void migrateOneToOne(OneToOne oto) throws UnsupportedDataTypeException {
@@ -125,7 +185,7 @@ public class OneToOneMigrator {
     }
 
     private boolean setParameter(ResultSet rs, PreparedStatement pStmt,
-            Map.Entry<OneToOne.Column, OneToOne.Column> columnMapping, int index) 
+            Map.Entry<OneToOne.Column, OneToOne.Column> columnMapping, int index)
             throws SQLException, UnsupportedDataTypeException {
         Object value = null;
         if (columnMapping.getKey().getType() == String.class) {
