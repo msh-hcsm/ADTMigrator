@@ -7,18 +7,17 @@ import com.intellisoftkenya.adt.migrator.dao.SqlExecutor;
 import com.intellisoftkenya.adt.migrator.data.Column;
 import com.intellisoftkenya.adt.migrator.data.OneToOne;
 import com.intellisoftkenya.adt.migrator.data.Reference;
-import com.intellisoftkenya.adt.migrator.data.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -137,38 +136,49 @@ public class OneToOneMigrator {
      */
     private String createColumns(Map<Column, Column> columnMappings,
             boolean select, boolean values) {
-        Set<String> added = new HashSet<String>();
-        String columns = "";
-        int i = 1;
-        int n = columnMappings.size();
+        List<String> added = new ArrayList<String>();
+        String append = null;
         for (Map.Entry<Column, Column> entry : columnMappings.entrySet()) {
             if (values) {
-                columns += "?";
+                added.add("?");
+                append = ", ?, ?, ?";
             } else {
                 if (select) {
                     String column = entry.getKey().getName();
-                    //avoid adding the same column to select statement more than once
-                    if (!added.contains(column)) {
-                        columns += column;
-                        added.add(column);
-                    } else {
-                        n--;
+                    if (column == null) {
                         continue;
                     }
+                    //avoid adding the same column to select statement more than once
+                    if (!added.contains(column)) {
+                        added.add(column);
+                    }
                 } else {
-                    columns += entry.getValue().getName();
-                }
-            }
-            if (i < n) {
-                columns += ", ";
-                i++;
-            } else {
-                if (!select) {
-                    columns += values ? ", ?, ?, ?" : ", uuid, created_by, created_on";
+                    added.add(entry.getValue().getName());
+                    append = ", uuid, created_by, created_on";
                 }
             }
         }
-        return columns;
+        return commify(added, append);
+    }
+
+    /**
+     * Returns a comma separated list of columns.
+     *
+     * @param columns the set of columns to be commified.
+     * @param append any string to be appended after commifying
+     */
+    private String commify(List<String> columns, String append) {
+        String commified = "";
+        int i = 0;
+        int n = columns.size() - 1;
+        for (String column : columns) {
+            commified += column;
+            if (i < n) {
+                commified += ", ";
+                i++;
+            }
+        }
+        return commified += (append != null ? append : "");
     }
 
     /**

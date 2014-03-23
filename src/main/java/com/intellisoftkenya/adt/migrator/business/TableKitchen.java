@@ -38,7 +38,7 @@ public class TableKitchen {
         oneToOneTables.add(prepareDrug());
         oneToOneTables.add(preparePerson());
         oneToOneTables.add(preparePatient());
-//        oneToOneTables.add(preparePatientIdentifier());
+        oneToOneTables.add(preparePatientIdentifier());
         return oneToOneTables;
     }
 
@@ -207,11 +207,11 @@ public class TableKitchen {
     }
 
     private OneToOne preparePatientIdentifier() {
-        OneToOne oto = new OneToOne("tblARTPatientMasterInformation", "patient");
+        OneToOne oto = new OneToOne("tblARTPatientMasterInformation", "patient_identifier");
         Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
 
         columnMappings.put(new Column("ArtID", Types.VARCHAR), new Column("identifier", Types.VARCHAR));
-        columnMappings.put(new Column(null, Types.INTEGER), new Column("identifier_type", Types.INTEGER, ART_IDENTIFIERTYPE_ID));
+        columnMappings.put(new Column(null, Types.INTEGER), new Column("identifier_type_id", Types.INTEGER, ART_IDENTIFIERTYPE_ID));
 
         Column patientId = new Column("patient_id", Types.INTEGER);
         patientId.setReference(new Reference("patient", "legacy_pk"));
