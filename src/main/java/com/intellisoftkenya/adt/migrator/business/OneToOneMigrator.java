@@ -16,7 +16,6 @@ import java.sql.Types;
 import java.util.AbstractMap;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -41,109 +40,8 @@ public class OneToOneMigrator {
      * @throws java.sql.SQLException
      */
     public void migrateOneToOnes() throws SQLException {
-        {
-            OneToOne oto = new OneToOne("tblDose", "dosage");
-            Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
-            columnMappings.put(
-                    new Column("dose", Types.VARCHAR), new Column("name", Types.VARCHAR));
-            columnMappings.put(
-                    new Column("value", Types.DECIMAL), new Column("value", Types.DECIMAL));
-            columnMappings.put(
-                    new Column("frequency", Types.INTEGER), new Column("frequency", Types.INTEGER));
-            oto.setColumnMappings(columnMappings);
-            migrateOneToOne(oto);
-        }
-        {
-            OneToOne oto = new OneToOne("tblClientSupportDetails", "supporting_organization");
-            Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
-            columnMappings.put(
-                    new Column("ClientSupportDesciption", Types.VARCHAR), new Column("name", Types.VARCHAR));
-            oto.setColumnMappings(columnMappings);
-            migrateOneToOne(oto);
-        }
-        {
-            OneToOne oto = new OneToOne("tblGenericName", "generic_name");
-            Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
-            columnMappings.put(
-                    new Column("GenID", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
-            columnMappings.put(
-                    new Column("GenericName", Types.VARCHAR), new Column("name", Types.VARCHAR));
-            oto.setColumnMappings(columnMappings);
-            migrateOneToOne(oto);
-        }
-        {
-            OneToOne oto = new OneToOne("tblReasonforChange", "regimen_change_reason");
-            Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
-            columnMappings.put(
-                    new Column("ReasonforChange", Types.VARCHAR), new Column("name", Types.VARCHAR));
-            oto.setColumnMappings(columnMappings);
-            migrateOneToOne(oto);
-        }
-        {
-            OneToOne oto = new OneToOne("tblRegimenCategory", "regimen_type");
-            Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
-            columnMappings.put(
-                    new Column("CategoryName", Types.VARCHAR), new Column("name", Types.VARCHAR));
-            oto.setColumnMappings(columnMappings);
-            migrateOneToOne(oto);
-        }
-        {
-            OneToOne oto = new OneToOne("tblSourceOfClient", "patient_source");
-            Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
-            columnMappings.put(
-                    new Column("SourceOfClient", Types.VARCHAR), new Column("name", Types.VARCHAR));
-            oto.setColumnMappings(columnMappings);
-            migrateOneToOne(oto);
-        }
-        {
-            OneToOne oto = new OneToOne("tblTypeOfService", "service_type");
-            Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
-            columnMappings.put(
-                    new Column("TypeofService", Types.VARCHAR), new Column("name", Types.VARCHAR));
-            oto.setColumnMappings(columnMappings);
-            migrateOneToOne(oto);
-        }
-        {
-            OneToOne oto = new OneToOne("tblUnit", "dispensing_unit");
-            Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
-            columnMappings.put(
-                    new Column("Unit", Types.VARCHAR), new Column("name", Types.VARCHAR));
-            oto.setColumnMappings(columnMappings);
-            migrateOneToOne(oto);
-        }
-        {
-            OneToOne oto = new OneToOne("tblVisitTransaction", "visit_type");
-            Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
-            columnMappings.put(
-                    new Column("VisitTranName", Types.VARCHAR), new Column("name", Types.VARCHAR));
-            oto.setColumnMappings(columnMappings);
-            migrateOneToOne(oto);
-        }
-
-        {
-            OneToOne oto = new OneToOne("tblARVDrugStockMain", "drug");
-            Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
-
-            columnMappings.put(new Column("ARVDrugsID", Types.VARCHAR), new Column("name", Types.VARCHAR));
-
-            columnMappings.put(new Column("Packsizes", Types.INTEGER), new Column("pack_size", Types.INTEGER));
-
-            columnMappings.put(new Column("ReorderLevel", Types.INTEGER), new Column("reorder_point", Types.INTEGER));
-
-            Column category = new Column("drug_category_id", Types.INTEGER);
-            category.setReference(new Reference("drug_category", true));
-            columnMappings.put(new Column("DrugCategory", Types.INTEGER), category);
-
-            Column unit = new Column("dispensing_unit_id", Types.INTEGER);
-            unit.setReference(new Reference("dispensing_unit"));
-            columnMappings.put(new Column("Unit", Types.VARCHAR), unit);
-
-            Column genericName = new Column("generic_name_id", Types.INTEGER);
-            genericName.setReference(new Reference("generic_name", "legacy_pk"));
-            columnMappings.put(new Column("GenericName", Types.VARCHAR), genericName);
-
-            oto.setColumnMappings(columnMappings);
-            migrateOneToOne(oto);
+        for (OneToOne oneToOne : new TableKitchen().prepareTables()) {
+            migrateOneToOne(oneToOne);
         }
         ase.close();
         fse.close();
