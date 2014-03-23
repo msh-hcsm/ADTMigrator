@@ -1,4 +1,4 @@
-package com.intellisoftkenya.adt.migrator.domain.fdt;
+package com.intellisoftkenya.adt.migrator.data;
 
 /**
  *

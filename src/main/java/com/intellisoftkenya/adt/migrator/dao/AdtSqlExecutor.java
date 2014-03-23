@@ -1,4 +1,4 @@
-package com.intellisoftkenya.adt.migrator;
+package com.intellisoftkenya.adt.migrator.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

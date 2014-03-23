@@ -1,5 +1,10 @@
 package com.intellisoftkenya.adt.migrator;
 
+import com.intellisoftkenya.adt.migrator.business.OneToOneMigrator;
+import com.intellisoftkenya.adt.migrator.exceptions.UnsupportedDataTypeException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author gitahi
@@ -7,6 +12,10 @@ package com.intellisoftkenya.adt.migrator;
 public class Main {
 
     public static void main(String[] args) {
-        new LookupMigrator().migrateLookups();
+        try {
+            new OneToOneMigrator().migrateOneToOnes();
+        } catch (UnsupportedDataTypeException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
