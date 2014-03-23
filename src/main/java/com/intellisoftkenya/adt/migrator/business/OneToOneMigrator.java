@@ -149,6 +149,9 @@ public class OneToOneMigrator {
         fse.close();
     }
 
+    /**
+     * Migrate a given {@link OneToOne} table from ADT to its FDT equivalent.
+     */
     private void migrateOneToOne(OneToOne oto) throws SQLException {
         if (!destinationIsEmpty(oto.getFdtTable())) {
             Logger.getLogger(Main.class.getName()).log(Level.WARNING, "Skipping migration for table ''{0}''. "
@@ -196,12 +199,20 @@ public class OneToOneMigrator {
         }
     }
 
+    /**
+     * @return true if the destination (FDT) table is empty.
+     */
     private boolean destinationIsEmpty(String fdtTable) throws SQLException {
         String select = "SELECT * FROM " + fdtTable;
         ResultSet rs = fse.executeQuery(select);
         return !rs.next();
     }
 
+    /**
+     * @return a key-value pair of <String, String> containing a select
+     * statement to the ADT table and an insert statement to the FDT table in
+     * that order.
+     */
     private Map.Entry<String, String> createStatements(OneToOne oto) {
         String select = "SELECT " + createColumns(oto.getColumnMappings(), true, false)
                 + " FROM " + oto.getAdtTable();
@@ -211,6 +222,16 @@ public class OneToOneMigrator {
         return new AbstractMap.SimpleEntry<String, String>(select, insert);
     }
 
+    /**
+     * @return properly concatenated column lists. This method is called by 
+     * {@link OneToOneMigrator#createStatements(com.intellisoftkenya.adt.migrator.data.OneToOne) }.
+     *
+     * @param select true if you mean to create columns for a select statement.
+     * Otherwise insert statement is assumed.
+     *
+     * @param values true if you mean to create "columns" for insert statement
+     * value parameters.
+     */
     private String createColumns(Map<Column, Column> columnMappings,
             boolean select, boolean values) {
         String columns = "";
@@ -235,7 +256,14 @@ public class OneToOneMigrator {
     }
 
     /**
-     * 
+     * Sets a parameter for the FDT insert statement from the value read for
+     * that column from ADT select statement.
+     *
+     * @param rs the ResultSet to the ADT table.
+     * @param pStmt the prepared statement for inserting into the FDT table.
+     * @param columnMapping the column mapping for the ADT table to the FDT
+     * table
+     * @param index the column index for which to set the parameter.
      */
     private boolean setParameter(ResultSet rs, PreparedStatement pStmt,
             Map.Entry<Column, Column> columnMapping, int index)
@@ -255,6 +283,10 @@ public class OneToOneMigrator {
         return (value != null);
     }
 
+    /**
+     * Sets a parameter for the FDT insert statement from a value deduced or created
+     * based on a table relationship as described by a {@link Column} {@link Reference}.
+     */
     private Integer setParamaterFromReference(Reference ref, String stringValue) throws SQLException {
         String referenceKey = ref.getTable() + "-"
                 + ref.getColumn() + stringValue;
