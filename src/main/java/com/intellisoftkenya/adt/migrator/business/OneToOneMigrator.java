@@ -37,7 +37,7 @@ public class OneToOneMigrator {
      * @throws
      * com.intellisoftkenya.adt.migrator.exceptions.UnsupportedDataTypeException
      */
-    public void migrateOneToOnes() throws UnsupportedDataTypeException {
+    public void migrateOneToOnes() throws UnsupportedDataTypeException, SQLException {
         {
             OneToOne oto = new OneToOne("tblDose", "dosage");
             Map<OneToOne.Column, OneToOne.Column> columnMappings = new HashMap<OneToOne.Column, OneToOne.Column>();
@@ -118,38 +118,57 @@ public class OneToOneMigrator {
         fse.close();
     }
 
-    private void migrateOneToOne(OneToOne oto) throws UnsupportedDataTypeException {
+    private void migrateOneToOne(OneToOne oto) throws UnsupportedDataTypeException, SQLException {
+        if (!destinationIsEmpty(oto.getFdtTable())) {
+            Logger.getLogger(Main.class.getName()).log(Level.WARNING, "Skipping migration for table ''{0}''. "
+                    + "Destination table ''{1}'' is not empty.", new Object[]{oto.getAdtTable(), oto.getFdtTable()});
+            return;
+        }
+
         Map.Entry<String, String> statements = createStatements(oto);
         String select = statements.getKey();
         String insert = statements.getValue();
 
         ResultSet rs = ase.executeQuery(select);
         if (rs != null) {
-            try {
-                connection.setAutoCommit(false);
-                PreparedStatement pStmt = connection.prepareCall(insert);
-                while (rs.next()) {
-                    boolean execute = false;
-                    int index = 1;
-                    for (Map.Entry<OneToOne.Column, OneToOne.Column> columnMapping
-                            : oto.getColumnMappings().entrySet()) {
-                        execute = setParameter(rs, pStmt, columnMapping, index) || execute;
-                        index++;
-                    }
-                    pStmt.setString(index++, UUID.randomUUID().toString());
-                    pStmt.setInt(index++, new User(1).getId());
-                    pStmt.setDate(index++, new java.sql.Date(new Date().getTime()));
-                    if (execute) {
-                        pStmt.executeUpdate();
-                    }
+            connection.setAutoCommit(false);
+            PreparedStatement pStmt = connection.prepareCall(insert);
+
+            int totalRowCount = 0;
+            int skippedRowCount = 0;
+
+            while (rs.next()) {
+                totalRowCount++;
+                boolean execute = false;
+                int index = 1;
+                for (Map.Entry<OneToOne.Column, OneToOne.Column> columnMapping
+                        : oto.getColumnMappings().entrySet()) {
+                    execute = setParameter(rs, pStmt, columnMapping, index) || execute;
+                    index++;
                 }
-                connection.commit();
-            } catch (SQLException ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            } finally {
-                ase.close(rs);
+                pStmt.setString(index++, UUID.randomUUID().toString());
+                pStmt.setInt(index++, new User(1).getId());
+                pStmt.setDate(index++, new java.sql.Date(new Date().getTime()));
+                if (execute) {
+                    pStmt.executeUpdate();
+                } else {
+                    skippedRowCount++;
+                }
             }
+            connection.commit();
+            if (skippedRowCount > 0) {
+                Logger.getLogger(Main.class.getName()).log(Level.WARNING, "Skipped {0}. "
+                        + "row(s) of the table ''{1}''. Nothing to migrate.", new Object[]{skippedRowCount, oto.getAdtTable()});
+            }
+            Logger.getLogger(Main.class.getName()).log(Level.INFO, "Migrated {0} row(s) from ''{1}'' "
+                    + "to ''{2}''.", new Object[]{totalRowCount - skippedRowCount, oto.getAdtTable(), oto.getFdtTable()});
         }
+    }
+
+    private boolean destinationIsEmpty(String fdtTable) throws SQLException {
+        String select = "SELECT * FROM " + fdtTable;
+        ResultSet rs = fse.executeQuery(select);
+        return !rs.next();
     }
 
     private Map.Entry<String, String> createStatements(OneToOne oto) {
