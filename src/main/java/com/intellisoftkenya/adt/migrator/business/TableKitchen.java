@@ -20,7 +20,7 @@ public class TableKitchen {
 
     /**
      * Prepare {@link OneToOne} tables for migration.
-     * 
+     *
      * @return a list of the tables prepared.
      */
     public List<OneToOne> prepareTables() {
@@ -130,9 +130,9 @@ public class TableKitchen {
         Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
 
         columnMappings.put(new Column("ARVDrugsID", Types.VARCHAR), new Column("name", Types.VARCHAR));
-
+        columnMappings.put(new Column("StdDuration", Types.INTEGER), new Column("duration", Types.INTEGER));   
+        columnMappings.put(new Column("StdQty", Types.INTEGER), new Column("quantity", Types.DECIMAL));
         columnMappings.put(new Column("Packsizes", Types.INTEGER), new Column("pack_size", Types.INTEGER));
-
         columnMappings.put(new Column("ReorderLevel", Types.INTEGER), new Column("reorder_point", Types.INTEGER));
 
         Column category = new Column("drug_category_id", Types.INTEGER);
@@ -146,6 +146,10 @@ public class TableKitchen {
         Column genericName = new Column("generic_name_id", Types.INTEGER);
         genericName.setReference(new Reference("generic_name", "legacy_pk"));
         columnMappings.put(new Column("GenericName", Types.VARCHAR), genericName);
+
+        Column dosage = new Column("dosage_id", Types.INTEGER);
+        dosage.setReference(new Reference("dosage", true));
+        columnMappings.put(new Column("StdDose", Types.VARCHAR), dosage);
 
         oto.setColumnMappings(columnMappings);
         return oto;

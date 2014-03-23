@@ -33,6 +33,8 @@ public class OneToOneMigrator {
 
     private final Map<String, Integer> referenceCache = new HashMap<String, Integer>();
 
+    private final AuditValues auditValues = new AuditValues();
+
     /**
      * Migrate all tables that have a one-to-one relationship between ADT and
      * FDT.
@@ -78,9 +80,9 @@ public class OneToOneMigrator {
                     execute = setParameter(rs, pStmt, columnMapping, index) || execute;
                     index++;
                 }
-                pStmt.setString(index++, UUID.randomUUID().toString());
-                pStmt.setInt(index++, new User(1).getId());
-                pStmt.setDate(index++, new java.sql.Date(new Date().getTime()));
+                pStmt.setString(index++, auditValues.uuid());
+                pStmt.setInt(index++, auditValues.createdBy());
+                pStmt.setDate(index++, auditValues.createdOn());
                 if (execute) {
                     pStmt.executeUpdate();
                 } else {
@@ -169,7 +171,7 @@ public class OneToOneMigrator {
         Object value = rs.getObject(columnMapping.getKey().getName());
         if (columnMapping.getValue().getReference() != null) {
             if (value != null) {
-                value = setParamaterFromReference(columnMapping.getValue().getReference(), value.toString());
+                value = setParameterFromReference(columnMapping.getValue().getReference(), value.toString());
             }
         }
 
@@ -182,10 +184,11 @@ public class OneToOneMigrator {
     }
 
     /**
-     * Sets a parameter for the FDT insert statement from a value deduced or created
-     * based on a table relationship as described by a {@link Column} {@link Reference}.
+     * Sets a parameter for the FDT insert statement from a value deduced or
+     * created based on a table relationship as described by a
+     * {@link Column} {@link Reference}.
      */
-    private Integer setParamaterFromReference(Reference ref, String stringValue) throws SQLException {
+    private Integer setParameterFromReference(Reference ref, String stringValue) throws SQLException {
         String referenceKey = ref.getTable() + "-"
                 + ref.getColumn() + stringValue;
         Integer value = referenceCache.get(referenceKey);
@@ -200,8 +203,9 @@ public class OneToOneMigrator {
             } else {
                 if (ref.isCreatable()) {
                     String insert = "INSERT INTO "
-                            + ref.getTable() + "(" + ref.getColumn() + ") "
-                            + "VALUES('" + stringValue + "')";
+                            + ref.getTable() + "(" + ref.getColumn() + ", uuid, created_by, created_on) "
+                            + "VALUES('" + stringValue + "', '" + auditValues.uuid() 
+                            + "'," + auditValues.createdBy() + " , '" + auditValues.createdOn() + "')";
                     value = fse.executeUpdate(insert, true);
                     connection.commit();
                     referenceCache.put(referenceKey, value);
@@ -209,5 +213,32 @@ public class OneToOneMigrator {
             }
         }
         return value;
+    }
+
+    /**
+     * Supplies values fro audit columns.
+     */
+    private class AuditValues {
+
+        /**
+         * @return a random UUID.
+         */
+        private String uuid() {
+            return UUID.randomUUID().toString();
+        }
+
+        /**
+         * @return an imaginary user id of 1.
+         */
+        public int createdBy() {
+            return 1;
+        }
+
+        /**
+         * @return the time now.
+         */
+        private java.sql.Date createdOn() {
+            return new java.sql.Date(new Date().getTime());
+        }
     }
 }
