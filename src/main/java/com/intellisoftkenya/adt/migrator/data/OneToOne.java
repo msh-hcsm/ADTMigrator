@@ -53,12 +53,38 @@ public class OneToOne {
      */
     public static class Reference {
 
+        /**
+         * Name of the referenced table
+         */
         private final String table;
+
+        /**
+         * Name of the column containing the text by which to query for primary
+         * keys
+         */
         private String column = "name";
+
+        /**
+         * Name of the referenced primary key
+         */
         private String pk = "id";
+
+        /**
+         * Whether or not a record should be created if the text from
+         * {@link Reference#column} is missing. Records are created subject to
+         * the table allowing insertion to column alone. If for instance there
+         * are other non-nullable columns which do not have defaults, creation
+         * will fail.
+         */
+        private boolean creatable = false;
 
         public Reference(String table) {
             this.table = table;
+        }
+
+        public Reference(String table, boolean creatable) {
+            this(table);
+            this.creatable = creatable;
         }
 
         public String getTable() {
@@ -79,6 +105,14 @@ public class OneToOne {
 
         public void setPk(String pk) {
             this.pk = pk;
+        }
+
+        public boolean isCreatable() {
+            return creatable;
+        }
+
+        public void setCreatable(boolean creatable) {
+            this.creatable = creatable;
         }
     }
 

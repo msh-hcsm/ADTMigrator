@@ -14,6 +14,7 @@ import java.sql.Types;
 import java.util.AbstractMap;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -40,7 +41,7 @@ public class OneToOneMigrator {
     public void migrateOneToOnes() throws SQLException {
         {
             OneToOne oto = new OneToOne("tblDose", "dosage");
-            Map<OneToOne.Column, OneToOne.Column> columnMappings = new HashMap<OneToOne.Column, OneToOne.Column>();
+            Map<OneToOne.Column, OneToOne.Column> columnMappings = new LinkedHashMap<OneToOne.Column, OneToOne.Column>();
             columnMappings.put(
                     new OneToOne.Column("dose", Types.VARCHAR), new OneToOne.Column("name", Types.VARCHAR));
             columnMappings.put(
@@ -52,7 +53,7 @@ public class OneToOneMigrator {
         }
         {
             OneToOne oto = new OneToOne("tblClientSupportDetails", "supporting_organization");
-            Map<OneToOne.Column, OneToOne.Column> columnMappings = new HashMap<OneToOne.Column, OneToOne.Column>();
+            Map<OneToOne.Column, OneToOne.Column> columnMappings = new LinkedHashMap<OneToOne.Column, OneToOne.Column>();
             columnMappings.put(
                     new OneToOne.Column("ClientSupportDesciption", Types.VARCHAR), new OneToOne.Column("name", Types.VARCHAR));
             oto.setColumnMappings(columnMappings);
@@ -60,7 +61,7 @@ public class OneToOneMigrator {
         }
         {
             OneToOne oto = new OneToOne("tblGenericName", "generic_name");
-            Map<OneToOne.Column, OneToOne.Column> columnMappings = new HashMap<OneToOne.Column, OneToOne.Column>();
+            Map<OneToOne.Column, OneToOne.Column> columnMappings = new LinkedHashMap<OneToOne.Column, OneToOne.Column>();
             columnMappings.put(
                     new OneToOne.Column("GenericName", Types.VARCHAR), new OneToOne.Column("name", Types.VARCHAR));
             oto.setColumnMappings(columnMappings);
@@ -68,7 +69,7 @@ public class OneToOneMigrator {
         }
         {
             OneToOne oto = new OneToOne("tblReasonforChange", "regimen_change_reason");
-            Map<OneToOne.Column, OneToOne.Column> columnMappings = new HashMap<OneToOne.Column, OneToOne.Column>();
+            Map<OneToOne.Column, OneToOne.Column> columnMappings = new LinkedHashMap<OneToOne.Column, OneToOne.Column>();
             columnMappings.put(
                     new OneToOne.Column("ReasonforChange", Types.VARCHAR), new OneToOne.Column("name", Types.VARCHAR));
             oto.setColumnMappings(columnMappings);
@@ -76,7 +77,7 @@ public class OneToOneMigrator {
         }
         {
             OneToOne oto = new OneToOne("tblRegimenCategory", "regimen_type");
-            Map<OneToOne.Column, OneToOne.Column> columnMappings = new HashMap<OneToOne.Column, OneToOne.Column>();
+            Map<OneToOne.Column, OneToOne.Column> columnMappings = new LinkedHashMap<OneToOne.Column, OneToOne.Column>();
             columnMappings.put(
                     new OneToOne.Column("CategoryName", Types.VARCHAR), new OneToOne.Column("name", Types.VARCHAR));
             oto.setColumnMappings(columnMappings);
@@ -84,7 +85,7 @@ public class OneToOneMigrator {
         }
         {
             OneToOne oto = new OneToOne("tblSourceOfClient", "patient_source");
-            Map<OneToOne.Column, OneToOne.Column> columnMappings = new HashMap<OneToOne.Column, OneToOne.Column>();
+            Map<OneToOne.Column, OneToOne.Column> columnMappings = new LinkedHashMap<OneToOne.Column, OneToOne.Column>();
             columnMappings.put(
                     new OneToOne.Column("SourceOfClient", Types.VARCHAR), new OneToOne.Column("name", Types.VARCHAR));
             oto.setColumnMappings(columnMappings);
@@ -92,7 +93,7 @@ public class OneToOneMigrator {
         }
         {
             OneToOne oto = new OneToOne("tblTypeOfService", "service_type");
-            Map<OneToOne.Column, OneToOne.Column> columnMappings = new HashMap<OneToOne.Column, OneToOne.Column>();
+            Map<OneToOne.Column, OneToOne.Column> columnMappings = new LinkedHashMap<OneToOne.Column, OneToOne.Column>();
             columnMappings.put(
                     new OneToOne.Column("TypeofService", Types.VARCHAR), new OneToOne.Column("name", Types.VARCHAR));
             oto.setColumnMappings(columnMappings);
@@ -100,7 +101,7 @@ public class OneToOneMigrator {
         }
         {
             OneToOne oto = new OneToOne("tblUnit", "dispensing_unit");
-            Map<OneToOne.Column, OneToOne.Column> columnMappings = new HashMap<OneToOne.Column, OneToOne.Column>();
+            Map<OneToOne.Column, OneToOne.Column> columnMappings = new LinkedHashMap<OneToOne.Column, OneToOne.Column>();
             columnMappings.put(
                     new OneToOne.Column("Unit", Types.VARCHAR), new OneToOne.Column("name", Types.VARCHAR));
             oto.setColumnMappings(columnMappings);
@@ -108,7 +109,7 @@ public class OneToOneMigrator {
         }
         {
             OneToOne oto = new OneToOne("tblVisitTransaction", "visit_type");
-            Map<OneToOne.Column, OneToOne.Column> columnMappings = new HashMap<OneToOne.Column, OneToOne.Column>();
+            Map<OneToOne.Column, OneToOne.Column> columnMappings = new LinkedHashMap<OneToOne.Column, OneToOne.Column>();
             columnMappings.put(
                     new OneToOne.Column("VisitTranName", Types.VARCHAR), new OneToOne.Column("name", Types.VARCHAR));
             oto.setColumnMappings(columnMappings);
@@ -117,14 +118,21 @@ public class OneToOneMigrator {
 
         {
             OneToOne oto = new OneToOne("tblARVDrugStockMain", "drug");
-            Map<OneToOne.Column, OneToOne.Column> columnMappings = new HashMap<OneToOne.Column, OneToOne.Column>();
-            columnMappings.put(
-                    new OneToOne.Column("ARVDrugsID", Types.VARCHAR), new OneToOne.Column("name", Types.VARCHAR));
+            Map<OneToOne.Column, OneToOne.Column> columnMappings = new LinkedHashMap<OneToOne.Column, OneToOne.Column>();
+            
+            columnMappings.put(new OneToOne.Column("ARVDrugsID", Types.VARCHAR), new OneToOne.Column("name", Types.VARCHAR));
 
-            OneToOne.Column fdtColumn = new OneToOne.Column("dispensing_unit_id", Types.VARCHAR);
-            fdtColumn.setReference(new OneToOne.Reference("dispensing_unit"));
+            columnMappings.put(new OneToOne.Column("Packsizes", Types.INTEGER), new OneToOne.Column("pack_size", Types.INTEGER));
+            
+            columnMappings.put(new OneToOne.Column("ReorderLevel", Types.INTEGER), new OneToOne.Column("reorder_point", Types.INTEGER));
 
-            columnMappings.put(new OneToOne.Column("Unit", Types.VARCHAR), fdtColumn);
+            OneToOne.Column category = new OneToOne.Column("drug_category_id", Types.INTEGER);
+            category.setReference(new OneToOne.Reference("drug_category", true));
+            columnMappings.put(new OneToOne.Column("DrugCategory", Types.INTEGER), category);
+
+            OneToOne.Column unit = new OneToOne.Column("dispensing_unit_id", Types.INTEGER);
+            unit.setReference(new OneToOne.Reference("dispensing_unit"));
+            columnMappings.put(new OneToOne.Column("Unit", Types.VARCHAR), unit);
 
             oto.setColumnMappings(columnMappings);
             migrateOneToOne(oto);
@@ -224,7 +232,7 @@ public class OneToOneMigrator {
         Object value = rs.getObject(columnMapping.getKey().getName());
         if (columnMapping.getValue().getReference() != null) {
             if (value != null) {
-                value = setParamaterFromReference(columnMapping.getValue().getReference(), (String) value);
+                value = setParamaterFromReference(columnMapping.getValue().getReference(), value.toString());
             }
         }
 
@@ -238,7 +246,7 @@ public class OneToOneMigrator {
 
     private Integer setParamaterFromReference(OneToOne.Reference ref, String stringValue) throws SQLException {
         String referenceKey = ref.getTable() + "-"
-                + ref.getColumn();
+                + ref.getColumn() + stringValue;
         Integer value = referenceCache.get(referenceKey);
         if (value == null) {
             String select = "SELECT " + ref.getPk() + ", " + ref.getColumn()
@@ -248,6 +256,15 @@ public class OneToOneMigrator {
             if (rs.next()) {
                 value = rs.getInt(ref.getPk());
                 referenceCache.put(referenceKey, value);
+            } else {
+                if (ref.isCreatable()) {
+                    String insert = "INSERT INTO "
+                            + ref.getTable() + "(" + ref.getColumn() + ") "
+                            + "VALUES('" + stringValue + "')";
+                    value = fse.executeUpdate(insert, true);
+                    connection.commit();
+                    referenceCache.put(referenceKey, value);
+                }
             }
         }
         return value;

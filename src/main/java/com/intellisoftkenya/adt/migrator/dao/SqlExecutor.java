@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 /**
  * Super class for other SqlExecutors. Provides basic functionality for database
  * interaction.
- * 
+ *
  * @author gitahi
  */
 public abstract class SqlExecutor {
@@ -30,6 +30,26 @@ public abstract class SqlExecutor {
             Logger.getLogger(AdtSqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
         }
         return rs;
+    }
+
+    public int executeUpdate(String update, boolean generatedValue) {
+        ResultSet rs;
+        int ret = 0;
+        try {
+            Statement stmt = createStatement();
+            if (!generatedValue) {
+                ret = stmt.executeUpdate(update);
+            } else {
+                stmt.executeUpdate(update, Statement.RETURN_GENERATED_KEYS);
+                rs = stmt.getGeneratedKeys();
+                if (rs.next()) {
+                    ret = rs.getInt(1);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(AdtSqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return ret;
     }
 
     public void close(AutoCloseable autoCloseable) {
