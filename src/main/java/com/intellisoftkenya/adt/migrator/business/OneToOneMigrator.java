@@ -32,7 +32,7 @@ public class OneToOneMigrator {
      * Migrate all tables that have a one-to-one relationship between ADT and
      * FDT.
      * 
-     * @throws com.intellisoftkenya.adt.migrator.UnsupportedDataTypeException
+     * @throws com.intellisoftkenya.adt.migrator.exceptions.UnsupportedDataTypeException
      */
     public void migrateOneToOnes() throws UnsupportedDataTypeException {
         {

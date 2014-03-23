@@ -9,7 +9,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * A data access object for the ADT database.
+ * 
  * @author gitahi
  */
 public class AdtSqlExecutor {

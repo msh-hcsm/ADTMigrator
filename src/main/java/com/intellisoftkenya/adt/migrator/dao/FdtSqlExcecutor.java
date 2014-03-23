@@ -10,7 +10,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * A data access object for the FDT database.
+ * 
  * @author gitahi
  */
 public class FdtSqlExcecutor {

@@ -6,7 +6,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * The Main class.
+ * 
  * @author gitahi
  */
 public class Main {
