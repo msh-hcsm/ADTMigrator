@@ -18,6 +18,7 @@ import java.util.Map;
  */
 public class TableKitchen {
 
+    public static final Integer ART_IDENTIFIERTYPE_ID = 1;
     /**
      * Prepare {@link OneToOne} tables for migration.
      *
@@ -37,6 +38,7 @@ public class TableKitchen {
         oneToOneTables.add(prepareDrug());
         oneToOneTables.add(preparePerson());
         oneToOneTables.add(preparePatient());
+//        oneToOneTables.add(preparePatientIdentifier());
         return oneToOneTables;
     }
 
@@ -181,6 +183,7 @@ public class TableKitchen {
         OneToOne oto = new OneToOne("tblARTPatientMasterInformation", "patient");
         Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
 
+        columnMappings.put(new Column("ArtID", Types.VARCHAR), new Column("legacy_pk", Types.VARCHAR));
         columnMappings.put(new Column("DateStartedonART", Types.VARCHAR), new Column("date_of_enrollment", Types.VARCHAR));
 
         Column patientId = new Column("person_id", Types.INTEGER);
@@ -198,6 +201,21 @@ public class TableKitchen {
         Column supportingOrganization = new Column("supporting_organization_id", Types.INTEGER);
         supportingOrganization.setReference(new Reference("supporting_organization", "legacy_pk"));
         columnMappings.put(new Column("ClientSupportedBy", Types.VARCHAR), supportingOrganization);
+
+        oto.setColumnMappings(columnMappings);
+        return oto;
+    }
+
+    private OneToOne preparePatientIdentifier() {
+        OneToOne oto = new OneToOne("tblARTPatientMasterInformation", "patient");
+        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+
+        columnMappings.put(new Column("ArtID", Types.VARCHAR), new Column("identifier", Types.VARCHAR));
+        columnMappings.put(new Column(null, Types.INTEGER), new Column("identifier_type", Types.INTEGER, ART_IDENTIFIERTYPE_ID));
+
+        Column patientId = new Column("patient_id", Types.INTEGER);
+        patientId.setReference(new Reference("patient", "legacy_pk"));
+        columnMappings.put(new Column("ArtID", Types.VARCHAR), patientId);
 
         oto.setColumnMappings(columnMappings);
         return oto;

@@ -16,7 +16,9 @@ import java.sql.Types;
 import java.util.AbstractMap;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -70,14 +72,15 @@ public class OneToOneMigrator {
 
             int totalRowCount = 0;
             int skippedRowCount = 0;
-
             while (rs.next()) {
                 totalRowCount++;
                 boolean execute = false;
                 int index = 1;
+                Map<String, Object> readValues = new HashMap<String, Object>();
+
                 for (Map.Entry<Column, Column> columnMapping
                         : oto.getColumnMappings().entrySet()) {
-                    execute = setParameter(rs, pStmt, columnMapping, index) || execute;
+                    execute = setParameter(rs, pStmt, columnMapping, index, readValues) || execute;
                     index++;
                 }
                 pStmt.setString(index++, auditValues.uuid());
@@ -134,6 +137,7 @@ public class OneToOneMigrator {
      */
     private String createColumns(Map<Column, Column> columnMappings,
             boolean select, boolean values) {
+        Set<String> added = new HashSet<String>();
         String columns = "";
         int i = 1;
         int n = columnMappings.size();
@@ -141,7 +145,19 @@ public class OneToOneMigrator {
             if (values) {
                 columns += "?";
             } else {
-                columns += select ? entry.getKey().getName() : entry.getValue().getName();
+                if (select) {
+                    String column = entry.getKey().getName();
+                    //avoid adding the same column to select statement more than once
+                    if (!added.contains(column)) {
+                        columns += column;
+                        added.add(column);
+                    } else {
+                        n--;
+                        continue;
+                    }
+                } else {
+                    columns += entry.getValue().getName();
+                }
             }
             if (i < n) {
                 columns += ", ";
@@ -164,11 +180,26 @@ public class OneToOneMigrator {
      * @param columnMapping the column mapping for the ADT table to the FDT
      * table
      * @param index the column index for which to set the parameter.
+     * @param alreadyRead a map of values already read from columns in this row.
+     * Prevents the ResultSet from attempting to re-read values that it has read
+     * previously because this results in an exception.
      */
     private boolean setParameter(ResultSet rs, PreparedStatement pStmt,
-            Map.Entry<Column, Column> columnMapping, int index)
+            Map.Entry<Column, Column> columnMapping, int index, Map<String, Object> alreadyRead)
             throws SQLException {
-        Object value = rs.getObject(columnMapping.getKey().getName());
+        String adtColumnName = columnMapping.getKey().getName();
+        Object value;
+        if (adtColumnName == null) {
+            value = columnMapping.getValue().getValue();
+        } else {
+            Object existingValue = alreadyRead.get(adtColumnName);
+            if (existingValue != null) {
+                value = existingValue;
+            } else {
+                value = rs.getObject(adtColumnName);
+                alreadyRead.put(adtColumnName, value);
+            }
+        }
         if (columnMapping.getValue().getReference() != null) {
             if (value != null) {
                 value = setParameterFromReference(columnMapping.getValue().getReference(), value.toString());
