@@ -10,14 +10,9 @@ import java.util.Map;
 public class OneToOne {
 
     /**
-     * Represents a column with it's name and data type.
+     * A database column with it's name and data type.
      */
     public static class Column {
-
-        public Column(String name, Class type) {
-            this.name = name;
-            this.type = type;
-        }
 
         /**
          * The name of the column.
@@ -27,20 +22,64 @@ public class OneToOne {
         /**
          * The class representing the data type of the column.
          */
-        private final Class type;
+        private final int type;
+
+        private Reference reference;
+
+        public Column(String name, int type) {
+            this.name = name;
+            this.type = type;
+        }
 
         public String getName() {
             return name;
         }
 
-        public Class getType() {
+        public int getType() {
             return type;
+        }
+
+        public Reference getReference() {
+            return reference;
+        }
+
+        public void setReference(Reference reference) {
+            this.reference = reference;
         }
     }
 
-    public OneToOne(String adtTable, String fdtTable) {
-        this.adtTable = adtTable;
-        this.fdtTable = fdtTable;
+    /**
+     * A reference to a database table to which this column is a foreign key.
+     */
+    public static class Reference {
+
+        private final String table;
+        private String column = "name";
+        private String pk = "id";
+
+        public Reference(String table) {
+            this.table = table;
+        }
+
+        public String getTable() {
+            return table;
+        }
+
+        public String getColumn() {
+            return column;
+        }
+
+        public void setColumn(String column) {
+            this.column = column;
+        }
+
+        public String getPk() {
+            return pk;
+        }
+
+        public void setPk(String pk) {
+            this.pk = pk;
+        }
     }
 
     /**
@@ -58,6 +97,11 @@ public class OneToOne {
      */
     private Map<Column, Column> columnMappings;
 
+    public OneToOne(String adtTable, String fdtTable) {
+        this.adtTable = adtTable;
+        this.fdtTable = fdtTable;
+    }
+
     public String getAdtTable() {
         return adtTable;
     }
@@ -73,5 +117,4 @@ public class OneToOne {
     public void setColumnMappings(Map<Column, Column> columnMappings) {
         this.columnMappings = columnMappings;
     }
-
 }
