@@ -35,6 +35,8 @@ public class TableKitchen {
         oneToOneTables.add(prepareDispensingUnit());
         oneToOneTables.add(prepareVisitType());
         oneToOneTables.add(prepareDrug());
+        oneToOneTables.add(preparePerson());
+        oneToOneTables.add(preparePatient());
         return oneToOneTables;
     }
 
@@ -54,6 +56,8 @@ public class TableKitchen {
     private OneToOne prepareSupportingOrganization() {
         OneToOne oto = new OneToOne("tblClientSupportDetails", "supporting_organization");
         Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+        columnMappings.put(
+                new Column("ClientSupportID", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
         columnMappings.put(
                 new Column("ClientSupportDesciption", Types.VARCHAR), new Column("name", Types.VARCHAR));
         oto.setColumnMappings(columnMappings);
@@ -93,6 +97,8 @@ public class TableKitchen {
         OneToOne oto = new OneToOne("tblSourceOfClient", "patient_source");
         Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
         columnMappings.put(
+                new Column("SourceID", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
+        columnMappings.put(
                 new Column("SourceOfClient", Types.VARCHAR), new Column("name", Types.VARCHAR));
         oto.setColumnMappings(columnMappings);
         return oto;
@@ -101,6 +107,8 @@ public class TableKitchen {
     private OneToOne prepareServiceType() {
         OneToOne oto = new OneToOne("tblTypeOfService", "service_type");
         Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+        columnMappings.put(
+                new Column("TypeOfServiceID", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
         columnMappings.put(
                 new Column("TypeofService", Types.VARCHAR), new Column("name", Types.VARCHAR));
         oto.setColumnMappings(columnMappings);
@@ -130,7 +138,7 @@ public class TableKitchen {
         Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
 
         columnMappings.put(new Column("ARVDrugsID", Types.VARCHAR), new Column("name", Types.VARCHAR));
-        columnMappings.put(new Column("StdDuration", Types.INTEGER), new Column("duration", Types.INTEGER));   
+        columnMappings.put(new Column("StdDuration", Types.INTEGER), new Column("duration", Types.INTEGER));
         columnMappings.put(new Column("StdQty", Types.INTEGER), new Column("quantity", Types.DECIMAL));
         columnMappings.put(new Column("Packsizes", Types.INTEGER), new Column("pack_size", Types.INTEGER));
         columnMappings.put(new Column("ReorderLevel", Types.INTEGER), new Column("reorder_point", Types.INTEGER));
@@ -150,6 +158,46 @@ public class TableKitchen {
         Column dosage = new Column("dosage_id", Types.INTEGER);
         dosage.setReference(new Reference("dosage", true));
         columnMappings.put(new Column("StdDose", Types.VARCHAR), dosage);
+
+        oto.setColumnMappings(columnMappings);
+        return oto;
+    }
+
+    private OneToOne preparePerson() {
+        OneToOne oto = new OneToOne("tblARTPatientMasterInformation", "person");
+        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+
+        columnMappings.put(new Column("ArtID", Types.VARCHAR), new Column("legacy_pk", Types.VARCHAR));
+        columnMappings.put(new Column("Firstname", Types.VARCHAR), new Column("first_name", Types.VARCHAR));
+        columnMappings.put(new Column("Surname", Types.VARCHAR), new Column("surname", Types.VARCHAR));
+        columnMappings.put(new Column("Sex", Types.VARCHAR), new Column("sex", Types.VARCHAR));
+        columnMappings.put(new Column("DateofBirth", Types.DATE), new Column("date_of_birth", Types.DATE));
+
+        oto.setColumnMappings(columnMappings);
+        return oto;
+    }
+
+    private OneToOne preparePatient() {
+        OneToOne oto = new OneToOne("tblARTPatientMasterInformation", "patient");
+        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+
+        columnMappings.put(new Column("DateStartedonART", Types.VARCHAR), new Column("date_of_enrollment", Types.VARCHAR));
+
+        Column patientId = new Column("person_id", Types.INTEGER);
+        patientId.setReference(new Reference("person", "legacy_pk"));
+        columnMappings.put(new Column("ArtID", Types.VARCHAR), patientId);
+
+        Column patientSource = new Column("patient_source_id", Types.INTEGER);
+        patientSource.setReference(new Reference("patient_source", "legacy_pk"));
+        columnMappings.put(new Column("SourceofClient", Types.VARCHAR), patientSource);
+
+        Column serviceType = new Column("service_type_id", Types.INTEGER);
+        serviceType.setReference(new Reference("service_type", "legacy_pk"));
+        columnMappings.put(new Column("TypeOfService", Types.VARCHAR), serviceType);
+
+        Column supportingOrganization = new Column("supporting_organization_id", Types.INTEGER);
+        supportingOrganization.setReference(new Reference("supporting_organization", "legacy_pk"));
+        columnMappings.put(new Column("ClientSupportedBy", Types.VARCHAR), supportingOrganization);
 
         oto.setColumnMappings(columnMappings);
         return oto;

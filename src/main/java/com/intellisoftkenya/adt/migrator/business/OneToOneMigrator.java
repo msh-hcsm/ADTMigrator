@@ -180,7 +180,11 @@ public class OneToOneMigrator {
         } else {
             pStmt.setObject(index, value, columnMapping.getValue().getType());
         }
-        return (value != null);
+        if (columnMapping.getValue().getName().equals("legacy_pk")) {//don't mark insert for execution on account of source table primary key
+            return false;
+        } else {
+            return (value != null);
+        }
     }
 
     /**
@@ -204,7 +208,7 @@ public class OneToOneMigrator {
                 if (ref.isCreatable()) {
                     String insert = "INSERT INTO "
                             + ref.getTable() + "(" + ref.getColumn() + ", uuid, created_by, created_on) "
-                            + "VALUES('" + stringValue + "', '" + auditValues.uuid() 
+                            + "VALUES('" + stringValue + "', '" + auditValues.uuid()
                             + "'," + auditValues.createdBy() + " , '" + auditValues.createdOn() + "')";
                     value = fse.executeUpdate(insert, true);
                     connection.commit();
