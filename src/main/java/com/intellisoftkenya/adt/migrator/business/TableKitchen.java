@@ -321,4 +321,27 @@ public class TableKitchen {
         oto.setColumnMappings(columnMappings);
         return oto;
     }
+
+    private OneToOne prepareTrasactionItem() {
+        OneToOne oto = new OneToOne("tblARVDrugStockTransactions", "batch");
+        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+
+        columnMappings.put(new Column("StockTranNo", Types.VARCHAR), new Column("legacy_pk", Types.VARCHAR));
+        columnMappings.put(new Column("BatchNo", Types.INTEGER), new Column("batch_no", Types.VARCHAR));
+        columnMappings.put(new Column("Npacks", Types.INTEGER), new Column("no_of_packs", Types.INTEGER));
+        columnMappings.put(new Column("PackSize", Types.INTEGER), new Column("pack_size", Types.INTEGER));
+        columnMappings.put(new Column("TranDate", Types.DATE), new Column("date_of_receipt", Types.DATE));
+        columnMappings.put(new Column("Expirydate", Types.DATE), new Column("date_of_expiry", Types.DATE));
+
+        Column patientId = new Column("transaction_id", Types.INTEGER);
+        patientId.setReference(new Reference("transaction", "legacy_pk"));
+        columnMappings.put(new Column("StockTranNo", Types.VARCHAR), patientId);
+
+        Column drugId = new Column("drug_id", Types.INTEGER);
+        drugId.setReference(new Reference("drug", "name"));
+        columnMappings.put(new Column("ARVDrugsID", Types.VARCHAR), drugId);
+
+        oto.setColumnMappings(columnMappings);
+        return oto;
+    }
 }
