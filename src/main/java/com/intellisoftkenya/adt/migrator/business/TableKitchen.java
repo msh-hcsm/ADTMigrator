@@ -19,6 +19,7 @@ import java.util.Map;
 public class TableKitchen {
 
     public static final Integer ART_IDENTIFIERTYPE_ID = 1;
+
     /**
      * Prepare {@link OneToOne} tables for migration.
      *
@@ -39,6 +40,8 @@ public class TableKitchen {
         oneToOneTables.add(preparePerson());
         oneToOneTables.add(preparePatient());
         oneToOneTables.add(preparePatientIdentifier());
+        oneToOneTables.add(prepareVisit());
+        oneToOneTables.add(preparePersonAddress());
         return oneToOneTables;
     }
 
@@ -215,6 +218,49 @@ public class TableKitchen {
 
         Column patientId = new Column("patient_id", Types.INTEGER);
         patientId.setReference(new Reference("patient", "legacy_pk"));
+        columnMappings.put(new Column("ArtID", Types.VARCHAR), patientId);
+
+        oto.setColumnMappings(columnMappings);
+        return oto;
+    }
+
+    private OneToOne prepareVisit() {
+        OneToOne oto = new OneToOne("tblARTPatientMasterInformation", "visit");
+        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+
+        columnMappings.put(new Column("ArtID", Types.VARCHAR), new Column("legacy_pk", Types.VARCHAR));
+//        columnMappings.put(new Column("DateOfNextAppointment", Types.VARCHAR), new Column("start_date", Types.DATE));
+        columnMappings.put(new Column("DateOfNextAppointment", Types.VARCHAR), new Column("next_appointment_date", Types.DATE));
+        columnMappings.put(new Column("Pregnant", Types.VARCHAR), new Column("pregnant", Types.BOOLEAN));
+//        columnMappings.put(new Column("OtherDeaseConditions", Types.VARCHAR), new Column("suffering_other_chronic_illnesses", Types.BOOLEAN));
+        columnMappings.put(new Column("OtherDeaseConditions", Types.VARCHAR), new Column("other_chronic_illnesses", Types.VARCHAR));
+        columnMappings.put(new Column("OtherDrugs", Types.VARCHAR), new Column("other_drugs", Types.VARCHAR));
+//        columnMappings.put(new Column("OtherDeaseConditions", Types.VARCHAR), new Column("allergic_to_drugs", Types.BOOLEAN));
+        columnMappings.put(new Column("ADRorSideEffects", Types.VARCHAR), new Column("drug_allergies", Types.VARCHAR));
+        columnMappings.put(new Column("TB", Types.BOOLEAN), new Column("tb_confirmed", Types.BOOLEAN));
+        columnMappings.put(new Column("PatientSmoke", Types.BOOLEAN), new Column("smoker", Types.BOOLEAN));
+        columnMappings.put(new Column("PatientDrinkAlcohol", Types.BOOLEAN), new Column("drinker", Types.BOOLEAN));
+
+        Column patientId = new Column("patient_id", Types.INTEGER);
+        patientId.setReference(new Reference("patient", "legacy_pk"));
+        columnMappings.put(new Column("ArtID", Types.VARCHAR), patientId);
+
+//        Column visit_type = new Column("visit_type_id", Types.INTEGER);
+//        visit_type.setReference(new Reference("visit_type", "legacy_pk"));
+//        columnMappings.put(new Column("TypeOfService", Types.VARCHAR), visit_type);
+        oto.setColumnMappings(columnMappings);
+        return oto;
+    }
+
+    private OneToOne preparePersonAddress() {
+        OneToOne oto = new OneToOne("tblARTPatientMasterInformation", "person_address");
+        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+
+        columnMappings.put(new Column("ArtID", Types.VARCHAR), new Column("legacy_pk", Types.VARCHAR));
+        columnMappings.put(new Column("Address", Types.VARCHAR), new Column("physical_address", Types.VARCHAR));
+
+        Column patientId = new Column("person_id", Types.INTEGER);
+        patientId.setReference(new Reference("person", "legacy_pk"));
         columnMappings.put(new Column("ArtID", Types.VARCHAR), patientId);
 
         oto.setColumnMappings(columnMappings);
