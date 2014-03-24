@@ -30,6 +30,7 @@ public class TableKitchen {
         oneToOneTables.add(prepareDosage());
         oneToOneTables.add(prepareSupportingOrganization());
         oneToOneTables.add(prepareGenericName());
+        oneToOneTables.add(prepareIndication());
         oneToOneTables.add(prepareRegimenChangeReason());
         oneToOneTables.add(prepareRegimenType());
         oneToOneTables.add(preparePatientSource());
@@ -42,8 +43,8 @@ public class TableKitchen {
         oneToOneTables.add(preparePatientIdentifier());
         oneToOneTables.add(prepareVisit());
         oneToOneTables.add(preparePersonAddress());
-        oneToOneTables.add(prepareTransactions());
-//        oneToOneTables.add(prepareBatches());
+        oneToOneTables.add(prepareTransaction());
+//        oneToOneTables.add(prepareBatch());
         return oneToOneTables;
     }
 
@@ -78,6 +79,17 @@ public class TableKitchen {
                 new Column("GenID", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
         columnMappings.put(
                 new Column("GenericName", Types.VARCHAR), new Column("name", Types.VARCHAR));
+        oto.setColumnMappings(columnMappings);
+        return oto;
+    }
+
+    private OneToOne prepareIndication() {
+        OneToOne oto = new OneToOne("tblIndication", "indication");
+        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+        columnMappings.put(
+                new Column("indicationCode", Types.VARCHAR), new Column("legacy_pk", Types.VARCHAR));
+        columnMappings.put(
+                new Column("IndicationName", Types.VARCHAR), new Column("name", Types.VARCHAR));
         oto.setColumnMappings(columnMappings);
         return oto;
     }
@@ -239,13 +251,17 @@ public class TableKitchen {
 
 //        columnMappings.put(new Column("Regimen", Types.VARCHAR), new Column("regimen_id", Types.INTEGER));
 //
-//        columnMappings.put(new Column("Indication", Types.VARCHAR), new Column("indication_id", Types.INTEGER));
-//
-//        columnMappings.put(new Column("ReasonsForChange", Types.VARCHAR), new Column("regimen_change_reason_id", Types.INTEGER));
+        Column indication = new Column("indication_id", Types.INTEGER);
+        indication.setReference(new Reference("indication", "legacy_pk"));
+        columnMappings.put(new Column("Indication", Types.VARCHAR), indication);
+
+        Column regimenChangeReason = new Column("regimen_change_reason_id", Types.INTEGER);
+        regimenChangeReason.setReference(new Reference("regimen_change_reason", "name"));
+        columnMappings.put(new Column("ReasonsForChange", Types.VARCHAR), regimenChangeReason);
 
         Column patientId = new Column("patient_id", Types.INTEGER);
         patientId.setReference(new Reference("patient", "legacy_pk"));
-        columnMappings.put(new Column("ArtID", Types.VARCHAR), patientId);
+        columnMappings.put(new Column("ARTID", Types.VARCHAR), patientId);
 
         oto.setColumnMappings(columnMappings);
         return oto;
@@ -266,7 +282,7 @@ public class TableKitchen {
         return oto;
     }
 
-    private OneToOne prepareTransactions() {
+    private OneToOne prepareTransaction() {
         OneToOne oto = new OneToOne("tblARVDrugStockTransactions", "transaction");
         Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
 
@@ -283,7 +299,7 @@ public class TableKitchen {
         return oto;
     }
 
-    private OneToOne prepareBatches() {
+    private OneToOne prepareBatch() {
         OneToOne oto = new OneToOne("tblARVDrugStockTransactions", "batch");
         Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
 

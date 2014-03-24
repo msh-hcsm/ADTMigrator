@@ -64,6 +64,10 @@ public class OneToOneMigrator {
         String select = statements.getKey();
         String insert = statements.getValue();
 
+        Logger.getLogger(Main.class.getName()).log(Level.INFO, "Begining migration from ''{0}'' to ''{1}.", new Object[]{oto.getAdtTable(), oto.getFdtTable()});
+        Logger.getLogger(Main.class.getName()).log(Level.INFO, "Using select statement: ''{0}''", select);
+        Logger.getLogger(Main.class.getName()).log(Level.INFO, "Using insert statement: ''{0}''", insert);
+
         ResultSet rs = ase.executeQuery(select);
         if (rs != null) {
             connection.setAutoCommit(false);
@@ -249,6 +253,9 @@ public class OneToOneMigrator {
             String select = "SELECT " + ref.getPk() + ", " + ref.getColumn()
                     + " FROM " + ref.getTable()
                     + " WHERE " + ref.getColumn() + " = '" + stringValue + "'";
+
+            Logger.getLogger(Main.class.getName()).log(Level.INFO, "Setting parameter from reference using select statement: ''{0}''", select);
+
             ResultSet rs = fse.executeQuery(select);
             if (rs.next()) {
                 value = rs.getInt(ref.getPk());
@@ -259,6 +266,9 @@ public class OneToOneMigrator {
                             + ref.getTable() + "(" + ref.getColumn() + ", uuid, created_by, created_on) "
                             + "VALUES('" + stringValue + "', '" + auditValues.uuid()
                             + "'," + auditValues.createdBy() + " , '" + auditValues.createdOn() + "')";
+
+                    Logger.getLogger(Main.class.getName()).log(Level.INFO, "Adding parameter to reference using insert statement: ''{0}''", insert);
+
                     value = fse.executeUpdate(insert, true);
                     connection.commit();
                     referenceCache.put(referenceKey, value);
