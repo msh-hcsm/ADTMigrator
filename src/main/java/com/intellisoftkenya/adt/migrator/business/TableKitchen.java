@@ -42,6 +42,7 @@ public class TableKitchen {
         oneToOneTables.add(preparePatientIdentifier());
         oneToOneTables.add(prepareVisit());
         oneToOneTables.add(preparePersonAddress());
+        oneToOneTables.add(prepareTransactions());
         return oneToOneTables;
     }
 
@@ -262,6 +263,19 @@ public class TableKitchen {
         Column patientId = new Column("person_id", Types.INTEGER);
         patientId.setReference(new Reference("person", "legacy_pk"));
         columnMappings.put(new Column("ArtID", Types.VARCHAR), patientId);
+
+        oto.setColumnMappings(columnMappings);
+        return oto;
+    }
+
+    private OneToOne prepareTransactions() {
+        OneToOne oto = new OneToOne("tblDrugPhysicalTran", "transaction");
+        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+
+        columnMappings.put(new Column("Code", Types.VARCHAR), new Column("legacy_pk", Types.VARCHAR));
+        columnMappings.put(new Column("PhyID", Types.INTEGER), new Column("reference_no", Types.VARCHAR));
+        columnMappings.put(new Column("TranDate", Types.DATE), new Column("date", Types.DATE));
+        columnMappings.put(new Column("Remarks", Types.VARCHAR), new Column("narrative", Types.VARCHAR));
 
         oto.setColumnMappings(columnMappings);
         return oto;
