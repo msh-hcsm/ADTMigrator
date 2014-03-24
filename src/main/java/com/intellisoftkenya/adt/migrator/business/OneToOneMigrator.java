@@ -94,7 +94,7 @@ public class OneToOneMigrator {
                 if (totalRowCount % SqlExecutor.TRANSACTION_BATCH_SIZE == 0) {
 
                     connection.commit();
-                    Logger.getLogger(Main.class.getName()).log(Level.WARNING, "Commited transaction batch #{0}.",
+                    Logger.getLogger(Main.class.getName()).log(Level.INFO, "Commited transaction batch #{0}.",
                             new Object[]{batchNo});
                     batchNo++;
                 }

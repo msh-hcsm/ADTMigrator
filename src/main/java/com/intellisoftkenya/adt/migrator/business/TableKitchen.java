@@ -43,7 +43,7 @@ public class TableKitchen {
         oneToOneTables.add(prepareVisit());
         oneToOneTables.add(preparePersonAddress());
         oneToOneTables.add(prepareTransactions());
-        oneToOneTables.add(prepareBatches());
+//        oneToOneTables.add(prepareBatches());
         return oneToOneTables;
     }
 
@@ -227,29 +227,26 @@ public class TableKitchen {
     }
 
     private OneToOne prepareVisit() {
-        OneToOne oto = new OneToOne("tblARTPatientMasterInformation", "visit");
+        OneToOne oto = new OneToOne("tblARTPatientTransactions", "visit");
         Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
 
-        columnMappings.put(new Column("ArtID", Types.VARCHAR), new Column("legacy_pk", Types.VARCHAR));
-//        columnMappings.put(new Column("DateOfNextAppointment", Types.VARCHAR), new Column("start_date", Types.DATE));
-        columnMappings.put(new Column("DateOfNextAppointment", Types.VARCHAR), new Column("next_appointment_date", Types.DATE));
-        columnMappings.put(new Column("Pregnant", Types.VARCHAR), new Column("pregnant", Types.BOOLEAN));
-//        columnMappings.put(new Column("OtherDeaseConditions", Types.VARCHAR), new Column("suffering_other_chronic_illnesses", Types.BOOLEAN));
-        columnMappings.put(new Column("OtherDeaseConditions", Types.VARCHAR), new Column("other_chronic_illnesses", Types.VARCHAR));
-        columnMappings.put(new Column("OtherDrugs", Types.VARCHAR), new Column("other_drugs", Types.VARCHAR));
-//        columnMappings.put(new Column("OtherDeaseConditions", Types.VARCHAR), new Column("allergic_to_drugs", Types.BOOLEAN));
-        columnMappings.put(new Column("ADRorSideEffects", Types.VARCHAR), new Column("drug_allergies", Types.VARCHAR));
-        columnMappings.put(new Column("TB", Types.BOOLEAN), new Column("tb_confirmed", Types.BOOLEAN));
-        columnMappings.put(new Column("PatientSmoke", Types.BOOLEAN), new Column("smoker", Types.BOOLEAN));
-        columnMappings.put(new Column("PatientDrinkAlcohol", Types.BOOLEAN), new Column("drinker", Types.BOOLEAN));
+        columnMappings.put(new Column("PatientTranNo", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
+        columnMappings.put(new Column("DateofVisit", Types.DATE), new Column("start_date", Types.DATE));
+        columnMappings.put(new Column("Weight", Types.DECIMAL), new Column("weight", Types.DECIMAL));
+        columnMappings.put(new Column("pillCount", Types.INTEGER), new Column("pill_count", Types.INTEGER));
+        columnMappings.put(new Column("Adherence", Types.DECIMAL), new Column("adherence", Types.DECIMAL));
+        columnMappings.put(new Column("Comment", Types.VARCHAR), new Column("comments", Types.VARCHAR));
+
+//        columnMappings.put(new Column("Regimen", Types.VARCHAR), new Column("regimen_id", Types.INTEGER));
+//
+//        columnMappings.put(new Column("Indication", Types.VARCHAR), new Column("indication_id", Types.INTEGER));
+//
+//        columnMappings.put(new Column("ReasonsForChange", Types.VARCHAR), new Column("regimen_change_reason_id", Types.INTEGER));
 
         Column patientId = new Column("patient_id", Types.INTEGER);
         patientId.setReference(new Reference("patient", "legacy_pk"));
         columnMappings.put(new Column("ArtID", Types.VARCHAR), patientId);
 
-//        Column visit_type = new Column("visit_type_id", Types.INTEGER);
-//        visit_type.setReference(new Reference("visit_type", "legacy_pk"));
-//        columnMappings.put(new Column("TypeOfService", Types.VARCHAR), visit_type);
         oto.setColumnMappings(columnMappings);
         return oto;
     }
@@ -272,6 +269,10 @@ public class TableKitchen {
     private OneToOne prepareTransactions() {
         OneToOne oto = new OneToOne("tblARVDrugStockTransactions", "transaction");
         Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+
+        Column drugId = new Column("drug_id", Types.INTEGER);
+        drugId.setReference(new Reference("drug", "name"));
+        columnMappings.put(new Column("ARVDrugsID", Types.VARCHAR), drugId);
 
         columnMappings.put(new Column("StockTranNo", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
         columnMappings.put(new Column("RefOrderNo", Types.INTEGER), new Column("reference_no", Types.VARCHAR));
