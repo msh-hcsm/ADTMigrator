@@ -15,6 +15,7 @@ import java.util.logging.Logger;
  */
 public abstract class SqlExecutor {
 
+    public static final int TRANSACTION_BATCH_SIZE = 1000;
     protected Connection connection;
 
     public Connection getConnection() {

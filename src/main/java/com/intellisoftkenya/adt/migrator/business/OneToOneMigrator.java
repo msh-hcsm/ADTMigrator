@@ -70,6 +70,7 @@ public class OneToOneMigrator {
             PreparedStatement pStmt = connection.prepareCall(insert);
 
             int totalRowCount = 0;
+            int batchNo = 1;
             int skippedRowCount = 0;
             while (rs.next()) {
                 totalRowCount++;
@@ -89,6 +90,13 @@ public class OneToOneMigrator {
                     pStmt.executeUpdate();
                 } else {
                     skippedRowCount++;
+                }
+                if (totalRowCount % SqlExecutor.TRANSACTION_BATCH_SIZE == 0) {
+
+                    connection.commit();
+                    Logger.getLogger(Main.class.getName()).log(Level.WARNING, "Commited transaction batch #{0}.",
+                            new Object[]{batchNo});
+                    batchNo++;
                 }
             }
             connection.commit();
