@@ -9,8 +9,6 @@ import java.util.Map;
  */
 public class OneToOne {
 
-
-
     /**
      * The name of the table in the ADT database.
      */
@@ -25,6 +23,13 @@ public class OneToOne {
      * The column mappings between the ADT and the FDT table..
      */
     private Map<Column, Column> columnMappings;
+
+    /**
+     * A custom select query to be used to read from the ADT table instead of
+     * constructing one from the tables and column mappings described in this
+     * instance.
+     */
+    private String selectQuery;
 
     public OneToOne(String adtTable, String fdtTable) {
         this.adtTable = adtTable;
@@ -45,5 +50,13 @@ public class OneToOne {
 
     public void setColumnMappings(Map<Column, Column> columnMappings) {
         this.columnMappings = columnMappings;
+    }
+
+    public String getSelectQuery() {
+        return selectQuery;
+    }
+
+    public void setSelectQuery(String selectQuery) {
+        this.selectQuery = selectQuery;
     }
 }

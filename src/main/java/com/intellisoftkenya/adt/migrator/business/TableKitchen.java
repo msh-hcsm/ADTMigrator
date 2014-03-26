@@ -259,27 +259,41 @@ public class TableKitchen {
         OneToOne oto = new OneToOne("tblARTPatientTransactions", "visit");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
-        columnMappings.put(new Column("PatientTranNo", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
+        columnMappings.put(new Column("PatientTranNo_", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
         columnMappings.put(new Column("DateofVisit", Types.DATE), new Column("start_date", Types.DATE));
-        columnMappings.put(new Column("Weight", Types.DECIMAL), new Column("weight", Types.DECIMAL));
-        columnMappings.put(new Column("pillCount", Types.INTEGER), new Column("pill_count", Types.INTEGER));
-        columnMappings.put(new Column("Adherence", Types.DECIMAL), new Column("adherence", Types.DECIMAL));
-        columnMappings.put(new Column("Comment", Types.VARCHAR), new Column("comments", Types.VARCHAR));
+        columnMappings.put(new Column("Weight_", Types.DECIMAL), new Column("weight", Types.DECIMAL));
+        columnMappings.put(new Column("pillCount_", Types.INTEGER), new Column("pill_count", Types.INTEGER));
+        columnMappings.put(new Column("Adherence_", Types.DECIMAL), new Column("adherence", Types.DECIMAL));
+        columnMappings.put(new Column("Comment_", Types.VARCHAR), new Column("comments", Types.VARCHAR));
 
 //        columnMappings.put(new Column("Regimen", Types.VARCHAR), new Column("regimen_id", Types.INTEGER));
 //
         Column indication = new Column("indication_id", Types.INTEGER);
         indication.setReference(new Reference("indication", "legacy_pk"));
-        columnMappings.put(new Column("Indication", Types.VARCHAR), indication);
+        columnMappings.put(new Column("Indication_", Types.VARCHAR), indication);
 
         Column regimenChangeReason = new Column("regimen_change_reason_id", Types.INTEGER);
         regimenChangeReason.setReference(new Reference("regimen_change_reason", "name"));
-        columnMappings.put(new Column("ReasonsForChange", Types.VARCHAR), regimenChangeReason);
+        columnMappings.put(new Column("ReasonsForChange_", Types.VARCHAR), regimenChangeReason);
 
         Column patientId = new Column("patient_id", Types.INTEGER);
         patientId.setReference(new Reference("patient", "legacy_pk"));
         columnMappings.put(new Column("ARTID", Types.VARCHAR), patientId);
 
+        oto.setSelectQuery("SELECT "
+                + "MIN(PatientTranNo) AS PatientTranNo_, "
+                + "DateofVisit, "
+                + "MIN(Weight) AS Weight_, "
+                + "MIN(pillCount) AS pillCount_, "
+                + "MIN(Adherence) AS Adherence_, "
+                + "MIN(Comment) AS Comment_,"
+                + " MIN(Indication) AS Indication_, "
+                + "MIN(ReasonsForChange) AS ReasonsForChange_, "
+                + "ARTID "
+                + "FROM "
+                + "tblARTPatientTransactions "
+                + "GROUP BY "
+                + "DateofVisit, ARTID");
         oto.setColumnMappings(columnMappings);
         return oto;
     }
