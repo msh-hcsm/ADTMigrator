@@ -33,6 +33,7 @@ public class OneToOneMigrator {
     private final Connection connection = fse.getConnection();
 
     private final Map<String, Integer> referenceCache = new HashMap<>();
+    private final Map<String, PreparedStatement> preparedQueryCache = new HashMap<>();
 
     private final AuditValues auditValues = new AuditValues();
 
@@ -71,7 +72,7 @@ public class OneToOneMigrator {
         ResultSet rs = ase.executeQuery(select);
         if (rs != null) {
             connection.setAutoCommit(false);
-            PreparedStatement pStmt = connection.prepareCall(insert);
+            PreparedStatement pStmt = connection.prepareStatement(insert);
 
             int totalRowCount = 0;
             int batchNo = 1;
@@ -254,11 +255,18 @@ public class OneToOneMigrator {
             }
             String select = "SELECT " + ref.getPk() + ", " + ref.getColumn()
                     + " FROM " + ref.getTable()
-                    + " WHERE " + ref.getColumn() + " = '" + stringValue + "'";
-
+                    + " WHERE " + ref.getColumn() + " = ?";
+            
+            PreparedStatement pStmt = preparedQueryCache.get(select);
+            if (pStmt == null) {
+                pStmt = connection.prepareStatement(select);
+                preparedQueryCache.put(select, pStmt);
+            }
+            pStmt.setString(1, stringValue);
+            
             Logger.getLogger(Main.class.getName()).log(Level.INFO, "Setting parameter from reference using select statement: ''{0}''", select);
 
-            ResultSet rs = fse.executeQuery(select);
+            ResultSet rs = pStmt.executeQuery();
             if (rs.next()) {
                 value = rs.getInt(ref.getPk());
                 referenceCache.put(referenceKey, value);
