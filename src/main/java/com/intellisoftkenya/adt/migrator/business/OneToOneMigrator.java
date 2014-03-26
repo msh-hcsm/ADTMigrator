@@ -44,7 +44,7 @@ public class OneToOneMigrator {
      * @throws java.sql.SQLException
      */
     public void migrateOneToOnes() throws SQLException {
-        for (OneToOne oneToOne : new TableKitchen().prepareTables()) {
+        for (OneToOne oneToOne : new TableConfigurator().configureTables()) {
             migrateOneToOne(oneToOne);
         }
         ase.close();

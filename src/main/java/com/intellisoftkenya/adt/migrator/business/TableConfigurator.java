@@ -17,41 +17,41 @@ import java.util.Map;
  *
  * @author gitahi
  */
-public class TableKitchen {
+public class TableConfigurator {
 
     public static final Integer ART_IDENTIFIERTYPE_ID = 1;
 
     /**
-     * Prepare {@link OneToOne} tables for migration.
+     * Configure {@link OneToOne} tables for migration.
      *
-     * @return a list of the tables prepared.
+     * @return a list of the tables configured.
      */
-    public List<OneToOne> prepareTables() {
+    public List<OneToOne> configureTables() {
         List<OneToOne> oneToOneTables = new ArrayList<>();
-        oneToOneTables.add(prepareDosage());
-        oneToOneTables.add(prepareSupportingOrganization());
-        oneToOneTables.add(prepareAccount());
-        oneToOneTables.add(prepareGenericName());
-        oneToOneTables.add(prepareIndication());
-        oneToOneTables.add(prepareRegimenChangeReason());
-        oneToOneTables.add(prepareRegimenType());
-        oneToOneTables.add(preparePatientSource());
-        oneToOneTables.add(prepareServiceType());
-        oneToOneTables.add(prepareDispensingUnit());
-        oneToOneTables.add(prepareVisitType());
-        oneToOneTables.add(prepareDrug());
-        oneToOneTables.add(preparePerson());
-        oneToOneTables.add(preparePatient());
-        oneToOneTables.add(preparePatientIdentifier());
-        oneToOneTables.add(prepareVisit());
-        oneToOneTables.add(preparePersonAddress());
-        oneToOneTables.add(prepareTransaction());
-        oneToOneTables.add(prepareTransactionItem());
-        oneToOneTables.add(preparePatientTransactionItem());
+        oneToOneTables.add(configureDosage());
+        oneToOneTables.add(configureSupportingOrganization());
+        oneToOneTables.add(configureAccount());
+        oneToOneTables.add(configureGenericName());
+        oneToOneTables.add(configureIndication());
+        oneToOneTables.add(configureRegimenChangeReason());
+        oneToOneTables.add(configureRegimenType());
+        oneToOneTables.add(configurePatientSource());
+        oneToOneTables.add(configureServiceType());
+        oneToOneTables.add(configureDispensingUnit());
+        oneToOneTables.add(configureVisitType());
+        oneToOneTables.add(configureDrug());
+        oneToOneTables.add(configurePerson());
+        oneToOneTables.add(configurePatient());
+        oneToOneTables.add(configurePatientIdentifier());
+        oneToOneTables.add(configureVisit());
+        oneToOneTables.add(configurePersonAddress());
+        oneToOneTables.add(configureTransaction());
+        oneToOneTables.add(configureTransactionItem());
+        oneToOneTables.add(configurePatientTransactionItem());
         return oneToOneTables;
     }
 
-    private OneToOne prepareDosage() {
+    private OneToOne configureDosage() {
         OneToOne oto = new OneToOne("tblDose", "dosage");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -64,7 +64,7 @@ public class TableKitchen {
         return oto;
     }
 
-    private OneToOne prepareSupportingOrganization() {
+    private OneToOne configureSupportingOrganization() {
         OneToOne oto = new OneToOne("tblClientSupportDetails", "supporting_organization");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -75,7 +75,7 @@ public class TableKitchen {
         return oto;
     }
 
-    private OneToOne prepareAccount() {
+    private OneToOne configureAccount() {
         OneToOne oto = new OneToOne("tblARVStockTranSourceorDestination", "account");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -91,7 +91,7 @@ public class TableKitchen {
         return oto;
     }
 
-    private OneToOne prepareGenericName() {
+    private OneToOne configureGenericName() {
         OneToOne oto = new OneToOne("tblGenericName", "generic_name");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -102,7 +102,7 @@ public class TableKitchen {
         return oto;
     }
 
-    private OneToOne prepareIndication() {
+    private OneToOne configureIndication() {
         OneToOne oto = new OneToOne("tblIndication", "indication");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -113,7 +113,7 @@ public class TableKitchen {
         return oto;
     }
 
-    private OneToOne prepareRegimenChangeReason() {
+    private OneToOne configureRegimenChangeReason() {
         OneToOne oto = new OneToOne("tblReasonforChange", "regimen_change_reason");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -122,7 +122,7 @@ public class TableKitchen {
         return oto;
     }
 
-    private OneToOne prepareRegimenType() {
+    private OneToOne configureRegimenType() {
         OneToOne oto = new OneToOne("tblRegimenCategory", "regimen_type");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -131,7 +131,7 @@ public class TableKitchen {
         return oto;
     }
 
-    private OneToOne preparePatientSource() {
+    private OneToOne configurePatientSource() {
         OneToOne oto = new OneToOne("tblSourceOfClient", "patient_source");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -142,7 +142,7 @@ public class TableKitchen {
         return oto;
     }
 
-    private OneToOne prepareServiceType() {
+    private OneToOne configureServiceType() {
         OneToOne oto = new OneToOne("tblTypeOfService", "service_type");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -153,7 +153,7 @@ public class TableKitchen {
         return oto;
     }
 
-    private OneToOne prepareDispensingUnit() {
+    private OneToOne configureDispensingUnit() {
         OneToOne oto = new OneToOne("tblUnit", "dispensing_unit");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -162,7 +162,7 @@ public class TableKitchen {
         return oto;
     }
 
-    private OneToOne prepareVisitType() {
+    private OneToOne configureVisitType() {
         OneToOne oto = new OneToOne("tblVisitTransaction", "visit_type");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -171,7 +171,7 @@ public class TableKitchen {
         return oto;
     }
 
-    private OneToOne prepareDrug() {
+    private OneToOne configureDrug() {
         OneToOne oto = new OneToOne("tblARVDrugStockMain", "drug");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
@@ -201,7 +201,7 @@ public class TableKitchen {
         return oto;
     }
 
-    private OneToOne preparePerson() {
+    private OneToOne configurePerson() {
         OneToOne oto = new OneToOne("tblARTPatientMasterInformation", "person");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
@@ -215,7 +215,7 @@ public class TableKitchen {
         return oto;
     }
 
-    private OneToOne preparePatient() {
+    private OneToOne configurePatient() {
         OneToOne oto = new OneToOne("tblARTPatientMasterInformation", "patient");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
@@ -242,7 +242,7 @@ public class TableKitchen {
         return oto;
     }
 
-    private OneToOne preparePatientIdentifier() {
+    private OneToOne configurePatientIdentifier() {
         OneToOne oto = new OneToOne("tblARTPatientMasterInformation", "patient_identifier");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
@@ -257,7 +257,7 @@ public class TableKitchen {
         return oto;
     }
 
-    private OneToOne prepareVisit() {
+    private OneToOne configureVisit() {
         OneToOne oto = new OneToOne("tblARTPatientTransactions", "visit");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
@@ -300,7 +300,7 @@ public class TableKitchen {
         return oto;
     }
 
-    private OneToOne preparePersonAddress() {
+    private OneToOne configurePersonAddress() {
         OneToOne oto = new OneToOne("tblARTPatientMasterInformation", "person_address");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
@@ -315,7 +315,7 @@ public class TableKitchen {
         return oto;
     }
 
-    private OneToOne prepareTransaction() {
+    private OneToOne configureTransaction() {
         OneToOne oto = new OneToOne("tblARVDrugStockTransactions", "transaction");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
@@ -332,7 +332,7 @@ public class TableKitchen {
         return oto;
     }
 
-    private OneToOne prepareTransactionItem() {
+    private OneToOne configureTransactionItem() {
         OneToOne oto = new OneToOne("tblARVDrugStockTransactions", "transaction_item");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
@@ -353,7 +353,7 @@ public class TableKitchen {
         return oto;
     }
 
-    private OneToOne prepareBatchTransactionItem() {
+    private OneToOne configureBatchTransactionItem() {
         OneToOne oto = new OneToOne("tblARVDrugStockTransactions", "batch_transaction_item");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
@@ -376,7 +376,7 @@ public class TableKitchen {
         return oto;
     }
 
-    private OneToOne preparePatientTransactionItem() {
+    private OneToOne configurePatientTransactionItem() {
         OneToOne oto = new OneToOne("tblARTPatientTransactions", "patient_transaction_item");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
