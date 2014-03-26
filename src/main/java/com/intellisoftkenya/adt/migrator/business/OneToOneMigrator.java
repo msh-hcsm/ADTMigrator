@@ -32,7 +32,7 @@ public class OneToOneMigrator {
     private final SqlExecutor fse = FdtSqlExcecutor.getInstance();
     private final Connection connection = fse.getConnection();
 
-    private final Map<String, Integer> referenceCache = new HashMap<String, Integer>();
+    private final Map<String, Integer> referenceCache = new HashMap<>();
 
     private final AuditValues auditValues = new AuditValues();
 
@@ -80,7 +80,7 @@ public class OneToOneMigrator {
                 totalRowCount++;
                 boolean execute = false;
                 int index = 1;
-                Map<String, Object> readValues = new HashMap<String, Object>();
+                Map<String, Object> readValues = new HashMap<>();
 
                 for (Map.Entry<Column, Column> columnMapping
                         : oto.getColumnMappings().entrySet()) {
@@ -133,7 +133,7 @@ public class OneToOneMigrator {
         String insert = "INSERT INTO "
                 + oto.getFdtTable() + "(" + createColumns(oto.getColumnMappings(), false, false) + ") "
                 + "VALUES(" + createColumns(oto.getColumnMappings(), false, true) + ")";
-        return new AbstractMap.SimpleEntry<String, String>(select, insert);
+        return new AbstractMap.SimpleEntry<>(select, insert);
     }
 
     /**
@@ -148,7 +148,7 @@ public class OneToOneMigrator {
      */
     private String createColumns(Map<Column, Column> columnMappings,
             boolean select, boolean values) {
-        List<String> added = new ArrayList<String>();
+        List<String> added = new ArrayList<>();
         String append = null;
         for (Map.Entry<Column, Column> entry : columnMappings.entrySet()) {
             if (values) {
@@ -249,6 +249,9 @@ public class OneToOneMigrator {
                 + ref.getColumn() + stringValue;
         Integer value = referenceCache.get(referenceKey);
         if (value == null) {
+            if (ref.getReferenceProcessor() != null) {
+                stringValue = ref.getReferenceProcessor().process(stringValue);
+            }
             String select = "SELECT " + ref.getPk() + ", " + ref.getColumn()
                     + " FROM " + ref.getTable()
                     + " WHERE " + ref.getColumn() + " = '" + stringValue + "'";
