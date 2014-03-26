@@ -214,9 +214,8 @@ public class OneToOneMigrator {
         if (adtColumnName == null) {
             value = columnMapping.getValue().getValue();
         } else {
-            Object existingValue = alreadyRead.get(adtColumnName);
-            if (existingValue != null) {
-                value = existingValue;
+            if (alreadyRead.containsKey(adtColumnName)) {
+                value = alreadyRead.get(adtColumnName);
             } else {
                 value = rs.getObject(adtColumnName);
                 alreadyRead.put(adtColumnName, value);
