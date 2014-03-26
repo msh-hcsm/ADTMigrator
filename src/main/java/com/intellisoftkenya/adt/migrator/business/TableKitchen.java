@@ -44,7 +44,7 @@ public class TableKitchen {
         oneToOneTables.add(prepareVisit());
         oneToOneTables.add(preparePersonAddress());
         oneToOneTables.add(prepareTransaction());
-//        oneToOneTables.add(prepareBatch());
+        oneToOneTables.add(prepareTransactionItem());
         return oneToOneTables;
     }
 
@@ -299,6 +299,23 @@ public class TableKitchen {
         return oto;
     }
 
+    private OneToOne prepareTransactionItem() {
+        OneToOne oto = new OneToOne("tblARVDrugStockTransactions", "transaction_item");
+        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+
+        Column transactionId = new Column("transaction_id", Types.INTEGER);
+        transactionId.setReference(new Reference("transaction", "legacy_pk"));
+        columnMappings.put(new Column("StockTranNo", Types.INTEGER), transactionId);
+
+        columnMappings.put(new Column("StockTranNo", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
+        columnMappings.put(new Column("BatchNo", Types.VARCHAR), new Column("batch_no", Types.VARCHAR));
+        columnMappings.put(new Column("Qty", Types.DATE), new Column("units_in", Types.DECIMAL));
+        columnMappings.put(new Column("Qty", Types.VARCHAR), new Column("units_out", Types.DECIMAL));
+
+        oto.setColumnMappings(columnMappings);
+        return oto;
+    }
+
     private OneToOne prepareBatch() {
         OneToOne oto = new OneToOne("tblARVDrugStockTransactions", "batch");
         Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
@@ -322,20 +339,20 @@ public class TableKitchen {
         return oto;
     }
 
-    private OneToOne prepareTrasactionItem() {
+    private OneToOne preparePatientTransactionItem() {
         OneToOne oto = new OneToOne("tblARVDrugStockTransactions", "batch");
         Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
 
-        columnMappings.put(new Column("StockTranNo", Types.VARCHAR), new Column("legacy_pk", Types.VARCHAR));
-        columnMappings.put(new Column("BatchNo", Types.INTEGER), new Column("batch_no", Types.VARCHAR));
-        columnMappings.put(new Column("Npacks", Types.INTEGER), new Column("no_of_packs", Types.INTEGER));
-        columnMappings.put(new Column("PackSize", Types.INTEGER), new Column("pack_size", Types.INTEGER));
-        columnMappings.put(new Column("TranDate", Types.DATE), new Column("date_of_receipt", Types.DATE));
-        columnMappings.put(new Column("Expirydate", Types.DATE), new Column("date_of_expiry", Types.DATE));
+        columnMappings.put(new Column("PatientTranNo", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
+        columnMappings.put(new Column("BatchNo", Types.INTEGER), new Column("transaction_item_id", Types.INTEGER));
+        columnMappings.put(new Column("Npacks", Types.INTEGER), new Column("dosage_id", Types.INTEGER));
+        columnMappings.put(new Column("PackSize", Types.INTEGER), new Column("quantity", Types.DECIMAL));
+        columnMappings.put(new Column("TranDate", Types.DATE), new Column("duration", Types.INTEGER));
+        columnMappings.put(new Column("Expirydate", Types.DATE), new Column("duration_id", Types.INTEGER));
 
-        Column patientId = new Column("transaction_id", Types.INTEGER);
-        patientId.setReference(new Reference("transaction", "legacy_pk"));
-        columnMappings.put(new Column("StockTranNo", Types.VARCHAR), patientId);
+        Column patientId = new Column("transaction_item_id", Types.INTEGER);
+        patientId.setReference(new Reference("transaction_item", "legacy_pk"));
+        columnMappings.put(new Column("PatientTranNo", Types.VARCHAR), patientId);
 
         Column drugId = new Column("drug_id", Types.INTEGER);
         drugId.setReference(new Reference("drug", "name"));
