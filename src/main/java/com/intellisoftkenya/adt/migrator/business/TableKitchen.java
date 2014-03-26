@@ -324,6 +324,10 @@ public class TableKitchen {
         transactionId.setReference(new Reference("transaction", "legacy_pk"));
         columnMappings.put(new Column("StockTranNo", Types.INTEGER), transactionId);
 
+        Column account_id = new Column("account_id", Types.INTEGER);
+        account_id.setReference(new Reference("account", "name"));
+        columnMappings.put(new Column("SourceorDestination", Types.VARCHAR), account_id);
+
         columnMappings.put(new Column("StockTranNo", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
         columnMappings.put(new Column("BatchNo", Types.VARCHAR), new Column("batch_no", Types.VARCHAR));
         columnMappings.put(new Column("Qty", Types.DATE), new Column("units_in", Types.DECIMAL));
