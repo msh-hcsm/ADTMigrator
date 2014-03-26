@@ -29,7 +29,7 @@ public class OneToOne {
      * constructing one from the tables and column mappings described in this
      * instance.
      */
-    private String selectQuery;
+    private String query;
 
     public OneToOne(String adtTable, String fdtTable) {
         this.adtTable = adtTable;
@@ -52,11 +52,11 @@ public class OneToOne {
         this.columnMappings = columnMappings;
     }
 
-    public String getSelectQuery() {
-        return selectQuery;
+    public String getQuery() {
+        return query;
     }
 
-    public void setSelectQuery(String selectQuery) {
-        this.selectQuery = selectQuery;
+    public void setQuery(String query) {
+        this.query = query;
     }
 }

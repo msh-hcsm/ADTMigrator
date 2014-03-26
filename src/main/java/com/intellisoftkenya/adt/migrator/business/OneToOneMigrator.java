@@ -62,7 +62,7 @@ public class OneToOneMigrator {
         }
 
         Map.Entry<String, String> statements = createStatements(oto);
-        String select = oto.getSelectQuery() == null ? statements.getKey() : oto.getSelectQuery();
+        String select = oto.getQuery() == null ? statements.getKey() : oto.getQuery();
         String insert = statements.getValue();
 
         Logger.getLogger(Main.class.getName()).log(Level.INFO, "Begining migration from ''{0}'' to ''{1}.", 

@@ -48,6 +48,7 @@ public class TableConfigurator {
         oneToOneTables.add(configureTransaction());
         oneToOneTables.add(configureTransactionItem());
         oneToOneTables.add(configurePatientTransactionItem());
+        oneToOneTables.add(configureBatchTransactionItem());
         return oneToOneTables;
     }
 
@@ -282,7 +283,7 @@ public class TableConfigurator {
         patientId.setReference(new Reference("patient", "legacy_pk"));
         columnMappings.put(new Column("ARTID", Types.VARCHAR), patientId);
 
-        oto.setSelectQuery("SELECT "
+        oto.setQuery("SELECT "
                 + "MIN(PatientTranNo) AS PatientTranNo_, "
                 + "DateofVisit, "
                 + "MIN(Weight) AS Weight_, "
@@ -358,20 +359,17 @@ public class TableConfigurator {
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column("StockTranNo", Types.VARCHAR), new Column("legacy_pk", Types.VARCHAR));
-        columnMappings.put(new Column("BatchNo", Types.INTEGER), new Column("batch_no", Types.VARCHAR));
         columnMappings.put(new Column("Npacks", Types.INTEGER), new Column("no_of_packs", Types.INTEGER));
         columnMappings.put(new Column("PackSize", Types.INTEGER), new Column("pack_size", Types.INTEGER));
-        columnMappings.put(new Column("TranDate", Types.DATE), new Column("date_of_receipt", Types.DATE));
         columnMappings.put(new Column("Expirydate", Types.DATE), new Column("date_of_expiry", Types.DATE));
 
-        Column patientId = new Column("transaction_id", Types.INTEGER);
-        patientId.setReference(new Reference("transaction", "legacy_pk"));
+        Column patientId = new Column("transaction_item_id", Types.INTEGER);
+        patientId.setReference(new Reference("transaction_item", "legacy_pk"));
         columnMappings.put(new Column("StockTranNo", Types.VARCHAR), patientId);
 
-        Column drugId = new Column("drug_id", Types.INTEGER);
-        drugId.setReference(new Reference("drug", "name"));
-        columnMappings.put(new Column("ARVDrugsID", Types.VARCHAR), drugId);
-
+        oto.setQuery("SELECT StockTranNo, Npacks, PackSize, Expirydate "
+                + "FROM tblARVDrugStockTransactions "
+                + "WHERE PackSize IS NOT NULL");
         oto.setColumnMappings(columnMappings);
         return oto;
     }
