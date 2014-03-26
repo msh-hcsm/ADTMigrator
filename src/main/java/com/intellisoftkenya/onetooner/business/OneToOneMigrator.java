@@ -1,12 +1,12 @@
-package com.intellisoftkenya.adt.migrator.business;
+package com.intellisoftkenya.onetooner.business;
 
-import com.intellisoftkenya.adt.migrator.Main;
-import com.intellisoftkenya.adt.migrator.dao.AdtSqlExecutor;
-import com.intellisoftkenya.adt.migrator.dao.FdtSqlExcecutor;
-import com.intellisoftkenya.adt.migrator.dao.SqlExecutor;
-import com.intellisoftkenya.adt.migrator.data.Column;
-import com.intellisoftkenya.adt.migrator.data.OneToOne;
-import com.intellisoftkenya.adt.migrator.data.Reference;
+import com.intellisoftkenya.onetooner.Main;
+import com.intellisoftkenya.onetooner.dao.SourceSqlExecutor;
+import com.intellisoftkenya.onetooner.dao.DestinationSqlExcecutor;
+import com.intellisoftkenya.onetooner.dao.SqlExecutor;
+import com.intellisoftkenya.onetooner.data.Column;
+import com.intellisoftkenya.onetooner.data.OneToOne;
+import com.intellisoftkenya.onetooner.data.Reference;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,8 +28,8 @@ import java.util.logging.Logger;
  */
 public class OneToOneMigrator {
 
-    private final SqlExecutor ase = AdtSqlExecutor.getInstance();
-    private final SqlExecutor fse = FdtSqlExcecutor.getInstance();
+    private final SqlExecutor ase = SourceSqlExecutor.getInstance();
+    private final SqlExecutor fse = DestinationSqlExcecutor.getInstance();
     private final Connection connection = fse.getConnection();
 
     private final Map<String, Integer> referenceCache = new HashMap<>();
@@ -38,8 +38,8 @@ public class OneToOneMigrator {
     private final AuditValues auditValues = new AuditValues();
 
     /**
-     * Migrate all tables that have a one-to-one relationship between ADT and
-     * FDT.
+     * Migrate all tables that have a logical one-to-one mapping between the Source 
+     * and the Destination.
      *
      * @throws java.sql.SQLException
      */
@@ -52,7 +52,7 @@ public class OneToOneMigrator {
     }
 
     /**
-     * Migrate a given {@link OneToOne} table from ADT to its FDT equivalent.
+     * Migrate a given {@link OneToOne} table from the Source to its Destination equivalent.
      */
     private void migrateOneToOne(OneToOne oto) throws SQLException {
         if (!destinationIsEmpty(oto.getFdtTable())) {
@@ -116,7 +116,7 @@ public class OneToOneMigrator {
     }
 
     /**
-     * @return true if the destination (FDT) table is empty.
+     * @return true if the destination (Destination) table is empty.
      */
     private boolean destinationIsEmpty(String fdtTable) throws SQLException {
         String select = "SELECT * FROM " + fdtTable;
@@ -126,7 +126,7 @@ public class OneToOneMigrator {
 
     /**
      * @return a key-value pair of <String, String> containing a select
-     * statement to the ADT table and an insert statement to the FDT table in
+     * statement to the Source table and an insert statement to the Destination table in
      * that order.
      */
     private Map.Entry<String, String> createStatements(OneToOne oto) {
@@ -196,12 +196,12 @@ public class OneToOneMigrator {
     }
 
     /**
-     * Sets a parameter for the FDT insert statement from the value read for
-     * that column from ADT select statement.
+     * Sets a parameter for the Destination insert statement from the value read for
+     * that column from Source select statement.
      *
-     * @param rs the ResultSet to the ADT table.
-     * @param pStmt the prepared statement for inserting into the FDT table.
-     * @param columnMapping the column mapping for the ADT table to the FDT
+     * @param rs the ResultSet to the Source table.
+     * @param pStmt the prepared statement for inserting into the Destination table.
+     * @param columnMapping the column mapping for the Source table to the Destination
      * table
      * @param index the column index for which to set the parameter.
      * @param alreadyRead a map of values already read from columns in this row.
@@ -242,7 +242,7 @@ public class OneToOneMigrator {
     }
 
     /**
-     * Sets a parameter for the FDT insert statement from a value deduced or
+     * Sets a parameter for the Destination insert statement from a value deduced or
      * created based on a table relationship as described by a
      * {@link Column} {@link Reference}.
      */

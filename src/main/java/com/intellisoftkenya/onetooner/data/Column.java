@@ -1,4 +1,4 @@
-package com.intellisoftkenya.adt.migrator.data;
+package com.intellisoftkenya.onetooner.data;
 
 /**
  * A database column with it's name and data type.
@@ -22,8 +22,8 @@ public class Column {
     private Reference reference;
     
     /**
-     * An optional default value that may be inserted for this column on the FDT
-     * side. To activate this, map this column to an ADT column with name ==
+     * An optional default value that may be inserted for this column on the Destination
+     * side. To activate this, map this column to a Source column with name ==
      * null.
      */
     private Object value;

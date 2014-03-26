@@ -1,6 +1,6 @@
-package com.intellisoftkenya.adt.migrator;
+package com.intellisoftkenya.onetooner;
 
-import com.intellisoftkenya.adt.migrator.business.OneToOneMigrator;
+import com.intellisoftkenya.onetooner.business.OneToOneMigrator;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;

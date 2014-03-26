@@ -1,8 +1,8 @@
-package com.intellisoftkenya.adt.migrator.business;
+package com.intellisoftkenya.onetooner.business;
 
-import com.intellisoftkenya.adt.migrator.data.Column;
-import com.intellisoftkenya.adt.migrator.data.OneToOne;
-import com.intellisoftkenya.adt.migrator.data.Reference;
+import com.intellisoftkenya.onetooner.data.Column;
+import com.intellisoftkenya.onetooner.data.OneToOne;
+import com.intellisoftkenya.onetooner.data.Reference;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

@@ -1,9 +1,9 @@
-package com.intellisoftkenya.adt.migrator.data;
+package com.intellisoftkenya.onetooner.data;
 
-import com.intellisoftkenya.adt.migrator.business.ReferenceProcessor;
+import com.intellisoftkenya.onetooner.business.ReferenceProcessor;
 
 /**
- * A reference to an FDT database table to which this column is a foreign key.
+ * A reference to an Destination database table to which this column is a foreign key.
  */
 public class Reference {
 

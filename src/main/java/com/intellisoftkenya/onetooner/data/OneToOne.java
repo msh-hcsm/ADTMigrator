@@ -1,31 +1,31 @@
-package com.intellisoftkenya.adt.migrator.data;
+package com.intellisoftkenya.onetooner.data;
 
 import java.util.Map;
 
 /**
- * Represents a one-to-one mapping between an ADT table and an FDT table.
+ * Represents a one-to-one mapping between a Source table and a Destination table.
  *
  * @author gitahi
  */
 public class OneToOne {
 
     /**
-     * The name of the table in the ADT database.
+     * The name of the table in the Source database.
      */
     private final String adtTable;
 
     /**
-     * The name of the table in the FDT database.
+     * The name of the table in the Destination database.
      */
     private final String fdtTable;
 
     /**
-     * The column mappings between the ADT and the FDT table..
+     * The column mappings between the Source and the Destination table..
      */
     private Map<Column, Column> columnMappings;
 
     /**
-     * A custom select query to be used to read from the ADT table instead of
+     * A custom select query to be used to read from the Source table instead of
      * constructing one from the tables and column mappings described in this
      * instance.
      */

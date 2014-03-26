@@ -1,4 +1,4 @@
-package com.intellisoftkenya.adt.migrator.dao;
+package com.intellisoftkenya.onetooner.dao;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -28,7 +28,7 @@ public abstract class SqlExecutor {
             Statement stmt = createStatement();
             rs = stmt.executeQuery(query);
         } catch (SQLException ex) {
-            Logger.getLogger(AdtSqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SourceSqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
         }
         return rs;
     }
@@ -48,7 +48,7 @@ public abstract class SqlExecutor {
                 }
             }
         } catch (SQLException ex) {
-            Logger.getLogger(AdtSqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SourceSqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
         }
         return ret;
     }
@@ -66,7 +66,7 @@ public abstract class SqlExecutor {
                 }
                 autoCloseable.close();
             } catch (Exception ex) {
-                Logger.getLogger(AdtSqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(SourceSqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -80,7 +80,7 @@ public abstract class SqlExecutor {
         try {
             stmt = connection.createStatement();
         } catch (SQLException ex) {
-            Logger.getLogger(AdtSqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SourceSqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
         }
         return stmt;
     }
