@@ -12,7 +12,8 @@ import java.util.Map;
 /**
  * Prepares {@link OneToOne} tables for migration. This class ensures that
  * {@link OneToOneMigrator} stays clean by not having to define migration table
- * properties.
+ * properties. Think of it as a configuration class. In future this content can
+ * be migrated to an out-of-code configuration file.
  *
  * @author gitahi
  */
@@ -46,6 +47,7 @@ public class TableKitchen {
         oneToOneTables.add(preparePersonAddress());
         oneToOneTables.add(prepareTransaction());
         oneToOneTables.add(prepareTransactionItem());
+        oneToOneTables.add(preparePatientTransactionItem());
         return oneToOneTables;
     }
 
@@ -351,8 +353,8 @@ public class TableKitchen {
         return oto;
     }
 
-    private OneToOne prepareBatch() {
-        OneToOne oto = new OneToOne("tblARVDrugStockTransactions", "batch");
+    private OneToOne prepareBatchTransactionItem() {
+        OneToOne oto = new OneToOne("tblARVDrugStockTransactions", "batch_transaction_item");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column("StockTranNo", Types.VARCHAR), new Column("legacy_pk", Types.VARCHAR));
@@ -375,23 +377,24 @@ public class TableKitchen {
     }
 
     private OneToOne preparePatientTransactionItem() {
-        OneToOne oto = new OneToOne("tblARVDrugStockTransactions", "batch");
+        OneToOne oto = new OneToOne("tblARTPatientTransactions", "patient_transaction_item");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column("PatientTranNo", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
-        columnMappings.put(new Column("BatchNo", Types.INTEGER), new Column("transaction_item_id", Types.INTEGER));
-        columnMappings.put(new Column("Npacks", Types.INTEGER), new Column("dosage_id", Types.INTEGER));
-        columnMappings.put(new Column("PackSize", Types.INTEGER), new Column("quantity", Types.DECIMAL));
-        columnMappings.put(new Column("TranDate", Types.DATE), new Column("duration", Types.INTEGER));
-        columnMappings.put(new Column("Expirydate", Types.DATE), new Column("duration_id", Types.INTEGER));
 
-        Column patientId = new Column("transaction_item_id", Types.INTEGER);
-        patientId.setReference(new Reference("transaction_item", "legacy_pk"));
-        columnMappings.put(new Column("PatientTranNo", Types.VARCHAR), patientId);
+        columnMappings.put(new Column("duration", Types.DATE), new Column("duration", Types.INTEGER));
 
-        Column drugId = new Column("drug_id", Types.INTEGER);
-        drugId.setReference(new Reference("drug", "name"));
-        columnMappings.put(new Column("ARVDrugsID", Types.VARCHAR), drugId);
+        Column transactionItemId = new Column("transaction_item_id", Types.INTEGER);
+        transactionItemId.setReference(new Reference("transaction_item", "legacy_pk"));
+        columnMappings.put(new Column("PatientTranNo", Types.VARCHAR), transactionItemId);
+
+        Column dosage = new Column("dosage_id", Types.INTEGER);
+        dosage.setReference(new Reference("dosage", true));
+        columnMappings.put(new Column("Dose", Types.VARCHAR), dosage);
+
+        Column visit = new Column("visit_id", Types.INTEGER);
+        visit.setReference(new Reference("visit", "legacy_pk"));
+        columnMappings.put(new Column("PatientTranNo", Types.VARCHAR), visit);
 
         oto.setColumnMappings(columnMappings);
         return oto;
