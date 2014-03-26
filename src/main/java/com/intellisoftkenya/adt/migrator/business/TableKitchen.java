@@ -26,9 +26,10 @@ public class TableKitchen {
      * @return a list of the tables prepared.
      */
     public List<OneToOne> prepareTables() {
-        List<OneToOne> oneToOneTables = new ArrayList<OneToOne>();
+        List<OneToOne> oneToOneTables = new ArrayList<>();
         oneToOneTables.add(prepareDosage());
         oneToOneTables.add(prepareSupportingOrganization());
+        oneToOneTables.add(prepareAccount());
         oneToOneTables.add(prepareGenericName());
         oneToOneTables.add(prepareIndication());
         oneToOneTables.add(prepareRegimenChangeReason());
@@ -50,7 +51,7 @@ public class TableKitchen {
 
     private OneToOne prepareDosage() {
         OneToOne oto = new OneToOne("tblDose", "dosage");
-        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
                 new Column("dose", Types.VARCHAR), new Column("name", Types.VARCHAR));
         columnMappings.put(
@@ -63,7 +64,7 @@ public class TableKitchen {
 
     private OneToOne prepareSupportingOrganization() {
         OneToOne oto = new OneToOne("tblClientSupportDetails", "supporting_organization");
-        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
                 new Column("ClientSupportID", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
         columnMappings.put(
@@ -72,9 +73,25 @@ public class TableKitchen {
         return oto;
     }
 
+    private OneToOne prepareAccount() {
+        OneToOne oto = new OneToOne("tblARVStockTranSourceorDestination", "account");
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
+        columnMappings.put(
+                new Column("SDNo", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
+        columnMappings.put(
+                new Column("SourceorDestination", Types.VARCHAR), new Column("name", Types.VARCHAR));
+
+        Column accountTypeId = new Column("account_type_id", Types.INTEGER);
+        accountTypeId.setReference(new Reference("account_type", true, new AccountTypeReferenceProcessor()));
+        columnMappings.put(new Column("SourceorDestination", Types.VARCHAR), accountTypeId);
+
+        oto.setColumnMappings(columnMappings);
+        return oto;
+    }
+
     private OneToOne prepareGenericName() {
         OneToOne oto = new OneToOne("tblGenericName", "generic_name");
-        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
                 new Column("GenID", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
         columnMappings.put(
@@ -85,7 +102,7 @@ public class TableKitchen {
 
     private OneToOne prepareIndication() {
         OneToOne oto = new OneToOne("tblIndication", "indication");
-        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
                 new Column("indicationCode", Types.VARCHAR), new Column("legacy_pk", Types.VARCHAR));
         columnMappings.put(
@@ -96,7 +113,7 @@ public class TableKitchen {
 
     private OneToOne prepareRegimenChangeReason() {
         OneToOne oto = new OneToOne("tblReasonforChange", "regimen_change_reason");
-        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
                 new Column("ReasonforChange", Types.VARCHAR), new Column("name", Types.VARCHAR));
         oto.setColumnMappings(columnMappings);
@@ -105,7 +122,7 @@ public class TableKitchen {
 
     private OneToOne prepareRegimenType() {
         OneToOne oto = new OneToOne("tblRegimenCategory", "regimen_type");
-        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
                 new Column("CategoryName", Types.VARCHAR), new Column("name", Types.VARCHAR));
         oto.setColumnMappings(columnMappings);
@@ -114,7 +131,7 @@ public class TableKitchen {
 
     private OneToOne preparePatientSource() {
         OneToOne oto = new OneToOne("tblSourceOfClient", "patient_source");
-        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
                 new Column("SourceID", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
         columnMappings.put(
@@ -125,7 +142,7 @@ public class TableKitchen {
 
     private OneToOne prepareServiceType() {
         OneToOne oto = new OneToOne("tblTypeOfService", "service_type");
-        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
                 new Column("TypeOfServiceID", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
         columnMappings.put(
@@ -136,7 +153,7 @@ public class TableKitchen {
 
     private OneToOne prepareDispensingUnit() {
         OneToOne oto = new OneToOne("tblUnit", "dispensing_unit");
-        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
                 new Column("Unit", Types.VARCHAR), new Column("name", Types.VARCHAR));
         oto.setColumnMappings(columnMappings);
@@ -145,7 +162,7 @@ public class TableKitchen {
 
     private OneToOne prepareVisitType() {
         OneToOne oto = new OneToOne("tblVisitTransaction", "visit_type");
-        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
                 new Column("VisitTranName", Types.VARCHAR), new Column("name", Types.VARCHAR));
         oto.setColumnMappings(columnMappings);
@@ -154,7 +171,7 @@ public class TableKitchen {
 
     private OneToOne prepareDrug() {
         OneToOne oto = new OneToOne("tblARVDrugStockMain", "drug");
-        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column("ARVDrugsID", Types.VARCHAR), new Column("name", Types.VARCHAR));
         columnMappings.put(new Column("StdDuration", Types.INTEGER), new Column("duration", Types.INTEGER));
@@ -184,7 +201,7 @@ public class TableKitchen {
 
     private OneToOne preparePerson() {
         OneToOne oto = new OneToOne("tblARTPatientMasterInformation", "person");
-        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column("ArtID", Types.VARCHAR), new Column("legacy_pk", Types.VARCHAR));
         columnMappings.put(new Column("Firstname", Types.VARCHAR), new Column("first_name", Types.VARCHAR));
@@ -198,7 +215,7 @@ public class TableKitchen {
 
     private OneToOne preparePatient() {
         OneToOne oto = new OneToOne("tblARTPatientMasterInformation", "patient");
-        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column("ArtID", Types.VARCHAR), new Column("legacy_pk", Types.VARCHAR));
         columnMappings.put(new Column("DateStartedonART", Types.VARCHAR), new Column("date_of_enrollment", Types.VARCHAR));
@@ -225,7 +242,7 @@ public class TableKitchen {
 
     private OneToOne preparePatientIdentifier() {
         OneToOne oto = new OneToOne("tblARTPatientMasterInformation", "patient_identifier");
-        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column("ArtID", Types.VARCHAR), new Column("identifier", Types.VARCHAR));
         columnMappings.put(new Column(null, Types.INTEGER), new Column("identifier_type_id", Types.INTEGER, ART_IDENTIFIERTYPE_ID));
@@ -240,7 +257,7 @@ public class TableKitchen {
 
     private OneToOne prepareVisit() {
         OneToOne oto = new OneToOne("tblARTPatientTransactions", "visit");
-        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column("PatientTranNo", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
         columnMappings.put(new Column("DateofVisit", Types.DATE), new Column("start_date", Types.DATE));
@@ -269,7 +286,7 @@ public class TableKitchen {
 
     private OneToOne preparePersonAddress() {
         OneToOne oto = new OneToOne("tblARTPatientMasterInformation", "person_address");
-        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column("ArtID", Types.VARCHAR), new Column("legacy_pk", Types.VARCHAR));
         columnMappings.put(new Column("Address", Types.VARCHAR), new Column("physical_address", Types.VARCHAR));
@@ -284,7 +301,7 @@ public class TableKitchen {
 
     private OneToOne prepareTransaction() {
         OneToOne oto = new OneToOne("tblARVDrugStockTransactions", "transaction");
-        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         Column drugId = new Column("drug_id", Types.INTEGER);
         drugId.setReference(new Reference("drug", "name"));
@@ -301,7 +318,7 @@ public class TableKitchen {
 
     private OneToOne prepareTransactionItem() {
         OneToOne oto = new OneToOne("tblARVDrugStockTransactions", "transaction_item");
-        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         Column transactionId = new Column("transaction_id", Types.INTEGER);
         transactionId.setReference(new Reference("transaction", "legacy_pk"));
@@ -318,7 +335,7 @@ public class TableKitchen {
 
     private OneToOne prepareBatch() {
         OneToOne oto = new OneToOne("tblARVDrugStockTransactions", "batch");
-        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column("StockTranNo", Types.VARCHAR), new Column("legacy_pk", Types.VARCHAR));
         columnMappings.put(new Column("BatchNo", Types.INTEGER), new Column("batch_no", Types.VARCHAR));
@@ -341,7 +358,7 @@ public class TableKitchen {
 
     private OneToOne preparePatientTransactionItem() {
         OneToOne oto = new OneToOne("tblARVDrugStockTransactions", "batch");
-        Map<Column, Column> columnMappings = new LinkedHashMap<Column, Column>();
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column("PatientTranNo", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
         columnMappings.put(new Column("BatchNo", Types.INTEGER), new Column("transaction_item_id", Types.INTEGER));

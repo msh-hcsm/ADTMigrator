@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.intellisoftkenya.adt.migrator.data;
 
 /**
@@ -25,10 +20,11 @@ public class Column {
      * participates.
      */
     private Reference reference;
-
+    
     /**
      * An optional default value that may be inserted for this column on the FDT
-     * side. To activate this, map this column to an ADT column with name == null.
+     * side. To activate this, map this column to an ADT column with name ==
+     * null.
      */
     private Object value;
 
