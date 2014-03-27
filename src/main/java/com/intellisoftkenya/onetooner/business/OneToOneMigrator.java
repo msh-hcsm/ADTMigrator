@@ -1,12 +1,13 @@
 package com.intellisoftkenya.onetooner.business;
 
 import com.intellisoftkenya.onetooner.Main;
-import com.intellisoftkenya.onetooner.dao.SourceSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.DestinationSqlExcecutor;
+import com.intellisoftkenya.onetooner.dao.SourceSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SqlExecutor;
 import com.intellisoftkenya.onetooner.data.Column;
 import com.intellisoftkenya.onetooner.data.OneToOne;
 import com.intellisoftkenya.onetooner.data.Reference;
+import com.intellisoftkenya.onetooner.data.Table;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,10 +15,13 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,9 +61,9 @@ public class OneToOneMigrator {
      * equivalent.
      */
     private void migrateOneToOne(OneToOne oto) throws SQLException {
-        if (!destinationIsEmpty(oto.getFdtTable())) {
+        if (!destinationIsEmpty(oto.getDestinationTable())) {
             Logger.getLogger(Main.class.getName()).log(Level.WARNING, "Skipping migration for table ''{0}''. "
-                    + "Destination table ''{1}'' is not empty.", new Object[]{oto.getAdtTable(), oto.getFdtTable()});
+                    + "Destination table ''{1}'' is not empty.", new Object[]{oto.getSourceTable(), oto.getDestinationTable()});
             return;
         }
 
@@ -68,7 +72,7 @@ public class OneToOneMigrator {
         String insert = statements.getValue();
 
         Logger.getLogger(Main.class.getName()).log(Level.INFO, "Begining migration from ''{0}'' to ''{1}.",
-                new Object[]{oto.getAdtTable(), oto.getFdtTable()});
+                new Object[]{oto.getSourceTable(), oto.getDestinationTable()});
         Logger.getLogger(Main.class.getName()).log(Level.INFO, "Using select statement: ''{0}''", select);
         Logger.getLogger(Main.class.getName()).log(Level.INFO, "Using insert statement: ''{0}''", insert);
 
@@ -110,18 +114,18 @@ public class OneToOneMigrator {
             connection.commit();
             if (skippedRowCount > 0) {
                 Logger.getLogger(Main.class.getName()).log(Level.WARNING, "Skipped {0}. "
-                        + "row(s) of the table ''{1}''. Nothing to migrate.", new Object[]{skippedRowCount, oto.getAdtTable()});
+                        + "row(s) of the table ''{1}''. Nothing to migrate.", new Object[]{skippedRowCount, oto.getSourceTable()});
             }
             Logger.getLogger(Main.class.getName()).log(Level.INFO, "Migrated {0} row(s) from ''{1}'' "
-                    + "to ''{2}''.", new Object[]{totalRowCount - skippedRowCount, oto.getAdtTable(), oto.getFdtTable()});
+                    + "to ''{2}''.", new Object[]{totalRowCount - skippedRowCount, oto.getSourceTable(), oto.getDestinationTable()});
         }
     }
 
     /**
-     * @return true if the destination (Destination) table is empty.
+     * @return true if the Destination table is empty.
      */
-    private boolean destinationIsEmpty(String fdtTable) throws SQLException {
-        String select = "SELECT * FROM " + fdtTable;
+    private boolean destinationIsEmpty(Table destinationTable) throws SQLException {
+        String select = "SELECT * FROM " + destinationTable.getName();
         ResultSet rs = fse.executeQuery(select);
         return !rs.next();
     }
@@ -133,9 +137,12 @@ public class OneToOneMigrator {
      */
     private Map.Entry<String, String> createStatements(OneToOne oto) {
         String select = "SELECT " + createColumns(oto.getColumnMappings(), true, false)
-                + " FROM " + oto.getAdtTable();
+                + " FROM " + oto.getSourceTable().getName();
+        if (oto.getSourceTable().getOrderBy() != null) {
+            select += " ORDER BY " + commify(oto.getSourceTable().getOrderBy(), null);
+        }
         String insert = "INSERT INTO "
-                + oto.getFdtTable() + "(" + createColumns(oto.getColumnMappings(), false, false) + ") "
+                + oto.getDestinationTable().getName() + "(" + createColumns(oto.getColumnMappings(), false, false) + ") "
                 + "VALUES(" + createColumns(oto.getColumnMappings(), false, true) + ")";
         return new AbstractMap.SimpleEntry<>(select, insert);
     }
@@ -183,7 +190,7 @@ public class OneToOneMigrator {
      * @param columns the set of columns to be commified.
      * @param append any string to be appended after commifying
      */
-    private String commify(List<String> columns, String append) {
+    private String commify(Collection<String> columns, String append) {
         String commified = "";
         int i = 0;
         int n = columns.size() - 1;

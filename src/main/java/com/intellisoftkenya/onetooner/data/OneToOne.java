@@ -10,14 +10,14 @@ import java.util.Map;
 public class OneToOne {
 
     /**
-     * The name of the table in the Source database.
+     * The Source {@link Table}.
      */
-    private final String adtTable;
+    private final Table sourceTable;
 
     /**
-     * The name of the table in the Destination database.
+     * The Destination {@link Table}.
      */
-    private final String fdtTable;
+    private final Table destinationTable;
 
     /**
      * The column mappings between the Source and the Destination table..
@@ -31,17 +31,17 @@ public class OneToOne {
      */
     private String query;
 
-    public OneToOne(String adtTable, String fdtTable) {
-        this.adtTable = adtTable;
-        this.fdtTable = fdtTable;
+    public OneToOne(Table sourceTable, Table destinationTable) {
+        this.sourceTable = sourceTable;
+        this.destinationTable = destinationTable;
     }
 
-    public String getAdtTable() {
-        return adtTable;
+    public Table getSourceTable() {
+        return sourceTable;
     }
 
-    public String getFdtTable() {
-        return fdtTable;
+    public Table getDestinationTable() {
+        return destinationTable;
     }
 
     public Map<Column, Column> getColumnMappings() {

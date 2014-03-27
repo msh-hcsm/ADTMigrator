@@ -1,14 +1,15 @@
 package com.intellisoftkenya.onetooner.data;
 
-/**
- * A database column with it's name and data type.
- */
-public class Column {
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-    /**
-     * The name of the column.
-     */
-    private final String name;
+/**
+ * A database column.
+ * 
+ * @author gitahi
+ */
+public class Column extends NamedDatabaseObject {
+
     /**
      * The {@link java.sql.Types} representing the data type of the column in
      * the database.
@@ -20,26 +21,22 @@ public class Column {
      * participates.
      */
     private Reference reference;
-    
+
     /**
-     * An optional default value that may be inserted for this column on the Destination
-     * side. To activate this, map this column to a Source column with name ==
-     * null.
+     * An optional default value that may be inserted for this column on the
+     * Destination side. To activate this, map this column to a Source column
+     * with name == null.
      */
     private Object value;
 
     public Column(String name, int type) {
-        this.name = name;
+        super(name);
         this.type = type;
     }
 
     public Column(String name, int type, Object value) {
         this(name, type);
         this.value = value;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public int getType() {
