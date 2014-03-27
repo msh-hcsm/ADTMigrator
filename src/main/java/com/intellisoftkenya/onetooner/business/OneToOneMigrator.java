@@ -18,10 +18,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -308,7 +306,7 @@ public class OneToOneMigrator {
     }
 
     /**
-     * Supplies values fro audit columns.
+     * Supplies values for audit columns.
      */
     private class AuditValues {
 

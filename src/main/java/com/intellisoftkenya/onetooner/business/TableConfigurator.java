@@ -44,6 +44,7 @@ public class TableConfigurator {
         oneToOneTables.add(configurePerson());
         oneToOneTables.add(configurePatient());
         oneToOneTables.add(configurePatientIdentifier());
+        oneToOneTables.add(configureRegimen());
         oneToOneTables.add(configureVisit());
         oneToOneTables.add(configurePersonAddress());
         oneToOneTables.add(configureTransaction());
@@ -280,6 +281,33 @@ public class TableConfigurator {
         return oto;
     }
 
+    private OneToOne configureRegimen() {
+        OneToOne oto = new OneToOne(new Table("tblRegimen", Table.orderBy("Regimencode")),
+                new Table("regimen"));
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
+
+        columnMappings.put(new Column("Regimencode", Types.VARCHAR), new Column("code", Types.VARCHAR));
+        columnMappings.put(new Column("Regimen", Types.VARCHAR), new Column("name", Types.VARCHAR));
+        columnMappings.put(new Column("Line", Types.INTEGER), new Column("line", Types.INTEGER));
+        columnMappings.put(new Column("Remarks", Types.VARCHAR), new Column("comments", Types.VARCHAR));
+        columnMappings.put(new Column("show", Types.BOOLEAN), new Column("visible", Types.BOOLEAN));
+
+        Column serviceType = new Column("service_type_id", Types.INTEGER);
+        serviceType.setReference(new Reference("service_type", "legacy_pk"));
+        columnMappings.put(new Column("TypeoService", Types.INTEGER), serviceType);
+
+        Column regimenType = new Column("regimen_type_id", Types.INTEGER);
+        regimenType.setReference(new Reference("regimen_type", "legacy_pk"));
+        columnMappings.put(new Column("Category", Types.INTEGER), regimenType);
+
+        Column regimenStatus = new Column("regimen_status_id", Types.INTEGER);
+        regimenStatus.setReference(new Reference("regimen_status", true));
+        columnMappings.put(new Column("Status", Types.VARCHAR), regimenStatus);
+
+        oto.setColumnMappings(columnMappings);
+        return oto;
+    }
+
     private OneToOne configureVisit() {
         OneToOne oto = new OneToOne(new Table("tblARTPatientTransactions", Table.orderBy("MIN(PatientTranNo)")),
                 new Table("visit"));
@@ -292,11 +320,13 @@ public class TableConfigurator {
         columnMappings.put(new Column("Adherence_", Types.DECIMAL), new Column("adherence", Types.DECIMAL));
         columnMappings.put(new Column("Comment_", Types.VARCHAR), new Column("comments", Types.VARCHAR));
 
-//        columnMappings.put(new Column("Regimen", Types.VARCHAR), new Column("regimen_id", Types.INTEGER));
-//
         Column indication = new Column("indication_id", Types.INTEGER);
         indication.setReference(new Reference("indication", "legacy_pk"));
         columnMappings.put(new Column("Indication_", Types.VARCHAR), indication);
+
+        Column regimen = new Column("regimen_id", Types.INTEGER);
+        regimen.setReference(new Reference("regimen", "code"));
+        columnMappings.put(new Column("Regimen_", Types.VARCHAR), regimen);
 
         Column regimenChangeReason = new Column("regimen_change_reason_id", Types.INTEGER);
         regimenChangeReason.setReference(new Reference("regimen_change_reason", "name"));
@@ -313,13 +343,15 @@ public class TableConfigurator {
                 + "MIN(pillCount) AS pillCount_, "
                 + "MIN(Adherence) AS Adherence_, "
                 + "MIN(Comment) AS Comment_,"
-                + " MIN(Indication) AS Indication_, "
+                + "MIN(Indication) AS Indication_, "
+                + "MIN(Regimen) AS Regimen_, "
                 + "MIN(ReasonsForChange) AS ReasonsForChange_, "
                 + "ARTID "
                 + "FROM "
                 + "tblARTPatientTransactions "
                 + "GROUP BY "
-                + "DateofVisit, ARTID ORDER BY PatientTranNo_");
+                + "DateofVisit, ARTID "
+                + "ORDER BY MIN(PatientTranNo)");
         oto.setColumnMappings(columnMappings);
         return oto;
     }
@@ -396,7 +428,8 @@ public class TableConfigurator {
 
         oto.setQuery("SELECT StockTranNo, Npacks, PackSize, Expirydate "
                 + "FROM tblARVDrugStockTransactions "
-                + "WHERE PackSize IS NOT NULL");
+                + "WHERE PackSize IS NOT NULL AND Npacks IS NOT NULL "
+                + "AND TransactionType <> 6");
         oto.setColumnMappings(columnMappings);
         return oto;
     }
