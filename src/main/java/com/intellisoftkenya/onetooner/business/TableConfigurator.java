@@ -391,7 +391,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("Dose", Types.VARCHAR), dosage);
 
         Column visit = new Column("visit_id", Types.INTEGER);
-        visit.setReference(new Reference("visit", "legacy_pk"));
+        visit.setReference(new Reference("visit", "legacy_pk", true));
         columnMappings.put(new Column("PatientTranNo", Types.VARCHAR), visit);
 
         oto.setColumnMappings(columnMappings);

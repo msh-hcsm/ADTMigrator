@@ -3,7 +3,8 @@ package com.intellisoftkenya.onetooner.data;
 import com.intellisoftkenya.onetooner.business.ReferenceProcessor;
 
 /**
- * A reference to an Destination database table to which this column is a foreign key.
+ * A reference to an Destination database table to which this column is a
+ * foreign key.
  */
 public class Reference {
 
@@ -11,22 +12,36 @@ public class Reference {
      * Name of the referenced table
      */
     private final String table;
+
     /**
      * Name of the column containing the text by which to query for primary
      * keys. Defaults to "name" if not set.
      */
     private String column = "name";
+
     /**
      * Name of the referenced primary key. Defaults to "id" if not set.
      */
     private String pk = "id";
+
     /**
      * Whether or not a record should be created if the text from
      * {@link Reference#column} is missing. Records are created subject to the
      * table allowing insertion to column alone. If for instance there are other
      * non-nullable columns which do not have defaults, creation will fail.
+     * Defaults to false if not set.
      */
     private boolean creatable = false;
+
+    /**
+     * Whether or not a referenced value should be borrowed from the preceeding
+     * record if none is available for the current record. Useful when formally
+     * one-to-one Source database relationships have been converted into
+     * one-to-many relationships. Records from the many side of the relationship
+     * must be ordered by the referencing column for this to work correctly.
+     * Defaults to false if not set.
+     */
+    private boolean borrowable = false;
 
     /**
      * A {@link ReferenceProcessor} to process a reference value to be used as
@@ -52,6 +67,11 @@ public class Reference {
     public Reference(String table, String column) {
         this(table);
         this.column = column;
+    }
+
+    public Reference(String table, String column, boolean borrowable) {
+        this(table, column);
+        this.borrowable = borrowable;
     }
 
     public String getTable() {
@@ -80,6 +100,14 @@ public class Reference {
 
     public void setCreatable(boolean creatable) {
         this.creatable = creatable;
+    }
+
+    public boolean isBorrowable() {
+        return borrowable;
+    }
+
+    public void setBorrowable(boolean borrowable) {
+        this.borrowable = borrowable;
     }
 
     public ReferenceProcessor getReferenceProcessor() {

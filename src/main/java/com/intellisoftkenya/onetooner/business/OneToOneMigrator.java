@@ -36,10 +36,11 @@ public class OneToOneMigrator {
     private final Map<String, PreparedStatement> preparedQueryCache = new HashMap<>();
 
     private final AuditValues auditValues = new AuditValues();
+    private Integer borrowableValue = null;
 
     /**
-     * Migrate all tables that have a logical one-to-one mapping between the Source 
-     * and the Destination.
+     * Migrate all tables that have a logical one-to-one mapping between the
+     * Source and the Destination.
      *
      * @throws java.sql.SQLException
      */
@@ -52,7 +53,8 @@ public class OneToOneMigrator {
     }
 
     /**
-     * Migrate a given {@link OneToOne} table from the Source to its Destination equivalent.
+     * Migrate a given {@link OneToOne} table from the Source to its Destination
+     * equivalent.
      */
     private void migrateOneToOne(OneToOne oto) throws SQLException {
         if (!destinationIsEmpty(oto.getFdtTable())) {
@@ -65,7 +67,7 @@ public class OneToOneMigrator {
         String select = oto.getQuery() == null ? statements.getKey() : oto.getQuery();
         String insert = statements.getValue();
 
-        Logger.getLogger(Main.class.getName()).log(Level.INFO, "Begining migration from ''{0}'' to ''{1}.", 
+        Logger.getLogger(Main.class.getName()).log(Level.INFO, "Begining migration from ''{0}'' to ''{1}.",
                 new Object[]{oto.getAdtTable(), oto.getFdtTable()});
         Logger.getLogger(Main.class.getName()).log(Level.INFO, "Using select statement: ''{0}''", select);
         Logger.getLogger(Main.class.getName()).log(Level.INFO, "Using insert statement: ''{0}''", insert);
@@ -126,8 +128,8 @@ public class OneToOneMigrator {
 
     /**
      * @return a key-value pair of <String, String> containing a select
-     * statement to the Source table and an insert statement to the Destination table in
-     * that order.
+     * statement to the Source table and an insert statement to the Destination
+     * table in that order.
      */
     private Map.Entry<String, String> createStatements(OneToOne oto) {
         String select = "SELECT " + createColumns(oto.getColumnMappings(), true, false)
@@ -196,13 +198,14 @@ public class OneToOneMigrator {
     }
 
     /**
-     * Sets a parameter for the Destination insert statement from the value read for
-     * that column from Source select statement.
+     * Sets a parameter for the Destination insert statement from the value read
+     * for that column from Source select statement.
      *
      * @param rs the ResultSet to the Source table.
-     * @param pStmt the prepared statement for inserting into the Destination table.
-     * @param columnMapping the column mapping for the Source table to the Destination
-     * table
+     * @param pStmt the prepared statement for inserting into the Destination
+     * table.
+     * @param columnMapping the column mapping for the Source table to the
+     * Destination table
      * @param index the column index for which to set the parameter.
      * @param alreadyRead a map of values already read from columns in this row.
      * Prevents the ResultSet from attempting to re-read values that it has read
@@ -242,8 +245,8 @@ public class OneToOneMigrator {
     }
 
     /**
-     * Sets a parameter for the Destination insert statement from a value deduced or
-     * created based on a table relationship as described by a
+     * Sets a parameter for the Destination insert statement from a value
+     * deduced or created based on a table relationship as described by a
      * {@link Column} {@link Reference}.
      */
     private Integer setParameterFromReference(Reference ref, String stringValue) throws SQLException {
@@ -257,20 +260,23 @@ public class OneToOneMigrator {
             String select = "SELECT " + ref.getPk() + ", " + ref.getColumn()
                     + " FROM " + ref.getTable()
                     + " WHERE " + ref.getColumn() + " = ?";
-            
+
             PreparedStatement pStmt = preparedQueryCache.get(select);
             if (pStmt == null) {
                 pStmt = connection.prepareStatement(select);
                 preparedQueryCache.put(select, pStmt);
             }
             pStmt.setString(1, stringValue);
-            
+
             Logger.getLogger(Main.class.getName()).log(Level.INFO, "Setting parameter from reference using select statement: ''{0}''", select);
 
             ResultSet rs = pStmt.executeQuery();
             if (rs.next()) {
                 value = rs.getInt(ref.getPk());
                 referenceCache.put(referenceKey, value);
+                if (ref.isBorrowable()) {
+                    borrowableValue = value;
+                }
             } else {
                 if (ref.isCreatable()) {
                     String insert = "INSERT INTO "
@@ -283,6 +289,11 @@ public class OneToOneMigrator {
                     value = fse.executeUpdate(insert, true);
                     connection.commit();
                     referenceCache.put(referenceKey, value);
+                } else {
+                    if (ref.isBorrowable()) {
+                        value = borrowableValue;
+                        referenceCache.put(referenceKey, value);
+                    }
                 }
             }
         }
