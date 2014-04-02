@@ -21,6 +21,7 @@ import java.util.Map;
 public class TableConfigurator {
 
     public static final Integer ART_IDENTIFIERTYPE_ID = 1;
+    public static final Integer OPIP_IDENTIFIERTYPE_ID = 2;
 
     /**
      * Configure {@link OneToOne} tables for migration.
@@ -52,10 +53,11 @@ public class TableConfigurator {
         //person data
         oneToOneTables.add(configurePerson());
         oneToOneTables.add(configurePersonAddress());
-        
+
         //patient data
         oneToOneTables.add(configurePatient());
-//        oneToOneTables.add(configurePatientIdentifier());
+        oneToOneTables.add(configurePatientIdentifier_ArtId());
+        oneToOneTables.add(configurePatientIdentifier_OpipdId());
 //
 //        oneToOneTables.add(configureVisit());
 //
@@ -366,9 +368,9 @@ public class TableConfigurator {
         return oto;
     }
 
-    private OneToOne configurePatientIdentifier() {
+    private OneToOne configurePatientIdentifier_ArtId() {
         OneToOne oto = new OneToOne(new Table("tblARTPatientMasterInformation", Table.orderBy("ArtID")),
-                new Table("patient_identifier"));
+                new Table("patient_identifier"), false);
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column("ArtID", Types.VARCHAR), new Column("identifier", Types.VARCHAR));
@@ -379,6 +381,23 @@ public class TableConfigurator {
         columnMappings.put(new Column("ArtID", Types.VARCHAR), patientId);
 
         oto.setColumnMappings(columnMappings);
+        return oto;
+    }
+
+    private OneToOne configurePatientIdentifier_OpipdId() {
+        OneToOne oto = new OneToOne(new Table("tblARTPatientMasterInformation", Table.orderBy("OPIPNO")),
+                new Table("patient_identifier"), false);
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
+
+        columnMappings.put(new Column("OPIPNO", Types.VARCHAR), new Column("identifier", Types.VARCHAR));
+        columnMappings.put(new Column(null, Types.INTEGER), new Column("identifier_type_id", Types.INTEGER, OPIP_IDENTIFIERTYPE_ID));
+
+        Column patientId = new Column("patient_id", Types.INTEGER);
+        patientId.setReference(new Reference("patient", "legacy_pk"));
+        columnMappings.put(new Column("ArtID", Types.VARCHAR), patientId);
+
+        oto.setColumnMappings(columnMappings);
+        oto.setQuery("SELECT ArtID, OPIPNO FROM tblARTPatientMasterInformation WHERE OPIPNO IS NOT NULL ORDER BY OPIPNO");
         return oto;
     }
 

@@ -3,7 +3,8 @@ package com.intellisoftkenya.onetooner.data;
 import java.util.Map;
 
 /**
- * Represents a one-to-one mapping between a Source table and a Destination table.
+ * Represents a one-to-one mapping between a Source table and a Destination
+ * table.
  *
  * @author gitahi
  */
@@ -25,6 +26,12 @@ public class OneToOne {
     private Map<Column, Column> columnMappings;
 
     /**
+     * Whether or not migration should require that the destination table be
+     * empty before proceeding. Set to true by default.
+     */
+    private boolean requireEmpty = true;
+
+    /**
      * A custom select query to be used to read from the Source table instead of
      * constructing one from the tables and column mappings described in this
      * instance.
@@ -34,6 +41,12 @@ public class OneToOne {
     public OneToOne(Table sourceTable, Table destinationTable) {
         this.sourceTable = sourceTable;
         this.destinationTable = destinationTable;
+    }
+
+    public OneToOne(Table sourceTable, Table destinationTable, boolean requireEmpty) {
+        this.sourceTable = sourceTable;
+        this.destinationTable = destinationTable;
+        this.requireEmpty = requireEmpty;
     }
 
     public Table getSourceTable() {
@@ -58,5 +71,9 @@ public class OneToOne {
 
     public void setQuery(String query) {
         this.query = query;
+    }
+
+    public boolean isRequireEmpty() {
+        return requireEmpty;
     }
 }

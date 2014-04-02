@@ -59,7 +59,7 @@ public class OneToOneMigrator {
      * equivalent.
      */
     private void migrateOneToOne(OneToOne oto) throws SQLException {
-        if (!destinationIsEmpty(oto.getDestinationTable())) {
+        if (oto.isRequireEmpty() && !destinationIsEmpty(oto.getDestinationTable())) {
             Logger.getLogger(Main.class.getName()).log(Level.WARNING, "Skipping migration for table ''{0}''. "
                     + "Destination table ''{1}'' is not empty.", new Object[]{oto.getSourceTable(), oto.getDestinationTable()});
             return;
