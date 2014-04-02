@@ -56,8 +56,8 @@ public class TableConfigurator {
 
         //patient data
         oneToOneTables.add(configurePatient());
-        oneToOneTables.add(configurePatientIdentifier_ArtId());
-        oneToOneTables.add(configurePatientIdentifier_OpipdId());
+//        oneToOneTables.add(configurePatientIdentifier_ArtId());
+//        oneToOneTables.add(configurePatientIdentifier_OpipdId());
 //
 //        oneToOneTables.add(configureVisit());
 //
@@ -363,6 +363,10 @@ public class TableConfigurator {
         Column supportingOrganization = new Column("supporting_organization_id", Types.INTEGER);
         supportingOrganization.setReference(new Reference("supporting_organization", "legacy_pk"));
         columnMappings.put(new Column("ClientSupportedBy", Types.VARCHAR), supportingOrganization);
+
+        Column transferFromFacility = new Column("from_facility_id", Types.INTEGER);
+        transferFromFacility.setReference(new Reference("facility", "code"));
+        columnMappings.put(new Column("TransferFrom", Types.VARCHAR), transferFromFacility);
 
         oto.setColumnMappings(columnMappings);
         return oto;
