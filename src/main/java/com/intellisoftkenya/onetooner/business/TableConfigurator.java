@@ -33,6 +33,9 @@ public class TableConfigurator {
         oneToOneTables.add(configureSupportingOrganization());
         oneToOneTables.add(configureAccount());
         oneToOneTables.add(configureGenericName());
+        oneToOneTables.add(configureRegion());
+        oneToOneTables.add(configureDistrict());
+        oneToOneTables.add(configureFacility());
         oneToOneTables.add(configureIndication());
         oneToOneTables.add(configureRegimenChangeReason());
         oneToOneTables.add(configureRegimenType());
@@ -49,7 +52,7 @@ public class TableConfigurator {
         oneToOneTables.add(configurePersonAddress());
         oneToOneTables.add(configureTransaction());
         oneToOneTables.add(configureTransactionItem());
-        oneToOneTables.add(configurePatientTransactionItem());
+//        oneToOneTables.add(configurePatientTransactionItem());
         oneToOneTables.add(configureBatchTransactionItem());
         return oneToOneTables;
     }
@@ -94,6 +97,13 @@ public class TableConfigurator {
         columnMappings.put(new Column("SourceorDestination", Types.VARCHAR), accountTypeId);
 
         oto.setColumnMappings(columnMappings);
+
+        oto.setQuery("SELECT SDNo, SourceorDestination FROM tblARVStockTranSourceorDestination WHERE SourceorDestination IS NOT NULL\n"
+                + "UNION\n"
+                + "SELECT SCode, Source FROM tblSource WHERE Source IS NOT NULL\n"
+                + "UNION\n"
+                + "SELECT DCode, Destination FROM tblDestination WHERE Destination IS NOT NULL");
+
         return oto;
     }
 
@@ -105,6 +115,49 @@ public class TableConfigurator {
                 new Column("GenID", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
         columnMappings.put(
                 new Column("GenericName", Types.VARCHAR), new Column("name", Types.VARCHAR));
+        oto.setColumnMappings(columnMappings);
+        return oto;
+    }
+
+    private OneToOne configureRegion() {
+        OneToOne oto = new OneToOne(new Table("tblRegion", Table.orderBy("Rcode")),
+                new Table("region"));
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
+        columnMappings.put(
+                new Column("Rcode", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
+        columnMappings.put(
+                new Column("Region", Types.VARCHAR), new Column("name", Types.VARCHAR));
+        oto.setColumnMappings(columnMappings);
+        return oto;
+    }
+
+    private OneToOne configureDistrict() {
+        OneToOne oto = new OneToOne(new Table("tblDistricts", Table.orderBy("DCode")),
+                new Table("district"));
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
+        columnMappings.put(
+                new Column("DCode", Types.INTEGER), new Column("code", Types.INTEGER));
+        columnMappings.put(
+                new Column("DistrictName", Types.VARCHAR), new Column("name", Types.VARCHAR));
+
+        Column region = new Column("region_id", Types.INTEGER);
+        region.setReference(new Reference("region", true));
+        columnMappings.put(new Column("Region", Types.VARCHAR), region);
+
+        oto.setColumnMappings(columnMappings);
+        return oto;
+    }
+
+    private OneToOne configureFacility() {
+        OneToOne oto = new OneToOne(new Table("tblHealthFacilities", Table.orderBy("MFLCode")),
+                new Table("facility"));
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
+        columnMappings.put(
+                new Column("MFLCode", Types.INTEGER), new Column("code", Types.INTEGER));
+        columnMappings.put(
+                new Column("FacilityName", Types.VARCHAR), new Column("name", Types.VARCHAR));
+        columnMappings.put(
+                new Column("District", Types.VARCHAR), new Column("district", Types.VARCHAR));
         oto.setColumnMappings(columnMappings);
         return oto;
     }
