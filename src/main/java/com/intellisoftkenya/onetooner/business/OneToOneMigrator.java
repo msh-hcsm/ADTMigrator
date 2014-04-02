@@ -134,7 +134,7 @@ public class OneToOneMigrator {
      * table in that order.
      */
     private Map.Entry<String, String> createStatements(OneToOne oto) {
-        String select = "SELECT " + createColumns(oto.getColumnMappings(), true, false)
+        String select = "SELECT DISTINCT " + createColumns(oto.getColumnMappings(), true, false)
                 + " FROM " + oto.getSourceTable().getName();
         if (oto.getSourceTable().getOrderBy() != null) {
             select += " ORDER BY " + commify(oto.getSourceTable().getOrderBy(), null);

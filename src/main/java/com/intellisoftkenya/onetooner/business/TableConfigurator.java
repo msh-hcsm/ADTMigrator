@@ -33,6 +33,7 @@ public class TableConfigurator {
         oneToOneTables.add(configureSupportingOrganization());
         oneToOneTables.add(configureAccount());
         oneToOneTables.add(configureGenericName());
+        oneToOneTables.add(configurePatientStatus());
         oneToOneTables.add(configureRegion());
         oneToOneTables.add(configureDistrict());
         oneToOneTables.add(configureFacility());
@@ -115,6 +116,18 @@ public class TableConfigurator {
                 new Column("GenID", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
         columnMappings.put(
                 new Column("GenericName", Types.VARCHAR), new Column("name", Types.VARCHAR));
+        oto.setColumnMappings(columnMappings);
+        return oto;
+    }
+
+    private OneToOne configurePatientStatus() {
+        OneToOne oto = new OneToOne(new Table("tblCurrentStatus", Table.orderBy("CurrentStatusID")),
+                new Table("patient_status"));
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
+        columnMappings.put(
+                new Column("CurrentStatusID", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
+        columnMappings.put(
+                new Column("CurrentStatus", Types.VARCHAR), new Column("name", Types.VARCHAR));
         oto.setColumnMappings(columnMappings);
         return oto;
     }
