@@ -28,33 +28,41 @@ public class TableConfigurator {
      * @return a list of the tables configured.
      */
     public List<OneToOne> configureTables() {
+        //basic look-up tables
         List<OneToOne> oneToOneTables = new ArrayList<>();
-        oneToOneTables.add(configureDosage());
-        oneToOneTables.add(configureSupportingOrganization());
-        oneToOneTables.add(configureAccount());
-        oneToOneTables.add(configureGenericName());
         oneToOneTables.add(configurePatientStatus());
-        oneToOneTables.add(configureRegion());
-        oneToOneTables.add(configureDistrict());
+        oneToOneTables.add(configureAccount());
+        oneToOneTables.add(configureDosage());
+        oneToOneTables.add(configureGenericName());
         oneToOneTables.add(configureFacility());
         oneToOneTables.add(configureIndication());
         oneToOneTables.add(configureRegimenChangeReason());
         oneToOneTables.add(configureRegimenType());
+        oneToOneTables.add(configureRegimen());
+        oneToOneTables.add(configureRegion());
+        oneToOneTables.add(configureDistrict());
+        oneToOneTables.add(configureSupportingOrganization());
         oneToOneTables.add(configurePatientSource());
         oneToOneTables.add(configureServiceType());
         oneToOneTables.add(configureDispensingUnit());
         oneToOneTables.add(configureVisitType());
+
         oneToOneTables.add(configureDrug());
+
+        //person data
         oneToOneTables.add(configurePerson());
-        oneToOneTables.add(configurePatient());
-        oneToOneTables.add(configurePatientIdentifier());
-        oneToOneTables.add(configureRegimen());
-        oneToOneTables.add(configureVisit());
         oneToOneTables.add(configurePersonAddress());
-        oneToOneTables.add(configureTransaction());
-        oneToOneTables.add(configureTransactionItem());
+        
+        //patient data
+        oneToOneTables.add(configurePatient());
+//        oneToOneTables.add(configurePatientIdentifier());
+//
+//        oneToOneTables.add(configureVisit());
+//
+//        oneToOneTables.add(configureTransaction());
+//        oneToOneTables.add(configureTransactionItem());
 //        oneToOneTables.add(configurePatientTransactionItem());
-        oneToOneTables.add(configureBatchTransactionItem());
+//        oneToOneTables.add(configureBatchTransactionItem());
         return oneToOneTables;
     }
 
@@ -269,7 +277,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("ReorderLevel", Types.INTEGER), new Column("reorder_point", Types.INTEGER));
 
         Column category = new Column("drug_category_id", Types.INTEGER);
-        category.setReference(new Reference("drug_category", true));
+        category.setReference(new Reference("drug_category", true, new DrugCategoryReferenceProcessor()));
         columnMappings.put(new Column("DrugCategory", Types.INTEGER), category);
 
         Column unit = new Column("dispensing_unit_id", Types.INTEGER);
@@ -296,8 +304,31 @@ public class TableConfigurator {
         columnMappings.put(new Column("ArtID", Types.VARCHAR), new Column("legacy_pk", Types.VARCHAR));
         columnMappings.put(new Column("Firstname", Types.VARCHAR), new Column("first_name", Types.VARCHAR));
         columnMappings.put(new Column("Surname", Types.VARCHAR), new Column("surname", Types.VARCHAR));
+        columnMappings.put(new Column("LastName", Types.VARCHAR), new Column("other_names", Types.VARCHAR));
         columnMappings.put(new Column("Sex", Types.VARCHAR), new Column("sex", Types.VARCHAR));
         columnMappings.put(new Column("DateofBirth", Types.DATE), new Column("date_of_birth", Types.DATE));
+
+        Column birthDistrict = new Column("birth_district_id", Types.INTEGER);
+        birthDistrict.setReference(new Reference("district", "code"));
+        columnMappings.put(new Column("PlaceofBirth", Types.VARCHAR), birthDistrict);
+
+        oto.setColumnMappings(columnMappings);
+        return oto;
+    }
+
+    private OneToOne configurePersonAddress() {
+        OneToOne oto = new OneToOne(new Table("tblARTPatientMasterInformation", Table.orderBy("ArtID")),
+                new Table("person_address"));
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
+
+        columnMappings.put(new Column("ArtID", Types.VARCHAR), new Column("legacy_pk", Types.VARCHAR));
+        columnMappings.put(new Column("Address", Types.VARCHAR), new Column("physical_address", Types.VARCHAR));
+        columnMappings.put(new Column("PatientCellphone", Types.INTEGER), new Column("tel_no1", Types.VARCHAR));
+        columnMappings.put(new Column("AlternateContact", Types.VARCHAR), new Column("tel_no2", Types.VARCHAR));
+
+        Column patientId = new Column("person_id", Types.INTEGER);
+        patientId.setReference(new Reference("person", "legacy_pk"));
+        columnMappings.put(new Column("ArtID", Types.VARCHAR), patientId);
 
         oto.setColumnMappings(columnMappings);
         return oto;
@@ -312,8 +343,8 @@ public class TableConfigurator {
         columnMappings.put(new Column("DateStartedonART", Types.VARCHAR), new Column("date_of_enrollment", Types.VARCHAR));
         columnMappings.put(new Column("OtherDeaseConditions", Types.VARCHAR), new Column("chronic_illnesses", Types.VARCHAR));
         columnMappings.put(new Column("ADRorSideEffects", Types.VARCHAR), new Column("drug_allergies", Types.VARCHAR));
-        columnMappings.put(new Column("PatientDrinkAlcohol", Types.BOOLEAN), new Column("smoker", Types.BOOLEAN));
-        columnMappings.put(new Column("PatientDontSmoke", Types.BOOLEAN), new Column("drinker", Types.BOOLEAN));
+        columnMappings.put(new Column("PatientSmoke", Types.BOOLEAN), new Column("smoker", Types.BOOLEAN));
+        columnMappings.put(new Column("PatientDrinkAlcohol", Types.BOOLEAN), new Column("drinker", Types.BOOLEAN));
 
         Column patientId = new Column("person_id", Types.INTEGER);
         patientId.setReference(new Reference("person", "legacy_pk"));
@@ -427,22 +458,6 @@ public class TableConfigurator {
                 + "GROUP BY "
                 + "DateofVisit, ARTID "
                 + "ORDER BY MIN(PatientTranNo)");
-        oto.setColumnMappings(columnMappings);
-        return oto;
-    }
-
-    private OneToOne configurePersonAddress() {
-        OneToOne oto = new OneToOne(new Table("tblARTPatientMasterInformation", Table.orderBy("ArtID")),
-                new Table("person_address"));
-        Map<Column, Column> columnMappings = new LinkedHashMap<>();
-
-        columnMappings.put(new Column("ArtID", Types.VARCHAR), new Column("legacy_pk", Types.VARCHAR));
-        columnMappings.put(new Column("Address", Types.VARCHAR), new Column("physical_address", Types.VARCHAR));
-
-        Column patientId = new Column("person_id", Types.INTEGER);
-        patientId.setReference(new Reference("person", "legacy_pk"));
-        columnMappings.put(new Column("ArtID", Types.VARCHAR), patientId);
-
         oto.setColumnMappings(columnMappings);
         return oto;
     }
