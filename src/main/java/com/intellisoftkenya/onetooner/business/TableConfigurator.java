@@ -324,6 +324,10 @@ public class TableConfigurator {
         indication.setReference(new Reference("indication", "legacy_pk"));
         columnMappings.put(new Column("Indication_", Types.VARCHAR), indication);
 
+        Column visitType = new Column("visit_type_id", Types.INTEGER);
+        visitType.setReference(new Reference("visit_type", "legacy_pk"));
+        columnMappings.put(new Column("TransactionCode_", Types.INTEGER), visitType);
+
         Column regimen = new Column("regimen_id", Types.INTEGER);
         regimen.setReference(new Reference("regimen", "code"));
         columnMappings.put(new Column("Regimen_", Types.VARCHAR), regimen);
@@ -339,6 +343,7 @@ public class TableConfigurator {
         oto.setQuery("SELECT "
                 + "MIN(PatientTranNo) AS PatientTranNo_, "
                 + "DateofVisit, "
+                + "MIN(TransactionCode) AS TransactionCode_, "
                 + "MIN(Weight) AS Weight_, "
                 + "MIN(pillCount) AS pillCount_, "
                 + "MIN(Adherence) AS Adherence_, "
