@@ -310,6 +310,10 @@ public class TableConfigurator {
 
         columnMappings.put(new Column("ArtID", Types.VARCHAR), new Column("legacy_pk", Types.VARCHAR));
         columnMappings.put(new Column("DateStartedonART", Types.VARCHAR), new Column("date_of_enrollment", Types.VARCHAR));
+        columnMappings.put(new Column("OtherDeaseConditions", Types.VARCHAR), new Column("chronic_illnesses", Types.VARCHAR));
+        columnMappings.put(new Column("ADRorSideEffects", Types.VARCHAR), new Column("drug_allergies", Types.VARCHAR));
+        columnMappings.put(new Column("PatientDrinkAlcohol", Types.BOOLEAN), new Column("smoker", Types.BOOLEAN));
+        columnMappings.put(new Column("PatientDontSmoke", Types.BOOLEAN), new Column("drinker", Types.BOOLEAN));
 
         Column patientId = new Column("person_id", Types.INTEGER);
         patientId.setReference(new Reference("person", "legacy_pk"));
