@@ -97,19 +97,24 @@ public class OneToOneMigrator {
                 pStmt.setInt(index++, auditValues.createdBy());
                 pStmt.setDate(index++, auditValues.createdOn());
                 if (execute) {
-                    pStmt.executeUpdate();
+                    pStmt.addBatch();
                 } else {
                     skippedRowCount++;
                 }
+                //execute commands in batches of TRANSACTION_BATCH_SIZE
                 if (totalRowCount % SqlExecutor.TRANSACTION_BATCH_SIZE == 0) {
-
+                    pStmt.executeBatch();
                     connection.commit();
+                    pStmt.clearBatch();
                     Logger.getLogger(Main.class.getName()).log(Level.INFO, "Commited transaction batch #{0}.",
                             new Object[]{batchNo});
                     batchNo++;
                 }
             }
+            //execute any remaining commands
+            pStmt.executeBatch();
             connection.commit();
+            pStmt.clearBatch();
             if (skippedRowCount > 0) {
                 Logger.getLogger(Main.class.getName()).log(Level.WARNING, "Skipped {0}. "
                         + "row(s) of the table ''{1}''. Nothing to migrate.", new Object[]{skippedRowCount, oto.getSourceTable()});
