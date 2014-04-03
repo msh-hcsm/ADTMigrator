@@ -1,5 +1,7 @@
 package com.intellisoftkenya.onetooner.business;
 
+import com.intellisoftkenya.onetooner.business.imp.DrugCategoryValueTranslator;
+import com.intellisoftkenya.onetooner.business.imp.AccountTypeValueTranslator;
 import com.intellisoftkenya.onetooner.data.Column;
 import com.intellisoftkenya.onetooner.data.OneToOne;
 import com.intellisoftkenya.onetooner.data.Reference;
@@ -20,8 +22,8 @@ import java.util.Map;
  */
 public class TableConfigurator {
 
-    public static final Integer ART_IDENTIFIERTYPE_ID = 1;
-    public static final Integer OPIP_IDENTIFIERTYPE_ID = 2;
+    public static final Integer ART_IDENTIFIER_TYPE_ID = 1;
+    public static final Integer OPIP_IDENTIFIER_TYPE_ID = 2;
 
     /**
      * Configure {@link OneToOne} tables for migration.
@@ -48,6 +50,7 @@ public class TableConfigurator {
         oneToOneTables.add(configureDispensingUnit());
         oneToOneTables.add(configureVisitType());
 
+        //drugs
         oneToOneTables.add(configureDrug());
 
         //person data
@@ -56,11 +59,13 @@ public class TableConfigurator {
 
         //patient data
         oneToOneTables.add(configurePatient());
-//        oneToOneTables.add(configurePatientIdentifier_ArtId());
-//        oneToOneTables.add(configurePatientIdentifier_OpipdId());
-//
-//        oneToOneTables.add(configureVisit());
-//
+        oneToOneTables.add(configurePatientIdentifier_ArtId());
+        oneToOneTables.add(configurePatientIdentifier_OpipdId());
+
+        //visits
+        oneToOneTables.add(configureVisit());
+
+        //transactions
 //        oneToOneTables.add(configureTransaction());
 //        oneToOneTables.add(configureTransactionItem());
 //        oneToOneTables.add(configurePatientTransactionItem());
@@ -104,7 +109,7 @@ public class TableConfigurator {
                 new Column("SourceorDestination", Types.VARCHAR), new Column("name", Types.VARCHAR));
 
         Column accountTypeId = new Column("account_type_id", Types.INTEGER);
-        accountTypeId.setReference(new Reference("account_type", true, new AccountTypeReferenceProcessor()));
+        accountTypeId.setReference(new Reference("account_type", true, new AccountTypeValueTranslator()));
         columnMappings.put(new Column("SourceorDestination", Types.VARCHAR), accountTypeId);
 
         oto.setColumnMappings(columnMappings);
@@ -279,7 +284,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("ReorderLevel", Types.INTEGER), new Column("reorder_point", Types.INTEGER));
 
         Column category = new Column("drug_category_id", Types.INTEGER);
-        category.setReference(new Reference("drug_category", true, new DrugCategoryReferenceProcessor()));
+        category.setReference(new Reference("drug_category", true, new DrugCategoryValueTranslator()));
         columnMappings.put(new Column("DrugCategory", Types.INTEGER), category);
 
         Column unit = new Column("dispensing_unit_id", Types.INTEGER);
@@ -342,7 +347,8 @@ public class TableConfigurator {
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column("ArtID", Types.VARCHAR), new Column("legacy_pk", Types.VARCHAR));
-        columnMappings.put(new Column("DateStartedonART", Types.VARCHAR), new Column("date_of_enrollment", Types.VARCHAR));
+        columnMappings.put(new Column("DateTherapyStarted", Types.DATE), new Column("enrollment_date", Types.DATE));
+        columnMappings.put(new Column("DateStartedonART", Types.DATE), new Column("service_start_date", Types.DATE));
         columnMappings.put(new Column("OtherDeaseConditions", Types.VARCHAR), new Column("chronic_illnesses", Types.VARCHAR));
         columnMappings.put(new Column("ADRorSideEffects", Types.VARCHAR), new Column("drug_allergies", Types.VARCHAR));
         columnMappings.put(new Column("PatientSmoke", Types.BOOLEAN), new Column("smoker", Types.BOOLEAN));
@@ -378,7 +384,7 @@ public class TableConfigurator {
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column("ArtID", Types.VARCHAR), new Column("identifier", Types.VARCHAR));
-        columnMappings.put(new Column(null, Types.INTEGER), new Column("identifier_type_id", Types.INTEGER, ART_IDENTIFIERTYPE_ID));
+        columnMappings.put(new Column(null, Types.INTEGER), new Column("identifier_type_id", Types.INTEGER, ART_IDENTIFIER_TYPE_ID));
 
         Column patientId = new Column("patient_id", Types.INTEGER);
         patientId.setReference(new Reference("patient", "legacy_pk"));
@@ -394,7 +400,7 @@ public class TableConfigurator {
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column("OPIPNO", Types.VARCHAR), new Column("identifier", Types.VARCHAR));
-        columnMappings.put(new Column(null, Types.INTEGER), new Column("identifier_type_id", Types.INTEGER, OPIP_IDENTIFIERTYPE_ID));
+        columnMappings.put(new Column(null, Types.INTEGER), new Column("identifier_type_id", Types.INTEGER, OPIP_IDENTIFIER_TYPE_ID));
 
         Column patientId = new Column("patient_id", Types.INTEGER);
         patientId.setReference(new Reference("patient", "legacy_pk"));
@@ -439,6 +445,7 @@ public class TableConfigurator {
 
         columnMappings.put(new Column("PatientTranNo_", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
         columnMappings.put(new Column("DateofVisit", Types.DATE), new Column("start_date", Types.DATE));
+        columnMappings.put(new Column("DateofVisit", Types.DATE), new Column("end_date", Types.DATE));
         columnMappings.put(new Column("Weight_", Types.DECIMAL), new Column("weight", Types.DECIMAL));
         columnMappings.put(new Column("pillCount_", Types.INTEGER), new Column("pill_count", Types.INTEGER));
         columnMappings.put(new Column("Adherence_", Types.DECIMAL), new Column("adherence", Types.DECIMAL));

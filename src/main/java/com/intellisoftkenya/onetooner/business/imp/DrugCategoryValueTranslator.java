@@ -1,14 +1,16 @@
-package com.intellisoftkenya.onetooner.business;
+package com.intellisoftkenya.onetooner.business.imp;
+
+import com.intellisoftkenya.onetooner.business.api.ValueTranslator;
 
 /**
- * The {@link ReferenceProcessor} for drug categories.
+ * The {@link ValueTranslator} for drug categories.
  *
  * @author gitahi
  */
-public class DrugCategoryReferenceProcessor implements ReferenceProcessor {
+public class DrugCategoryValueTranslator implements ValueTranslator {
 
     @Override
-    public String process(String value) {
+    public String translate(String value) {
         if (value != null) {
             if (value.equalsIgnoreCase("1")) {
                 return "Fixed Dose Combination";

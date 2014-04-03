@@ -260,7 +260,7 @@ public class OneToOneMigrator {
         Integer value = referenceCache.get(referenceKey);
         if (value == null) {
             if (ref.getReferenceProcessor() != null) {
-                stringValue = ref.getReferenceProcessor().process(stringValue);
+                stringValue = ref.getReferenceProcessor().translate(stringValue);
             }
             String select = "SELECT " + ref.getPk() + ", " + ref.getColumn()
                     + " FROM " + ref.getTable()
