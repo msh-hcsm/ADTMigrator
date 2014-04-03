@@ -19,6 +19,7 @@ public class DestinationSqlExcecutor extends SqlExecutor {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/fdt", "root", "2806");
+            connection.setAutoCommit(false);
         } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(SourceSqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -36,9 +37,9 @@ public class DestinationSqlExcecutor extends SqlExecutor {
         try {
             pStmt = connection.prepareStatement(update);
             pStmt.executeUpdate();
+            connection.commit();
         } catch (SQLException ex) {
             Logger.getLogger(DestinationSqlExcecutor.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 }

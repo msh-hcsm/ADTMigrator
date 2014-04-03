@@ -32,7 +32,6 @@ public class OneToOneMigrator {
 
     private final SqlExecutor sse = SourceSqlExecutor.getInstance();
     private final SqlExecutor dse = DestinationSqlExcecutor.getInstance();
-    private final Connection connection = dse.getConnection();
 
     private final Map<String, Integer> referenceCache = new HashMap<>();
     private final Map<String, PreparedStatement> preparedQueryCache = new HashMap<>();
@@ -76,8 +75,7 @@ public class OneToOneMigrator {
 
         ResultSet rs = sse.executeQuery(select);
         if (rs != null) {
-            connection.setAutoCommit(false);
-            PreparedStatement pStmt = connection.prepareStatement(insert);
+            PreparedStatement pStmt = dse.createPreparedStatement(insert);
 
             int totalRowCount = 0;
             int batchNo = 1;
@@ -101,19 +99,14 @@ public class OneToOneMigrator {
                 } else {
                     skippedRowCount++;
                 }
-                //execute commands in batches of TRANSACTION_BATCH_SIZE
                 if (totalRowCount % SqlExecutor.TRANSACTION_BATCH_SIZE == 0) {
-                    pStmt.executeBatch();
-                    connection.commit();
-                    pStmt.clearBatch();
+                    dse.executeBatch(pStmt);
                     Logger.getLogger(Main.class.getName()).log(Level.INFO, "Commited transaction batch #{0}.",
                             new Object[]{batchNo});
                     batchNo++;
                 }
             }
-            //execute any remaining commands
-            pStmt.executeBatch();
-            connection.commit();
+            dse.executeBatch(pStmt);
             pStmt.clearBatch();
             if (skippedRowCount > 0) {
                 Logger.getLogger(Main.class.getName()).log(Level.WARNING, "Skipped {0}. "
@@ -273,7 +266,7 @@ public class OneToOneMigrator {
 
             PreparedStatement pStmt = preparedQueryCache.get(select);
             if (pStmt == null) {
-                pStmt = connection.prepareStatement(select);
+                pStmt = dse.createPreparedStatement(select);
                 preparedQueryCache.put(select, pStmt);
             }
             pStmt.setString(1, stringValue);
@@ -297,7 +290,6 @@ public class OneToOneMigrator {
                     Logger.getLogger(Main.class.getName()).log(Level.INFO, "Adding parameter to reference using insert statement: ''{0}''", insert);
 
                     value = dse.executeUpdate(insert, true);
-                    connection.commit();
                     referenceCache.put(referenceKey, value);
                 } else {
                     if (ref.isBorrowable()) {

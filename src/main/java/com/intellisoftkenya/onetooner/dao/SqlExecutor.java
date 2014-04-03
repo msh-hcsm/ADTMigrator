@@ -1,6 +1,7 @@
 package com.intellisoftkenya.onetooner.dao;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -47,8 +48,34 @@ public abstract class SqlExecutor {
                     ret = rs.getInt(1);
                 }
             }
+            if (!connection.getAutoCommit()) {
+                connection.commit();
+            }
         } catch (SQLException ex) {
             Logger.getLogger(SourceSqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return ret;
+    }
+
+    public PreparedStatement createPreparedStatement(String sql) {
+        try {
+            return connection.prepareStatement(sql);
+        } catch (SQLException ex) {
+            Logger.getLogger(SqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public int[] executeBatch(PreparedStatement pStmt) {
+        int[] ret = null;
+        try {
+            ret = pStmt.executeBatch();
+            if (!connection.getAutoCommit()) {
+                connection.commit();
+            }
+            pStmt.clearBatch();
+        } catch (SQLException ex) {
+            Logger.getLogger(SqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
         }
         return ret;
     }
