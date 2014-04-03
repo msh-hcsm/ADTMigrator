@@ -19,10 +19,23 @@ public abstract class SqlExecutor {
     public static final int TRANSACTION_BATCH_SIZE = 1000;
     protected Connection connection;
 
+    /**
+     * Avails the connection associated with this class for use in ways not
+     * provided here.
+     * 
+     * @return the connection.
+     */
     public Connection getConnection() {
         return connection;
     }
 
+    /**
+     * Executes am SQL query.
+     * 
+     * @param query the query to execute
+     * 
+     * @return the ResultSet returned by the query
+     */
     public ResultSet executeQuery(String query) {
         ResultSet rs = null;
         try {
@@ -34,6 +47,17 @@ public abstract class SqlExecutor {
         return rs;
     }
 
+    /**
+     * Executes an insert or update statement. This method will call connection.commit()
+     * if connection.getAutoCommit() returns false;
+     * 
+     * @param update the statement to execute.
+     * @param generatedValue whether or not to return the auto-generated integer 
+     * value of an auto-increment database column
+     * 
+     * @return the auto-generated integer value if specified, the number of affected
+     * rows otherwise.
+     */
     public int executeUpdate(String update, boolean generatedValue) {
         ResultSet rs;
         int ret = 0;
@@ -57,6 +81,13 @@ public abstract class SqlExecutor {
         return ret;
     }
 
+    /**
+     * Prepares an SQL statement.
+     * 
+     * @param sql the statement to prepare
+     * 
+     * @return the PreparedStatement
+     */
     public PreparedStatement createPreparedStatement(String sql) {
         try {
             return connection.prepareStatement(sql);
@@ -66,6 +97,16 @@ public abstract class SqlExecutor {
         return null;
     }
 
+    /**
+     * Executes a batch of commands and then clears the batch thereafter.
+     * This method will call connection.commit() if connection.getAutoCommit() 
+     * returns false;
+     * 
+     * @param pStmt The PreparedStatement containing the batch.
+     * 
+     * @return an array of integers containing the number of rows affected by
+     * each command.
+     */
     public int[] executeBatch(PreparedStatement pStmt) {
         int[] ret = null;
         try {
@@ -80,6 +121,11 @@ public abstract class SqlExecutor {
         return ret;
     }
 
+    /**
+     * Closes an AutoCloseable resource.
+     * 
+     * @param autoCloseable the AutoCloseable resource to close.
+     */
     public void close(AutoCloseable autoCloseable) {
         if (autoCloseable != null) {
             try {
@@ -98,10 +144,18 @@ public abstract class SqlExecutor {
         }
     }
 
+    /**
+     * Closes the connection associated with this class.
+     */
     public void close() {
         close(connection);
     }
 
+    /**
+     * Creates a Statement.
+     * 
+     * @return the Statement created
+     */
     protected Statement createStatement() {
         Statement stmt = null;
         try {
