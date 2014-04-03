@@ -30,9 +30,9 @@ import java.util.logging.Logger;
  */
 public class OneToOneMigrator {
 
-    private final SqlExecutor ase = SourceSqlExecutor.getInstance();
-    private final SqlExecutor fse = DestinationSqlExcecutor.getInstance();
-    private final Connection connection = fse.getConnection();
+    private final SqlExecutor sse = SourceSqlExecutor.getInstance();
+    private final SqlExecutor dse = DestinationSqlExcecutor.getInstance();
+    private final Connection connection = dse.getConnection();
 
     private final Map<String, Integer> referenceCache = new HashMap<>();
     private final Map<String, PreparedStatement> preparedQueryCache = new HashMap<>();
@@ -50,8 +50,8 @@ public class OneToOneMigrator {
         for (OneToOne oneToOne : new TableConfigurator().configureTables()) {
             migrateOneToOne(oneToOne);
         }
-        ase.close();
-        fse.close();
+        sse.close();
+        dse.close();
     }
 
     /**
@@ -74,7 +74,7 @@ public class OneToOneMigrator {
         Logger.getLogger(Main.class.getName()).log(Level.INFO, "Using select statement: ''{0}''", select);
         Logger.getLogger(Main.class.getName()).log(Level.INFO, "Using insert statement: ''{0}''", insert);
 
-        ResultSet rs = ase.executeQuery(select);
+        ResultSet rs = sse.executeQuery(select);
         if (rs != null) {
             connection.setAutoCommit(false);
             PreparedStatement pStmt = connection.prepareStatement(insert);
@@ -124,7 +124,7 @@ public class OneToOneMigrator {
      */
     private boolean destinationIsEmpty(Table destinationTable) throws SQLException {
         String select = "SELECT * FROM " + destinationTable.getName();
-        ResultSet rs = fse.executeQuery(select);
+        ResultSet rs = dse.executeQuery(select);
         return !rs.next();
     }
 
@@ -260,7 +260,7 @@ public class OneToOneMigrator {
         Integer value = referenceCache.get(referenceKey);
         if (value == null) {
             if (ref.getReferenceProcessor() != null) {
-                stringValue = ref.getReferenceProcessor().process(stringValue);
+                stringValue = ref.getReferenceProcessor().translate(stringValue);
             }
             String select = "SELECT " + ref.getPk() + ", " + ref.getColumn()
                     + " FROM " + ref.getTable()
@@ -291,7 +291,7 @@ public class OneToOneMigrator {
 
                     Logger.getLogger(Main.class.getName()).log(Level.INFO, "Adding parameter to reference using insert statement: ''{0}''", insert);
 
-                    value = fse.executeUpdate(insert, true);
+                    value = dse.executeUpdate(insert, true);
                     connection.commit();
                     referenceCache.put(referenceKey, value);
                 } else {

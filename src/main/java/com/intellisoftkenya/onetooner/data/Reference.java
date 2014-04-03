@@ -1,6 +1,6 @@
 package com.intellisoftkenya.onetooner.data;
 
-import com.intellisoftkenya.onetooner.business.ReferenceProcessor;
+import com.intellisoftkenya.onetooner.business.api.ValueTranslator;
 
 /**
  * A reference to an Destination database table to which this column is a
@@ -44,11 +44,11 @@ public class Reference {
     private boolean borrowable = false;
 
     /**
-     * A {@link ReferenceProcessor} to process a reference value to be used as
+     * A {@link ValueTranslator} to process a reference value to be used as
      * the data for cells in this column. This is useful when the value cannot
      * be easily deduced and must be obtained by some non-trivial means.
      */
-    private ReferenceProcessor referenceProcessor;
+    private ValueTranslator referenceProcessor;
 
     public Reference(String table) {
         this.table = table;
@@ -59,7 +59,7 @@ public class Reference {
         this.creatable = creatable;
     }
 
-    public Reference(String table, boolean creatable, ReferenceProcessor referenceProcessor) {
+    public Reference(String table, boolean creatable, ValueTranslator referenceProcessor) {
         this(table, creatable);
         this.referenceProcessor = referenceProcessor;
     }
@@ -110,11 +110,11 @@ public class Reference {
         this.borrowable = borrowable;
     }
 
-    public ReferenceProcessor getReferenceProcessor() {
+    public ValueTranslator getReferenceProcessor() {
         return referenceProcessor;
     }
 
-    public void setReferenceProcessor(ReferenceProcessor referenceProcessor) {
+    public void setReferenceProcessor(ValueTranslator referenceProcessor) {
         this.referenceProcessor = referenceProcessor;
     }
 }

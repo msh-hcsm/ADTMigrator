@@ -1,14 +1,16 @@
-package com.intellisoftkenya.onetooner.business;
+package com.intellisoftkenya.onetooner.business.imp;
+
+import com.intellisoftkenya.onetooner.business.api.ValueTranslator;
 
 /**
- * The {@link ReferenceProcessor} for account types.
+ * The {@link ValueTranslator} for account types.
  *
  * @author gitahi
  */
-public class AccountTypeReferenceProcessor implements ReferenceProcessor {
+public class AccountTypeValueTranslator implements ValueTranslator {
 
     @Override
-    public String process(String value) {
+    public String translate(String value) {
         if (value != null) {
             if (value.equalsIgnoreCase("KEMSA")
                     || value.equalsIgnoreCase("MEDS")

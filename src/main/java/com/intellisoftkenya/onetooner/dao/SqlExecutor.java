@@ -41,7 +41,7 @@ public abstract class SqlExecutor {
             if (!generatedValue) {
                 ret = stmt.executeUpdate(update);
             } else {
-                stmt.executeUpdate(update, Statement.RETURN_GENERATED_KEYS);
+                ret = stmt.executeUpdate(update, Statement.RETURN_GENERATED_KEYS);
                 rs = stmt.getGeneratedKeys();
                 if (rs.next()) {
                     ret = rs.getInt(1);
