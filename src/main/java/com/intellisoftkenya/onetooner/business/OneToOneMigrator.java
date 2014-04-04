@@ -8,7 +8,6 @@ import com.intellisoftkenya.onetooner.data.Column;
 import com.intellisoftkenya.onetooner.data.OneToOne;
 import com.intellisoftkenya.onetooner.data.Reference;
 import com.intellisoftkenya.onetooner.data.Table;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
