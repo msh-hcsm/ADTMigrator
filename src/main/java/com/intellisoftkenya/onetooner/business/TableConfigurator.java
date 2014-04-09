@@ -2,6 +2,7 @@ package com.intellisoftkenya.onetooner.business;
 
 import com.intellisoftkenya.onetooner.business.imp.DrugCategoryValueTranslator;
 import com.intellisoftkenya.onetooner.business.imp.AccountTypeValueTranslator;
+import com.intellisoftkenya.onetooner.business.imp.VisitExtraProcessor;
 import com.intellisoftkenya.onetooner.data.Column;
 import com.intellisoftkenya.onetooner.data.OneToOne;
 import com.intellisoftkenya.onetooner.data.Reference;
@@ -489,6 +490,7 @@ public class TableConfigurator {
                 + "DateofVisit, ARTID "
                 + "ORDER BY MIN(PatientTranNo)");
         oto.setColumnMappings(columnMappings);
+        oto.setPostProcessor(new VisitExtraProcessor());
         return oto;
     }
 

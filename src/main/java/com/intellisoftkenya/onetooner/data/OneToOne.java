@@ -1,5 +1,7 @@
 package com.intellisoftkenya.onetooner.data;
 
+import com.intellisoftkenya.onetooner.business.OneToOneMigrator;
+import com.intellisoftkenya.onetooner.business.api.ExtraProcessor;
 import java.util.Map;
 
 /**
@@ -38,6 +40,18 @@ public class OneToOne {
      */
     private String query;
 
+    /**
+     * The {@link ExtraProcessor} to execute before running
+     * {@link OneToOneMigrator}
+     */
+    private ExtraProcessor preProcessor;
+
+    /**
+     * The {@link ExtraProcessor} to execute after running
+     * {@link OneToOneMigrator}
+     */
+    private ExtraProcessor postProcessor;
+
     public OneToOne(Table sourceTable, Table destinationTable) {
         this.sourceTable = sourceTable;
         this.destinationTable = destinationTable;
@@ -75,5 +89,21 @@ public class OneToOne {
 
     public boolean isRequireEmpty() {
         return requireEmpty;
+    }
+
+    public ExtraProcessor getPreProcessor() {
+        return preProcessor;
+    }
+
+    public void setPreProcessor(ExtraProcessor preProcessor) {
+        this.preProcessor = preProcessor;
+    }
+
+    public ExtraProcessor getPostProcessor() {
+        return postProcessor;
+    }
+
+    public void setPostProcessor(ExtraProcessor postProcessor) {
+        this.postProcessor = postProcessor;
     }
 }

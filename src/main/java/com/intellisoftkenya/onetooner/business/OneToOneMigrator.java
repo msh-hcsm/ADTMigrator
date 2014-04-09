@@ -63,6 +63,14 @@ public class OneToOneMigrator {
             return;
         }
 
+        if (oto.getPreProcessor() != null) {
+            Logger.getLogger(Main.class.getName()).log(Level.INFO, "Pre processor ''{0}'' begins.",
+                    new Object[]{oto.getPostProcessor().getClass().getName()});
+            oto.getPreProcessor().process(oto);
+            Logger.getLogger(Main.class.getName()).log(Level.INFO, "Pre processor ''{0}'' completes.",
+                    new Object[]{oto.getPostProcessor().getClass().getName()});
+        }
+
         Map.Entry<String, String> statements = createStatements(oto);
         String select = oto.getQuery() == null ? statements.getKey() : oto.getQuery();
         String insert = statements.getValue();
@@ -107,6 +115,15 @@ public class OneToOneMigrator {
             }
             dse.executeBatch(pStmt);
             pStmt.clearBatch();
+
+            if (oto.getPostProcessor() != null) {
+                Logger.getLogger(Main.class.getName()).log(Level.INFO, "Post processor ''{0}' begins.",
+                        new Object[]{oto.getPostProcessor().getClass().getName()});
+                oto.getPostProcessor().process(oto);
+                Logger.getLogger(Main.class.getName()).log(Level.INFO, "Post processor ''{0}'' completes.",
+                        new Object[]{oto.getPostProcessor().getClass().getName()});
+            }
+
             if (skippedRowCount > 0) {
                 Logger.getLogger(Main.class.getName()).log(Level.WARNING, "Skipped {0}. "
                         + "row(s) of the table ''{1}''. Nothing to migrate.", new Object[]{skippedRowCount, oto.getSourceTable()});
