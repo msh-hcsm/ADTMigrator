@@ -42,7 +42,7 @@ public abstract class SqlExecutor {
             Statement stmt = createStatement();
             rs = stmt.executeQuery(query);
         } catch (SQLException ex) {
-            Logger.getLogger(SourceSqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
         }
         return rs;
     }
@@ -76,7 +76,7 @@ public abstract class SqlExecutor {
                 connection.commit();
             }
         } catch (SQLException ex) {
-            Logger.getLogger(SourceSqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
         }
         return ret;
     }
@@ -139,7 +139,7 @@ public abstract class SqlExecutor {
                 }
                 autoCloseable.close();
             } catch (Exception ex) {
-                Logger.getLogger(SourceSqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(SqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -161,7 +161,7 @@ public abstract class SqlExecutor {
         try {
             stmt = connection.createStatement();
         } catch (SQLException ex) {
-            Logger.getLogger(SourceSqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
         }
         return stmt;
     }
