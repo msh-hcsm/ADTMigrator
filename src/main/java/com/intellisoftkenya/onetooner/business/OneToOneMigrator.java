@@ -1,7 +1,7 @@
 package com.intellisoftkenya.onetooner.business;
 
 import com.intellisoftkenya.onetooner.Main;
-import com.intellisoftkenya.onetooner.dao.DestinationSqlExcecutor;
+import com.intellisoftkenya.onetooner.dao.DestinationSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SourceSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SqlExecutor;
 import com.intellisoftkenya.onetooner.data.Column;
@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 public class OneToOneMigrator {
 
     private final SqlExecutor sse = SourceSqlExecutor.getInstance();
-    private final SqlExecutor dse = DestinationSqlExcecutor.getInstance();
+    private final SqlExecutor dse = DestinationSqlExecutor.getInstance();
 
     private final Map<String, Integer> referenceCache = new HashMap<>();
     private final Map<String, PreparedStatement> preparedQueryCache = new HashMap<>();

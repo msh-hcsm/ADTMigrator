@@ -67,10 +67,10 @@ public class TableConfigurator {
         oneToOneTables.add(configureVisit());
 
         //transactions
-//        oneToOneTables.add(configureTransaction());
-//        oneToOneTables.add(configureTransactionItem());
+        oneToOneTables.add(configureTransaction());
+        oneToOneTables.add(configureTransactionItem());
+        oneToOneTables.add(configureBatchTransactionItem());
 //        oneToOneTables.add(configurePatientTransactionItem());
-//        oneToOneTables.add(configureBatchTransactionItem());
         return oneToOneTables;
     }
 
@@ -506,7 +506,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("StockTranNo", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
         columnMappings.put(new Column("RefOrderNo", Types.INTEGER), new Column("reference_no", Types.VARCHAR));
         columnMappings.put(new Column("TranDate", Types.DATE), new Column("date", Types.DATE));
-        columnMappings.put(new Column("Remarks", Types.VARCHAR), new Column("narrative", Types.VARCHAR));
+        columnMappings.put(new Column("Remarks", Types.VARCHAR), new Column("comments", Types.VARCHAR));
 
         oto.setColumnMappings(columnMappings);
         return oto;

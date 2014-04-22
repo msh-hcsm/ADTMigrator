@@ -11,23 +11,23 @@ import java.util.logging.Logger;
  *
  * @author gitahi
  */
-public class DestinationSqlExcecutor extends SqlExecutor {
+public class DestinationSqlExecutor extends SqlExecutor {
 
     protected static SqlExecutor instance;
 
-    private DestinationSqlExcecutor() {
+    private DestinationSqlExecutor() {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/fdt", "root", "2806");
             connection.setAutoCommit(false);
         } catch (ClassNotFoundException | SQLException ex) {
-            Logger.getLogger(SourceSqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DestinationSqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     public static SqlExecutor getInstance() {
         if (instance == null) {
-            instance = new DestinationSqlExcecutor();
+            instance = new DestinationSqlExecutor();
         }
         return instance;
     }
@@ -39,7 +39,7 @@ public class DestinationSqlExcecutor extends SqlExecutor {
             pStmt.executeUpdate();
             connection.commit();
         } catch (SQLException ex) {
-            Logger.getLogger(DestinationSqlExcecutor.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DestinationSqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

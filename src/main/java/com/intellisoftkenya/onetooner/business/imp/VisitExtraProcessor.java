@@ -2,7 +2,7 @@ package com.intellisoftkenya.onetooner.business.imp;
 
 import com.intellisoftkenya.onetooner.Main;
 import com.intellisoftkenya.onetooner.business.api.ExtraProcessor;
-import com.intellisoftkenya.onetooner.dao.DestinationSqlExcecutor;
+import com.intellisoftkenya.onetooner.dao.DestinationSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SourceSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SqlExecutor;
 import com.intellisoftkenya.onetooner.data.OneToOne;
@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 public class VisitExtraProcessor implements ExtraProcessor {
 
     private final SqlExecutor sse = SourceSqlExecutor.getInstance();
-    private final SqlExecutor dse = DestinationSqlExcecutor.getInstance();
+    private final SqlExecutor dse = DestinationSqlExecutor.getInstance();
 
     @Override
     public void process(OneToOne oto) {
