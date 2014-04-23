@@ -15,7 +15,7 @@ public class Main {
     public static void main(String[] args) {
         try {
             new OneToOneMigrator().migrateOneToOnes();
-        } catch (SQLException ex) {
+        } catch (SQLException | RuntimeException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

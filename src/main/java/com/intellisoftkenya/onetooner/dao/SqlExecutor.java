@@ -22,7 +22,7 @@ public abstract class SqlExecutor {
     /**
      * Avails the connection associated with this class for use in ways not
      * provided here.
-     * 
+     *
      * @return the connection.
      */
     public Connection getConnection() {
@@ -31,9 +31,9 @@ public abstract class SqlExecutor {
 
     /**
      * Executes am SQL query.
-     * 
+     *
      * @param query the query to execute
-     * 
+     *
      * @return the ResultSet returned by the query
      */
     public ResultSet executeQuery(String query) {
@@ -50,11 +50,11 @@ public abstract class SqlExecutor {
     /**
      * Executes an insert or update statement. This method will call connection.commit()
      * if connection.getAutoCommit() returns false;
-     * 
+     *
      * @param update the statement to execute.
-     * @param generatedValue whether or not to return the auto-generated integer 
+     * @param generatedValue whether or not to return the auto-generated integer
      * value of an auto-increment database column
-     * 
+     *
      * @return the auto-generated integer value if specified, the number of affected
      * rows otherwise.
      */
@@ -83,9 +83,9 @@ public abstract class SqlExecutor {
 
     /**
      * Prepares an SQL statement.
-     * 
+     *
      * @param sql the statement to prepare
-     * 
+     *
      * @return the PreparedStatement
      */
     public PreparedStatement createPreparedStatement(String sql) {
@@ -98,12 +98,12 @@ public abstract class SqlExecutor {
     }
 
     /**
-     * Executes a batch of commands and then clears the batch thereafter.
-     * This method will call connection.commit() if connection.getAutoCommit() 
+     * Executes a batch of commands and then clears the batch thereafter. This
+     * method will call connection.commit() if connection.getAutoCommit()
      * returns false;
-     * 
+     *
      * @param pStmt The PreparedStatement containing the batch.
-     * 
+     *
      * @return an array of integers containing the number of rows affected by
      * each command.
      */
@@ -123,7 +123,7 @@ public abstract class SqlExecutor {
 
     /**
      * Closes an AutoCloseable resource.
-     * 
+     *
      * @param autoCloseable the AutoCloseable resource to close.
      */
     public void close(AutoCloseable autoCloseable) {
@@ -153,7 +153,7 @@ public abstract class SqlExecutor {
 
     /**
      * Creates a Statement.
-     * 
+     *
      * @return the Statement created
      */
     protected Statement createStatement() {

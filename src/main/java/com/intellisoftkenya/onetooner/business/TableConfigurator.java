@@ -2,6 +2,7 @@ package com.intellisoftkenya.onetooner.business;
 
 import com.intellisoftkenya.onetooner.business.imp.DrugCategoryValueTranslator;
 import com.intellisoftkenya.onetooner.business.imp.AccountTypeValueTranslator;
+import com.intellisoftkenya.onetooner.business.imp.IdentifierTypeExtraProcessor;
 import com.intellisoftkenya.onetooner.business.imp.VisitExtraProcessor;
 import com.intellisoftkenya.onetooner.data.Column;
 import com.intellisoftkenya.onetooner.data.OneToOne;
@@ -22,9 +23,6 @@ import java.util.Map;
  * @author gitahi
  */
 public class TableConfigurator {
-
-    public static final Integer ART_IDENTIFIER_TYPE_ID = 1;
-    public static final Integer OPIP_IDENTIFIER_TYPE_ID = 2;
 
     /**
      * Configure {@link OneToOne} tables for migration.
@@ -385,13 +383,14 @@ public class TableConfigurator {
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column("ArtID", Types.VARCHAR), new Column("identifier", Types.VARCHAR));
-        columnMappings.put(new Column(null, Types.INTEGER), new Column("identifier_type_id", Types.INTEGER, ART_IDENTIFIER_TYPE_ID));
+        columnMappings.put(new Column(null, Types.INTEGER), new Column("identifier_type_id", Types.INTEGER, Constants.ART_IDENTIFIER_TYPE_ID));
 
         Column patientId = new Column("patient_id", Types.INTEGER);
         patientId.setReference(new Reference("patient", "legacy_pk"));
         columnMappings.put(new Column("ArtID", Types.VARCHAR), patientId);
 
         oto.setColumnMappings(columnMappings);
+        oto.setPreProcessor(new IdentifierTypeExtraProcessor());
         return oto;
     }
 
@@ -401,7 +400,7 @@ public class TableConfigurator {
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column("OPIPNO", Types.VARCHAR), new Column("identifier", Types.VARCHAR));
-        columnMappings.put(new Column(null, Types.INTEGER), new Column("identifier_type_id", Types.INTEGER, OPIP_IDENTIFIER_TYPE_ID));
+        columnMappings.put(new Column(null, Types.INTEGER), new Column("identifier_type_id", Types.INTEGER, Constants.OPIP_IDENTIFIER_TYPE_ID));
 
         Column patientId = new Column("patient_id", Types.INTEGER);
         patientId.setReference(new Reference("patient", "legacy_pk"));
@@ -409,6 +408,7 @@ public class TableConfigurator {
 
         oto.setColumnMappings(columnMappings);
         oto.setQuery("SELECT ArtID, OPIPNO FROM tblARTPatientMasterInformation WHERE OPIPNO IS NOT NULL ORDER BY OPIPNO");
+        oto.setPreProcessor(new IdentifierTypeExtraProcessor());
         return oto;
     }
 

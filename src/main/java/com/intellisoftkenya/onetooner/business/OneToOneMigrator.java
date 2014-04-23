@@ -15,11 +15,9 @@ import java.sql.Types;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -65,10 +63,10 @@ public class OneToOneMigrator {
 
         if (oto.getPreProcessor() != null) {
             Logger.getLogger(Main.class.getName()).log(Level.INFO, "Pre processor ''{0}'' begins.",
-                    new Object[]{oto.getPostProcessor().getClass().getName()});
+                    new Object[]{oto.getPreProcessor().getClass().getName()});
             oto.getPreProcessor().process(oto);
             Logger.getLogger(Main.class.getName()).log(Level.INFO, "Pre processor ''{0}'' completes.",
-                    new Object[]{oto.getPostProcessor().getClass().getName()});
+                    new Object[]{oto.getPreProcessor().getClass().getName()});
         }
 
         Map.Entry<String, String> statements = createStatements(oto);
@@ -318,30 +316,4 @@ public class OneToOneMigrator {
         return value;
     }
 
-    /**
-     * Supplies values for audit columns.
-     */
-    private class AuditValues {
-
-        /**
-         * @return a random UUID.
-         */
-        private String uuid() {
-            return UUID.randomUUID().toString();
-        }
-
-        /**
-         * @return an imaginary user id of 1.
-         */
-        public int createdBy() {
-            return 1;
-        }
-
-        /**
-         * @return the time now.
-         */
-        private java.sql.Date createdOn() {
-            return new java.sql.Date(new Date().getTime());
-        }
-    }
 }
