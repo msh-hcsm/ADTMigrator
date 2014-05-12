@@ -17,7 +17,9 @@ public class SourceSqlExecutor extends SqlExecutor {
     private SourceSqlExecutor() {
         try {
             Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
-            connection = DriverManager.getConnection("jdbc:odbc:adt_dsn");
+            connection = DriverManager.getConnection("jdbc:odbc:Driver"
+                    + "={Microsoft Access Driver (*.mdb, *.accdb)}; "
+                    + "DBQ=C:\\ARVDatabase\\Datafiles\\ARVDispensingDatabase_be.mdb");
         } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(SourceSqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
         }
