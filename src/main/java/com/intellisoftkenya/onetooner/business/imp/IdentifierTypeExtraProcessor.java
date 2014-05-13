@@ -20,7 +20,6 @@ import java.util.logging.Logger;
  */
 public class IdentifierTypeExtraProcessor implements ExtraProcessor {
 
-    private final SqlExecutor sse = SourceSqlExecutor.getInstance();
     private final SqlExecutor dse = DestinationSqlExecutor.getInstance();
 
     @Override

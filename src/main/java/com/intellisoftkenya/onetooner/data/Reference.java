@@ -48,7 +48,7 @@ public class Reference {
      * the data for cells in this column. This is useful when the value cannot
      * be easily deduced and must be obtained by some non-trivial means.
      */
-    private ValueTranslator referenceProcessor;
+    private ValueTranslator valueTranslator;
 
     public Reference(String table) {
         this.table = table;
@@ -59,9 +59,9 @@ public class Reference {
         this.creatable = creatable;
     }
 
-    public Reference(String table, boolean creatable, ValueTranslator referenceProcessor) {
+    public Reference(String table, boolean creatable, ValueTranslator valueTranslator) {
         this(table, creatable);
-        this.referenceProcessor = referenceProcessor;
+        this.valueTranslator = valueTranslator;
     }
 
     public Reference(String table, String column) {
@@ -110,11 +110,11 @@ public class Reference {
         this.borrowable = borrowable;
     }
 
-    public ValueTranslator getReferenceProcessor() {
-        return referenceProcessor;
+    public ValueTranslator getValueTranslator() {
+        return valueTranslator;
     }
 
-    public void setReferenceProcessor(ValueTranslator referenceProcessor) {
-        this.referenceProcessor = referenceProcessor;
+    public void setValueTranslator(ValueTranslator valueTranslator) {
+        this.valueTranslator = valueTranslator;
     }
 }

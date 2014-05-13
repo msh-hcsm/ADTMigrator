@@ -271,8 +271,8 @@ public class OneToOneMigrator {
                 + ref.getColumn() + stringValue;
         Integer value = referenceCache.get(referenceKey);
         if (value == null) {
-            if (ref.getReferenceProcessor() != null) {
-                stringValue = ref.getReferenceProcessor().translate(stringValue);
+            if (ref.getValueTranslator() != null) {
+                stringValue = ref.getValueTranslator().translate(stringValue);
             }
             String select = "SELECT " + ref.getPk() + ", " + ref.getColumn()
                     + " FROM " + ref.getTable()
