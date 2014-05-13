@@ -4,6 +4,7 @@ import com.intellisoftkenya.onetooner.api.imp.translator.DrugCategoryValueTransl
 import com.intellisoftkenya.onetooner.api.imp.translator.AccountTypeValueTranslator;
 import com.intellisoftkenya.onetooner.api.imp.processor.IdentifierTypeCreator;
 import com.intellisoftkenya.onetooner.api.imp.processor.VisitUpdater;
+import com.intellisoftkenya.onetooner.api.imp.translator.AccountValueInferrer;
 import com.intellisoftkenya.onetooner.data.Column;
 import com.intellisoftkenya.onetooner.data.OneToOne;
 import com.intellisoftkenya.onetooner.data.Reference;
@@ -117,7 +118,7 @@ public class TableConfigurator {
                 + "UNION\n"
                 + "SELECT SCode, Source FROM tblSource WHERE Source IS NOT NULL\n"
                 + "UNION\n"
-                + "SELECT DCode, Destination FROM tblDestination WHERE Destination IS NOT NULL");
+                + "SELECT DCode, Destination FROM tblDestination WHERE Destination IS NOT NULL\n");
 
         return oto;
     }
@@ -537,9 +538,12 @@ public class TableConfigurator {
         transactionId.setReference(new Reference("transaction", "legacy_pk"));
         columnMappings.put(new Column("StockTranNo", Types.INTEGER), transactionId);
 
-        Column account_id = new Column("account_id", Types.INTEGER);
-        account_id.setReference(new Reference("account", "name"));
-        columnMappings.put(new Column("SourceorDestination", Types.VARCHAR), account_id);
+        Column accountId = new Column("account_id", Types.INTEGER);
+        Reference reference = new Reference("account", "name");
+        reference.setInferable(true);
+        reference.setValueInferrer(new AccountValueInferrer());
+        accountId.setReference(reference);
+        columnMappings.put(new Column("SourceorDestination", Types.VARCHAR), accountId);
 
         columnMappings.put(new Column("StockTranNo", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
         columnMappings.put(new Column("BatchNo", Types.VARCHAR), new Column("batch_no", Types.VARCHAR));

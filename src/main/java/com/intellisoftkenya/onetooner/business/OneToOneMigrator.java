@@ -267,6 +267,9 @@ public class OneToOneMigrator {
      * {@link Column} {@link Reference}.
      */
     private Integer setParameterFromReference(Reference ref, String stringValue) throws SQLException {
+        if ("ARV Bulk store".equalsIgnoreCase(stringValue)) {
+            System.out.println("");
+        }
         String referenceKey = ref.getTable() + "-"
                 + ref.getColumn() + stringValue;
         Integer value = referenceCache.get(referenceKey);
@@ -295,7 +298,9 @@ public class OneToOneMigrator {
                     borrowableValue = value;
                 }
             } else {
-                if (ref.isCreatable()) {
+                if (ref.isInferable() && ref.getValueInferrer()!= null) {
+                    value = ref.getValueInferrer().infer(stringValue);
+                } else if (ref.isCreatable()) {
                     String insert = "INSERT INTO "
                             + ref.getTable() + "(" + ref.getColumn() + ", uuid, created_by, created_on) "
                             + "VALUES('" + stringValue + "', '" + auditValues.uuid()
@@ -315,5 +320,4 @@ public class OneToOneMigrator {
         }
         return value;
     }
-
 }

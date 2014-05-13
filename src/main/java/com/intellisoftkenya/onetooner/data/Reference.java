@@ -1,5 +1,6 @@
 package com.intellisoftkenya.onetooner.data;
 
+import com.intellisoftkenya.onetooner.api.translator.ValueInferrer;
 import com.intellisoftkenya.onetooner.api.translator.ValueTranslator;
 
 /**
@@ -25,11 +26,24 @@ public class Reference {
     private String pk = "id";
 
     /**
+     * Whether or not an attempt should be made to infer the referenced value by
+     * some custom means if such a value cannot be established normally. Useful
+     * when a source column contains legacy data that is not part of an existing
+     * referential relationship.
+     *
+     * Defaults to false if not set. Setting this value to true automatically
+     * sets creatable and borrowable to false.
+     */
+    private boolean inferable = false;
+
+    /**
      * Whether or not a record should be created if the text from
      * {@link Reference#column} is missing. Records are created subject to the
      * table allowing insertion to column alone. If for instance there are other
      * non-nullable columns which do not have defaults, creation will fail.
-     * Defaults to false if not set.
+     *
+     * Defaults to false if not set. Setting this value to true automatically
+     * sets inferable and borrowable to false.
      */
     private boolean creatable = false;
 
@@ -39,16 +53,25 @@ public class Reference {
      * one-to-one Source database relationships have been converted into
      * one-to-many relationships. Records from the many side of the relationship
      * must be ordered by the referencing column for this to work correctly.
-     * Defaults to false if not set.
+     *
+     * Defaults to false if not set. Setting this value to true automatically
+     * sets inferable and creatable to false.
      */
     private boolean borrowable = false;
 
     /**
-     * A {@link ValueTranslator} to process a reference value to be used as
-     * the data for cells in this column. This is useful when the value cannot
-     * be easily deduced and must be obtained by some non-trivial means.
+     * A {@link ValueTranslator} to process a reference value to be used as the
+     * data for cells in this column. This is useful when the value cannot be
+     * easily deduced and must be obtained by some non-trivial means.
      */
     private ValueTranslator valueTranslator;
+
+    /**
+     * A {@link ValueInferrer} to process a reference value to be used as the
+     * data for cells in this column. This is useful when the source value has
+     * been obsoleted or otherwise can't be used as-is.
+     */
+    private ValueInferrer valueInferrer;
 
     public Reference(String table) {
         this.table = table;
@@ -94,12 +117,28 @@ public class Reference {
         this.pk = pk;
     }
 
+    public boolean isInferable() {
+        return inferable;
+    }
+
+    public void setInferable(boolean inferable) {
+        this.inferable = inferable;
+        if (inferable) {
+            creatable = false;
+            borrowable = false;
+        }
+    }
+
     public boolean isCreatable() {
         return creatable;
     }
 
     public void setCreatable(boolean creatable) {
         this.creatable = creatable;
+        if (creatable) {
+            inferable = false;
+            borrowable = false;
+        }
     }
 
     public boolean isBorrowable() {
@@ -108,6 +147,10 @@ public class Reference {
 
     public void setBorrowable(boolean borrowable) {
         this.borrowable = borrowable;
+        if (borrowable) {
+            inferable = false;
+            creatable = false;
+        }
     }
 
     public ValueTranslator getValueTranslator() {
@@ -116,5 +159,13 @@ public class Reference {
 
     public void setValueTranslator(ValueTranslator valueTranslator) {
         this.valueTranslator = valueTranslator;
+    }
+
+    public ValueInferrer getValueInferrer() {
+        return valueInferrer;
+    }
+
+    public void setValueInferrer(ValueInferrer valueInferrer) {
+        this.valueInferrer = valueInferrer;
     }
 }
