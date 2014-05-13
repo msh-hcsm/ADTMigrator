@@ -22,11 +22,15 @@ import java.util.logging.Logger;
  *
  * @author gitahi
  */
-public class VisitExtraProcessor implements ExtraProcessor {
+public class VisitUpdater implements ExtraProcessor {
 
     private final SqlExecutor sse = SourceSqlExecutor.getInstance();
     private final SqlExecutor dse = DestinationSqlExecutor.getInstance();
 
+    /**
+     * Retrospectively updates visit information that comes from the patient 
+     * record in the ADT database.
+     */
     @Override
     public void process(OneToOne oto) {
         try {
@@ -73,7 +77,7 @@ public class VisitExtraProcessor implements ExtraProcessor {
                     new Object[]{counter});
 
         } catch (SQLException ex) {
-            Logger.getLogger(VisitExtraProcessor.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(VisitUpdater.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

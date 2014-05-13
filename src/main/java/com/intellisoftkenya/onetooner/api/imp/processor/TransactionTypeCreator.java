@@ -4,7 +4,6 @@ import com.intellisoftkenya.onetooner.business.AuditValues;
 import com.intellisoftkenya.onetooner.business.Constants;
 import com.intellisoftkenya.onetooner.api.processor.ExtraProcessor;
 import com.intellisoftkenya.onetooner.dao.DestinationSqlExecutor;
-import com.intellisoftkenya.onetooner.dao.SourceSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SqlExecutor;
 import com.intellisoftkenya.onetooner.data.OneToOne;
 import java.sql.ResultSet;
@@ -18,10 +17,14 @@ import java.util.logging.Logger;
  *
  * @author gitahi
  */
-public class IdentifierTypeExtraProcessor implements ExtraProcessor {
+public class TransactionTypeCreator implements ExtraProcessor {
 
     private final SqlExecutor dse = DestinationSqlExecutor.getInstance();
 
+    /**
+     * Checks if the requisite identifier types exist and creates them if they
+     * don't.
+     */
     @Override
     public void process(OneToOne oto) {
         try {
@@ -57,7 +60,7 @@ public class IdentifierTypeExtraProcessor implements ExtraProcessor {
                         false);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(IdentifierTypeExtraProcessor.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TransactionTypeCreator.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

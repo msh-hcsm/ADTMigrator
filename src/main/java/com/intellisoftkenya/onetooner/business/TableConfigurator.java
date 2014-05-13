@@ -2,8 +2,8 @@ package com.intellisoftkenya.onetooner.business;
 
 import com.intellisoftkenya.onetooner.api.imp.translator.DrugCategoryValueTranslator;
 import com.intellisoftkenya.onetooner.api.imp.translator.AccountTypeValueTranslator;
-import com.intellisoftkenya.onetooner.api.imp.processor.IdentifierTypeExtraProcessor;
-import com.intellisoftkenya.onetooner.api.imp.processor.VisitExtraProcessor;
+import com.intellisoftkenya.onetooner.api.imp.processor.IdentifierTypeCreator;
+import com.intellisoftkenya.onetooner.api.imp.processor.VisitUpdater;
 import com.intellisoftkenya.onetooner.data.Column;
 import com.intellisoftkenya.onetooner.data.OneToOne;
 import com.intellisoftkenya.onetooner.data.Reference;
@@ -390,7 +390,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("ArtID", Types.VARCHAR), patientId);
 
         oto.setColumnMappings(columnMappings);
-        oto.setPreProcessor(new IdentifierTypeExtraProcessor());
+        oto.setPreProcessor(new IdentifierTypeCreator());
         return oto;
     }
 
@@ -408,7 +408,7 @@ public class TableConfigurator {
 
         oto.setColumnMappings(columnMappings);
         oto.setQuery("SELECT ArtID, OPIPNO FROM tblARTPatientMasterInformation WHERE OPIPNO IS NOT NULL ORDER BY OPIPNO");
-        oto.setPreProcessor(new IdentifierTypeExtraProcessor());
+        oto.setPreProcessor(new IdentifierTypeCreator());
         return oto;
     }
 
@@ -490,7 +490,7 @@ public class TableConfigurator {
                 + "DateofVisit, ARTID "
                 + "ORDER BY MIN(PatientTranNo)");
         oto.setColumnMappings(columnMappings);
-        oto.setPostProcessor(new VisitExtraProcessor());
+        oto.setPostProcessor(new VisitUpdater());
         return oto;
     }
 
