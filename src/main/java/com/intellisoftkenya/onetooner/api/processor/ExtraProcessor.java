@@ -1,4 +1,4 @@
-package com.intellisoftkenya.onetooner.business.api;
+package com.intellisoftkenya.onetooner.api.processor;
 
 import com.intellisoftkenya.onetooner.business.OneToOneMigrator;
 import com.intellisoftkenya.onetooner.data.OneToOne;

@@ -1,7 +1,7 @@
-package com.intellisoftkenya.onetooner.business.imp;
+package com.intellisoftkenya.onetooner.api.imp.processor;
 
 import com.intellisoftkenya.onetooner.Main;
-import com.intellisoftkenya.onetooner.business.api.ExtraProcessor;
+import com.intellisoftkenya.onetooner.api.processor.ExtraProcessor;
 import com.intellisoftkenya.onetooner.dao.DestinationSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SourceSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SqlExecutor;

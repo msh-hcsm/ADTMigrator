@@ -1,6 +1,6 @@
 package com.intellisoftkenya.onetooner.data;
 
-import com.intellisoftkenya.onetooner.business.api.ValueTranslator;
+import com.intellisoftkenya.onetooner.api.translator.ValueTranslator;
 
 /**
  * A reference to an Destination database table to which this column is a

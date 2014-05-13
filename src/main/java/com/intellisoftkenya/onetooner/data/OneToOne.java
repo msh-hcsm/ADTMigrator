@@ -1,7 +1,7 @@
 package com.intellisoftkenya.onetooner.data;
 
 import com.intellisoftkenya.onetooner.business.OneToOneMigrator;
-import com.intellisoftkenya.onetooner.business.api.ExtraProcessor;
+import com.intellisoftkenya.onetooner.api.processor.ExtraProcessor;
 import java.util.Map;
 
 /**

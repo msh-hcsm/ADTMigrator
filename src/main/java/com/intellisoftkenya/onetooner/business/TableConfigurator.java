@@ -1,9 +1,9 @@
 package com.intellisoftkenya.onetooner.business;
 
-import com.intellisoftkenya.onetooner.business.imp.DrugCategoryValueTranslator;
-import com.intellisoftkenya.onetooner.business.imp.AccountTypeValueTranslator;
-import com.intellisoftkenya.onetooner.business.imp.IdentifierTypeExtraProcessor;
-import com.intellisoftkenya.onetooner.business.imp.VisitExtraProcessor;
+import com.intellisoftkenya.onetooner.api.imp.translator.DrugCategoryValueTranslator;
+import com.intellisoftkenya.onetooner.api.imp.translator.AccountTypeValueTranslator;
+import com.intellisoftkenya.onetooner.api.imp.processor.IdentifierTypeExtraProcessor;
+import com.intellisoftkenya.onetooner.api.imp.processor.VisitExtraProcessor;
 import com.intellisoftkenya.onetooner.data.Column;
 import com.intellisoftkenya.onetooner.data.OneToOne;
 import com.intellisoftkenya.onetooner.data.Reference;

@@ -1,6 +1,6 @@
-package com.intellisoftkenya.onetooner.business.imp;
+package com.intellisoftkenya.onetooner.api.imp.translator;
 
-import com.intellisoftkenya.onetooner.business.api.ValueTranslator;
+import com.intellisoftkenya.onetooner.api.translator.ValueTranslator;
 
 /**
  * The {@link ValueTranslator} for drug categories.

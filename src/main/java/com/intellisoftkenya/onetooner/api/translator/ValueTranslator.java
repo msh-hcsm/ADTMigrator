@@ -1,4 +1,4 @@
-package com.intellisoftkenya.onetooner.business.api;
+package com.intellisoftkenya.onetooner.api.translator;
 
 /**
  * Defines a means by which a source value is translated to a single destination
