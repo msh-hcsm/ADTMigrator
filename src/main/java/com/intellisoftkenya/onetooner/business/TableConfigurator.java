@@ -30,44 +30,44 @@ public class TableConfigurator {
      * @return a list of the tables configured.
      */
     public List<OneToOne> configureTables() {
-        //basic look-up tables
         List<OneToOne> oneToOneTables = new ArrayList<>();
-        oneToOneTables.add(configurePatientStatus());
-        oneToOneTables.add(configureAccount());
-        oneToOneTables.add(configureDosage());
-        oneToOneTables.add(configureGenericName());
-        oneToOneTables.add(configureFacility());
-        oneToOneTables.add(configureIndication());
-        oneToOneTables.add(configureRegimenChangeReason());
-        oneToOneTables.add(configureRegimenType());
-        oneToOneTables.add(configureRegimen());
-        oneToOneTables.add(configureRegion());
-        oneToOneTables.add(configureDistrict());
-        oneToOneTables.add(configureSupportingOrganization());
-        oneToOneTables.add(configurePatientSource());
-        oneToOneTables.add(configureServiceType());
-        oneToOneTables.add(configureDispensingUnit());
-        oneToOneTables.add(configureVisitType());
-
-        //drugs
-        oneToOneTables.add(configureDrug());
-
-        //person data
-        oneToOneTables.add(configurePerson());
-        oneToOneTables.add(configurePersonAddress());
-
-        //patient data
-        oneToOneTables.add(configurePatient());
-        oneToOneTables.add(configurePatientIdentifier_ArtId());
-        oneToOneTables.add(configurePatientIdentifier_OpipdId());
-
-        //visits
-        oneToOneTables.add(configureVisit());
-
-        //transactions
-        oneToOneTables.add(configureTransaction());
+//        //basic look-up tables
+//        oneToOneTables.add(configurePatientStatus());
+//        oneToOneTables.add(configureAccount());
+//        oneToOneTables.add(configureDosage());
+//        oneToOneTables.add(configureGenericName());
+//        oneToOneTables.add(configureFacility());
+//        oneToOneTables.add(configureIndication());
+//        oneToOneTables.add(configureRegimenChangeReason());
+//        oneToOneTables.add(configureRegimenType());
+//        oneToOneTables.add(configureRegimen());
+//        oneToOneTables.add(configureRegion());
+//        oneToOneTables.add(configureDistrict());
+//        oneToOneTables.add(configureSupportingOrganization());
+//        oneToOneTables.add(configurePatientSource());
+//        oneToOneTables.add(configureServiceType());
+//        oneToOneTables.add(configureDispensingUnit());
+//        oneToOneTables.add(configureVisitType());
+//        oneToOneTables.add(configureTransactionType());
+//        //drugs
+//        oneToOneTables.add(configureDrug());
+//
+//        //person data
+//        oneToOneTables.add(configurePerson());
+//        oneToOneTables.add(configurePersonAddress());
+//
+//        //patient data
+//        oneToOneTables.add(configurePatient());
+//        oneToOneTables.add(configurePatientIdentifier_ArtId());
+//        oneToOneTables.add(configurePatientIdentifier_OpipdId());
+//
+//        //visits
+//        oneToOneTables.add(configureVisit());
+//
+//        //transactions
+//        oneToOneTables.add(configureTransaction());
         oneToOneTables.add(configureTransactionItem());
-        oneToOneTables.add(configureBatchTransactionItem());
+//        oneToOneTables.add(configureBatchTransactionItem());
 //        oneToOneTables.add(configurePatientTransactionItem());
         return oneToOneTables;
     }
@@ -267,6 +267,18 @@ public class TableConfigurator {
                 new Column("TransactionCode", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
         columnMappings.put(
                 new Column("VisitTranName", Types.VARCHAR), new Column("name", Types.VARCHAR));
+        oto.setColumnMappings(columnMappings);
+        return oto;
+    }
+
+    private OneToOne configureTransactionType() {
+        OneToOne oto = new OneToOne(new Table("tblStockTransactionType", Table.orderBy("TransactionType")),
+                new Table("transaction_type"));
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
+        columnMappings.put(
+                new Column("TransactionType", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
+        columnMappings.put(
+                new Column("TransactionDescription", Types.VARCHAR), new Column("name", Types.VARCHAR));
         oto.setColumnMappings(columnMappings);
         return oto;
     }
@@ -502,6 +514,10 @@ public class TableConfigurator {
         Column drugId = new Column("drug_id", Types.INTEGER);
         drugId.setReference(new Reference("drug", "name"));
         columnMappings.put(new Column("ARVDrugsID", Types.VARCHAR), drugId);
+                
+        Column transactionTypeId = new Column("transaction_type_id", Types.INTEGER);
+        transactionTypeId.setReference(new Reference("transaction_type", "legacy_pk"));
+        columnMappings.put(new Column("TransactionType", Types.VARCHAR), transactionTypeId);
 
         columnMappings.put(new Column("StockTranNo", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
         columnMappings.put(new Column("RefOrderNo", Types.INTEGER), new Column("reference_no", Types.VARCHAR));
