@@ -3,6 +3,7 @@ package com.intellisoftkenya.onetooner.business;
 import com.intellisoftkenya.onetooner.api.imp.translator.DrugCategoryValueTranslator;
 import com.intellisoftkenya.onetooner.api.imp.translator.AccountTypeValueTranslator;
 import com.intellisoftkenya.onetooner.api.imp.processor.IdentifierTypeCreator;
+import com.intellisoftkenya.onetooner.api.imp.processor.UnitsInOutUpdater;
 import com.intellisoftkenya.onetooner.api.imp.processor.VisitUpdater;
 import com.intellisoftkenya.onetooner.api.imp.translator.AccountValueInferrer;
 import com.intellisoftkenya.onetooner.data.Column;
@@ -66,7 +67,7 @@ public class TableConfigurator {
 //        oneToOneTables.add(configureVisit());
 //
 //        //transactions
-//        oneToOneTables.add(configureTransaction());
+        oneToOneTables.add(configureTransaction());
         oneToOneTables.add(configureTransactionItem());
 //        oneToOneTables.add(configureBatchTransactionItem());
 //        oneToOneTables.add(configurePatientTransactionItem());
@@ -551,6 +552,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("Qty", Types.VARCHAR), new Column("units_out", Types.DECIMAL));
 
         oto.setColumnMappings(columnMappings);
+        oto.setPostProcessor(new UnitsInOutUpdater());
         return oto;
     }
 

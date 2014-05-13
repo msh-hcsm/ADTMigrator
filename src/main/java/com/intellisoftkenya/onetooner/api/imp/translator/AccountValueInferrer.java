@@ -61,13 +61,7 @@ public class AccountValueInferrer implements ValueInferrer {
             } catch (SQLException ex) {
                 Logger.getLogger(AccountValueInferrer.class.getName()).log(Level.SEVERE, null, ex);
             } finally {
-                if (rs != null) {
-                    try {
-                        rs.close();
-                    } catch (SQLException ex) {
-                        Logger.getLogger(AccountValueInferrer.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
+                dse.close(rs);
             }
         }
         return ret;
