@@ -51,7 +51,7 @@ public class UnitsInOutUpdater implements ExtraProcessor {
             while (rs.next()) {
                 int txItemId = rs.getInt("id");
                 String txType = rs.getString("transaction_type");
-                if (purgeIn(txType)) {
+                if (nullifyUnitsIn(txType)) {
                     inRowCount++;
                     inPStmt.setInt(1, txItemId);
                     inPStmt.addBatch();
@@ -78,12 +78,11 @@ public class UnitsInOutUpdater implements ExtraProcessor {
         }
     }
 
-    private boolean purgeIn(String txType) {
-        return "Balance Forward".equalsIgnoreCase(txType)
-                || "Returns from (+)".equalsIgnoreCase(txType)
-                || "Ajustment (+)".equalsIgnoreCase(txType)
-                || "Dispensed to Patients".equalsIgnoreCase(txType)
-                || "Issued To".equalsIgnoreCase(txType)
-                || "Starting Stock/Physical Count".equalsIgnoreCase(txType);
+    private boolean nullifyUnitsIn(String txType) {
+        return "Received from".equalsIgnoreCase(txType)
+                || "Ajustment (-)".equalsIgnoreCase(txType)
+                || "Returns to (-)".equalsIgnoreCase(txType)
+                || "Losses(-)".equalsIgnoreCase(txType)
+                || "Expired(-)".equalsIgnoreCase(txType);
     }
 }
