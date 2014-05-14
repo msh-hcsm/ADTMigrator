@@ -5,9 +5,12 @@ import com.intellisoftkenya.onetooner.business.Constants;
 import com.intellisoftkenya.onetooner.dao.DestinationSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SqlExecutor;
 import com.intellisoftkenya.onetooner.data.OneToOne;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,6 +24,26 @@ public class TransactionVisitUpdater implements ExtraProcessor {
 
     @Override
     public void process(OneToOne oto) {
+        try {
+            Map<String, List<Integer>> visitMap = fillVisits();
+            Map<String, List<List<Integer>>> transactionMap = fillTransactions();
+
+            List<Map<Integer, List<Integer>>> visitTxMapList = new ArrayList<>();
+
+            for (String artId : transactionMap.keySet()) {
+                visitTxMapList.add(matchVisitsToTransactions(visitMap.get(artId),
+                        transactionMap.get(artId), artId));
+            }
+
+            updateTransactions(visitTxMapList);
+        } catch (SQLException ex) {
+            Logger.getLogger(TransactionVisitUpdater.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private Map<String, List<Integer>> fillVisits() throws SQLException {
+        Map<String, List<Integer>> visitMap = new LinkedHashMap<>();
+
         String selectVisit = "SELECT\n"
                 + "`visit`.`id`,\n"
                 + "`patient`.`legacy_pk` AS art_id\n"
@@ -28,11 +51,33 @@ public class TransactionVisitUpdater implements ExtraProcessor {
                 + "`visit`\n"
                 + "INNER JOIN\n"
                 + "`patient` ON `visit`.`patient_id` = `patient`.`id`\n"
-                + "ORDER BY `visit`.`id`";
+                + "ORDER BY art_id, `visit`.`id`";
+
+        ResultSet rs = dse.executeQuery(selectVisit);
+        while (rs.next()) {
+            String artId = rs.getString("art_id");
+            int visitId = rs.getInt("id");
+            List<Integer> visitIds = visitMap.get(artId);
+            if (visitIds == null) {
+                visitIds = new ArrayList<>();
+                visitIds.add(visitId);
+                visitMap.put(artId, visitIds);
+            } else {
+                visitIds.add(visitId);
+            }
+        }
+        dse.close(rs);
+
+        return visitMap;
+    }
+
+    private Map<String, List<List<Integer>>> fillTransactions() throws SQLException {
+        Map<String, List<List<Integer>>> transactionsMap = new LinkedHashMap<>();
+
         String selectTransaction = "SELECT\n"
                 + "`transaction`.`id`,\n"
-                + "SUBSTRING(`comments`, " 
-                + (Constants.DISPENSED_TO_ART_ID_PREFIX.length() + 1) 
+                + "SUBSTRING(`comments`, "
+                + (Constants.DISPENSED_TO_ART_ID_PREFIX.length() + 1)
                 + ") AS art_id\n"
                 + "FROM\n"
                 + "`transaction`\n"
@@ -41,76 +86,81 @@ public class TransactionVisitUpdater implements ExtraProcessor {
                 + "WHERE \n"
                 + "`comments` LIKE '" + Constants.DISPENSED_TO_ART_ID_PREFIX + "%'\n"
                 + "ORDER BY\n"
-                + "`transaction`.`id`;";
-        String updateTransaction = "UPDATE `transaction` SET `visit_id` = ? WHERE `transaction`.`id` = ?";
-        PreparedStatement pStmt = dse.createPreparedStatement(updateTransaction);
+                + "art_id, `transaction`.`id`";
 
-        ResultSet visitRs = null;
-        ResultSet transactionRs = null;
+        ResultSet rs = dse.executeQuery(selectTransaction);
+        while (rs.next()) {
+            String artId = rs.getString("art_id");
+            int txId = rs.getInt("id");
+            List<List<Integer>> transactionIdGroups = transactionsMap.get(artId);
+            if (transactionIdGroups == null) {
+                transactionIdGroups = new ArrayList<>();
 
-        try {
-            int rowCount = 0;
-            int visitCount = 1;
+                List<Integer> txIdGroup = new ArrayList<>();
+                txIdGroup.add(txId);
 
-            visitRs = dse.executeQuery(selectVisit);
-            transactionRs = dse.executeQuery(selectTransaction);
+                transactionIdGroups.add(txIdGroup);
 
-            visitRs.next();
-            while (transactionRs.next()) {
-                if (visitCount == 67) {
-                    System.out.println("Pause");
+                transactionsMap.put(artId, transactionIdGroups);
+            } else {
+                List<Integer> lastTxGroup = transactionIdGroups.get(transactionIdGroups.size() - 1);
+                int lastTxId = lastTxGroup.get(lastTxGroup.size() - 1);
+                if (lastTxId + 1 == txId) {
+                    lastTxGroup.add(txId);
+                } else {
+                    List<Integer> newTxGroup = new ArrayList<>();
+                    newTxGroup.add(txId);
+                    transactionIdGroups.add(newTxGroup);
                 }
-                int visitId = visitRs.getInt("id");
-                String visitArtId = visitRs.getString("art_id");
+            }
+        }
+        dse.close(rs);
 
-                int transactionId = transactionRs.getInt("id");
-                String transactionArtId = transactionRs.getString("art_id");
+        return transactionsMap;
+    }
 
-                int attempts = 0;
-                while (true) {
-                    if (attempts > 1) {
-                        System.out.println("Attempts > 1");
-                        break;
-                    } else {
-                        if (moveToNextVisit(visitArtId, transactionArtId)) {
-                            if (!visitRs.next()) {
-                                System.out.println("No more visit records");
-                                return;
-                            } else {
-                                attempts++;
-                                visitCount++;
-                                visitId = visitRs.getInt("id");
-                                visitArtId = visitRs.getString("art_id");
-                            }
-                        } else {
-                            rowCount++;
-                            System.out.println("Row Count: " + rowCount + " and Visit Count: " + visitCount);
-                            if (rowCount == 1000) {
-                                System.out.println("");
-                            }
-                            pStmt.setInt(1, visitId);
-                            pStmt.setInt(2, transactionId);
-                            pStmt.addBatch();
-                            if (rowCount != 0 && rowCount % SqlExecutor.TRANSACTION_BATCH_SIZE == 0) {
-                                dse.executeBatch(pStmt);
-                            }
-                            System.out.println("Transaction: " + transactionId + " belongs to Visit: " + visitId);
-                            break;
-                        }
+    private Map<Integer, List<Integer>> matchVisitsToTransactions(List<Integer> visitIds,
+            List<List<Integer>> transactionIdGroups, String artId) {
+        if (visitIds == null || visitIds.isEmpty()) {
+            Logger.getLogger(TransactionVisitUpdater.class.getName()).log(Level.WARNING, "Transactions for Patient with ART ID: ''{0}'' "
+                    + "could not be fuzzily be mapped to visits. No visits found.", new Object[]{artId});
+            return null;
+        }
+        if (transactionIdGroups == null || transactionIdGroups.isEmpty()) {
+            Logger.getLogger(TransactionVisitUpdater.class.getName()).log(Level.WARNING, "Visits for Patient with ART ID: ''{0}'' "
+                    + "could not be fuzzily be mapped to transactions. No transactions found.", new Object[]{artId});
+            return null;
+        }
+
+        int n = transactionIdGroups.size();
+        int m = visitIds.size();
+
+        Map<Integer, List<Integer>> visitTxMap = new LinkedHashMap<>();
+
+        Integer visitId = visitIds.get(0);
+        List<Integer> transactionIdGroup;
+
+        for (int i = 0; i < n; i++) {
+            transactionIdGroup = transactionIdGroups.get(i);
+            if (i <= (m - 1)) {
+                visitId = visitIds.get(i);
+                visitTxMap.put(visitId, transactionIdGroup);
+            } else {
+                visitTxMap.get(visitId).addAll(transactionIdGroup);
+            }
+        }
+        return visitTxMap;
+    }
+
+    private void updateTransactions(List<Map<Integer, List<Integer>>> visitTxMapList) {
+        for (Map<Integer, List<Integer>> map : visitTxMapList) {
+            if (map != null) {
+                for (Integer visitId : map.keySet()) {
+                    for (Integer txId : map.get(visitId)) {
+//                        System.out.println("Transaction: " + txId + " belongs to Visit: " + visitId);
                     }
                 }
             }
-            dse.executeBatch(pStmt);
-            pStmt.clearBatch();
-        } catch (SQLException ex) {
-            Logger.getLogger(TransactionVisitUpdater.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            dse.close(visitRs);
-            dse.close(transactionRs);
         }
-    }
-
-    private boolean moveToNextVisit(String visitArtId, String transactionArtId) {
-        return !visitArtId.equals(transactionArtId);
     }
 }
