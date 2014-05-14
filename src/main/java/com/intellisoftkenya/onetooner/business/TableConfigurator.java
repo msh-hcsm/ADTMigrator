@@ -3,6 +3,7 @@ package com.intellisoftkenya.onetooner.business;
 import com.intellisoftkenya.onetooner.api.imp.translator.DrugCategoryValueTranslator;
 import com.intellisoftkenya.onetooner.api.imp.translator.AccountTypeValueTranslator;
 import com.intellisoftkenya.onetooner.api.imp.processor.IdentifierTypeCreator;
+import com.intellisoftkenya.onetooner.api.imp.processor.TransactionVisitUpdater;
 import com.intellisoftkenya.onetooner.api.imp.processor.UnitsInOutUpdater;
 import com.intellisoftkenya.onetooner.api.imp.processor.VisitUpdater;
 import com.intellisoftkenya.onetooner.api.imp.translator.AccountValueInferrer;
@@ -67,7 +68,7 @@ public class TableConfigurator {
 //        oneToOneTables.add(configureVisit());
 //
 //        //transactions
-        oneToOneTables.add(configureTransaction());
+//        oneToOneTables.add(configureTransaction());
         oneToOneTables.add(configureTransactionItem());
 //        oneToOneTables.add(configureBatchTransactionItem());
 //        oneToOneTables.add(configurePatientTransactionItem());
@@ -404,7 +405,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("ArtID", Types.VARCHAR), patientId);
 
         oto.setColumnMappings(columnMappings);
-        oto.setPreProcessor(new IdentifierTypeCreator());
+        oto.addPreProcessor(new IdentifierTypeCreator());
         return oto;
     }
 
@@ -422,7 +423,7 @@ public class TableConfigurator {
 
         oto.setColumnMappings(columnMappings);
         oto.setQuery("SELECT ArtID, OPIPNO FROM tblARTPatientMasterInformation WHERE OPIPNO IS NOT NULL ORDER BY OPIPNO");
-        oto.setPreProcessor(new IdentifierTypeCreator());
+        oto.addPreProcessor(new IdentifierTypeCreator());
         return oto;
     }
 
@@ -504,7 +505,7 @@ public class TableConfigurator {
                 + "DateofVisit, ARTID "
                 + "ORDER BY MIN(PatientTranNo)");
         oto.setColumnMappings(columnMappings);
-        oto.setPostProcessor(new VisitUpdater());
+        oto.addPostProcessor(new VisitUpdater());
         return oto;
     }
 
@@ -513,20 +514,17 @@ public class TableConfigurator {
                 new Table("transaction"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
-        Column drugId = new Column("drug_id", Types.INTEGER);
-        drugId.setReference(new Reference("drug", "name"));
-        columnMappings.put(new Column("ARVDrugsID", Types.VARCHAR), drugId);
-                
         Column transactionTypeId = new Column("transaction_type_id", Types.INTEGER);
         transactionTypeId.setReference(new Reference("transaction_type", "legacy_pk"));
         columnMappings.put(new Column("TransactionType", Types.VARCHAR), transactionTypeId);
-
+        
         columnMappings.put(new Column("StockTranNo", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
         columnMappings.put(new Column("RefOrderNo", Types.INTEGER), new Column("reference_no", Types.VARCHAR));
         columnMappings.put(new Column("TranDate", Types.DATE), new Column("date", Types.DATE));
         columnMappings.put(new Column("Remarks", Types.VARCHAR), new Column("comments", Types.VARCHAR));
 
         oto.setColumnMappings(columnMappings);
+        oto.addPostProcessor(new TransactionVisitUpdater());
         return oto;
     }
 
@@ -534,6 +532,10 @@ public class TableConfigurator {
         OneToOne oto = new OneToOne(new Table("tblARVDrugStockTransactions", Table.orderBy("StockTranNo")),
                 new Table("transaction_item"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
+
+        Column drugId = new Column("drug_id", Types.INTEGER);
+        drugId.setReference(new Reference("drug", "name"));
+        columnMappings.put(new Column("ARVDrugsID", Types.VARCHAR), drugId);
 
         Column transactionId = new Column("transaction_id", Types.INTEGER);
         transactionId.setReference(new Reference("transaction", "legacy_pk"));
@@ -552,7 +554,8 @@ public class TableConfigurator {
         columnMappings.put(new Column("Qty", Types.VARCHAR), new Column("units_out", Types.DECIMAL));
 
         oto.setColumnMappings(columnMappings);
-        oto.setPostProcessor(new UnitsInOutUpdater());
+        oto.addPostProcessor(new TransactionVisitUpdater());
+        oto.addPostProcessor(new UnitsInOutUpdater());
         return oto;
     }
 
@@ -573,7 +576,7 @@ public class TableConfigurator {
         oto.setQuery("SELECT StockTranNo, Npacks, PackSize, Expirydate "
                 + "FROM tblARVDrugStockTransactions "
                 + "WHERE PackSize IS NOT NULL AND Npacks IS NOT NULL "
-                + "AND TransactionType <> 6");
+                + "AND TransactionType <> " + Constants.DISPENSED_TO_PATIENTS_TX_TYPE);
         oto.setColumnMappings(columnMappings);
         return oto;
     }
@@ -594,10 +597,6 @@ public class TableConfigurator {
         Column dosage = new Column("dosage_id", Types.INTEGER);
         dosage.setReference(new Reference("dosage", true));
         columnMappings.put(new Column("Dose", Types.VARCHAR), dosage);
-
-        Column visit = new Column("visit_id", Types.INTEGER);
-        visit.setReference(new Reference("visit", "legacy_pk", true));
-        columnMappings.put(new Column("PatientTranNo", Types.VARCHAR), visit);
 
         oto.setColumnMappings(columnMappings);
         return oto;
