@@ -2,6 +2,8 @@ package com.intellisoftkenya.onetooner.data;
 
 import com.intellisoftkenya.onetooner.business.OneToOneMigrator;
 import com.intellisoftkenya.onetooner.api.processor.ExtraProcessor;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,13 +46,13 @@ public class OneToOne {
      * The {@link ExtraProcessor} to execute before running
      * {@link OneToOneMigrator}
      */
-    private ExtraProcessor preProcessor;
+    private List<ExtraProcessor> preProcessors;
 
     /**
      * The {@link ExtraProcessor} to execute after running
      * {@link OneToOneMigrator}
      */
-    private ExtraProcessor postProcessor;
+    private List<ExtraProcessor> postProcessors;
 
     public OneToOne(Table sourceTable, Table destinationTable) {
         this.sourceTable = sourceTable;
@@ -91,19 +93,29 @@ public class OneToOne {
         return requireEmpty;
     }
 
-    public ExtraProcessor getPreProcessor() {
-        return preProcessor;
+    public void setRequireEmpty(boolean requireEmpty) {
+        this.requireEmpty = requireEmpty;
     }
 
-    public void setPreProcessor(ExtraProcessor preProcessor) {
-        this.preProcessor = preProcessor;
+    public List<ExtraProcessor> getPreProcessors() {
+        if (preProcessors == null) {
+            preProcessors = new ArrayList<>();
+        }
+        return preProcessors;
     }
 
-    public ExtraProcessor getPostProcessor() {
-        return postProcessor;
+    public void addPreProcessor(ExtraProcessor preProcessor) {
+        getPreProcessors().add(preProcessor);
     }
 
-    public void setPostProcessor(ExtraProcessor postProcessor) {
-        this.postProcessor = postProcessor;
+    public List<ExtraProcessor> getPostProcessors() {
+        if (postProcessors == null) {
+            postProcessors = new ArrayList<>();
+        }
+        return postProcessors;
+    }
+
+    public void addPostProcessor(ExtraProcessor postProcessor) {
+        getPostProcessors().add(postProcessor);
     }
 }
