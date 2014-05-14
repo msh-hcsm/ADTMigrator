@@ -1,6 +1,7 @@
 package com.intellisoftkenya.onetooner.business;
 
 import com.intellisoftkenya.onetooner.Main;
+import com.intellisoftkenya.onetooner.api.processor.ExtraProcessor;
 import com.intellisoftkenya.onetooner.dao.DestinationSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SourceSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SqlExecutor;
@@ -26,6 +27,17 @@ import java.util.logging.Logger;
  * @author gitahi
  */
 public class OneToOneMigrator {
+
+    /**
+     * When set to TRUE, this variable mutes actual data migration and just runs 
+     * the {@link ExtraProcessor}s on the {@link OneToOne} object passed to 
+     * {@link OneToOneMigrator#migrateOneToOne(com.intellisoftkenya.onetooner.data.OneToOne) }.
+     * 
+     * Useful when testing {@link ExtraProcessor}s against data that has already
+     * been migrated in order to save time. This variable artificially sets the
+     * {@link OneToOne#requireEmpty} variable to FALSE.
+     */
+    private final boolean muteMigration = true;
 
     private final SqlExecutor sse = SourceSqlExecutor.getInstance();
     private final SqlExecutor dse = DestinationSqlExecutor.getInstance();
@@ -55,18 +67,25 @@ public class OneToOneMigrator {
      * equivalent.
      */
     private void migrateOneToOne(OneToOne oto) throws SQLException {
+        
+        if (muteMigration) {
+            oto.setRequireEmpty(false);
+        }
+        
         if (oto.isRequireEmpty() && !destinationIsEmpty(oto.getDestinationTable())) {
             Logger.getLogger(Main.class.getName()).log(Level.WARNING, "Skipping migration for table ''{0}''. "
                     + "Destination table ''{1}'' is not empty.", new Object[]{oto.getSourceTable(), oto.getDestinationTable()});
             return;
         }
 
-        if (oto.getPreProcessor() != null) {
-            Logger.getLogger(Main.class.getName()).log(Level.INFO, "Pre processor ''{0}'' begins.",
-                    new Object[]{oto.getPreProcessor().getClass().getName()});
-            oto.getPreProcessor().process(oto);
-            Logger.getLogger(Main.class.getName()).log(Level.INFO, "Pre processor ''{0}'' completes.",
-                    new Object[]{oto.getPreProcessor().getClass().getName()});
+        if (!oto.getPreProcessors().isEmpty()) {
+            for (ExtraProcessor preProcessor : oto.getPreProcessors()) {
+                Logger.getLogger(Main.class.getName()).log(Level.INFO, "Pre processor ''{0}'' begins.",
+                        new Object[]{preProcessor.getClass().getName()});
+                preProcessor.process(oto);
+                Logger.getLogger(Main.class.getName()).log(Level.INFO, "Pre processor ''{0}'' completes.",
+                        new Object[]{preProcessor.getClass().getName()});
+            }
         }
 
         Map.Entry<String, String> statements = createStatements(oto);
@@ -85,7 +104,9 @@ public class OneToOneMigrator {
             int totalRowCount = 0;
             int batchNo = 1;
             int skippedRowCount = 0;
-            while (rs.next()) {
+
+            if (!muteMigration) {
+                        while (rs.next()) {
                 totalRowCount++;
                 boolean execute = false;
                 int index = 1;
@@ -113,13 +134,16 @@ public class OneToOneMigrator {
             }
             dse.executeBatch(pStmt);
             pStmt.clearBatch();
+            }
 
-            if (oto.getPostProcessor() != null) {
-                Logger.getLogger(Main.class.getName()).log(Level.INFO, "Post processor ''{0}' begins.",
-                        new Object[]{oto.getPostProcessor().getClass().getName()});
-                oto.getPostProcessor().process(oto);
-                Logger.getLogger(Main.class.getName()).log(Level.INFO, "Post processor ''{0}'' completes.",
-                        new Object[]{oto.getPostProcessor().getClass().getName()});
+            if (!oto.getPostProcessors().isEmpty()) {
+                for (ExtraProcessor postProcessor : oto.getPostProcessors()) {
+                    Logger.getLogger(Main.class.getName()).log(Level.INFO, "Post processor ''{0}' begins.",
+                            new Object[]{postProcessor.getClass().getName()});
+                    postProcessor.process(oto);
+                    Logger.getLogger(Main.class.getName()).log(Level.INFO, "Post processor ''{0}'' completes.",
+                            new Object[]{postProcessor.getClass().getName()});
+                }
             }
 
             if (skippedRowCount > 0) {
@@ -298,7 +322,7 @@ public class OneToOneMigrator {
                     borrowableValue = value;
                 }
             } else {
-                if (ref.isInferable() && ref.getValueInferrer()!= null) {
+                if (ref.isInferable() && ref.getValueInferrer() != null) {
                     value = ref.getValueInferrer().infer(stringValue);
                 } else if (ref.isCreatable()) {
                     String insert = "INSERT INTO "
