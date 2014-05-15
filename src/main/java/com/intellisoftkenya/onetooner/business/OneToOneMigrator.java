@@ -37,7 +37,7 @@ public class OneToOneMigrator {
      * been migrated in order to save time. This variable artificially sets the
      * {@link OneToOne#requireEmpty} variable to FALSE.
      */
-    private final boolean muteMigration = true;
+    private final boolean muteMigration = false;
 
     private final SqlExecutor sse = SourceSqlExecutor.getInstance();
     private final SqlExecutor dse = DestinationSqlExecutor.getInstance();

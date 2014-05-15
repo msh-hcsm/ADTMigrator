@@ -34,44 +34,44 @@ public class TableConfigurator {
      */
     public List<OneToOne> configureTables() {
         List<OneToOne> oneToOneTables = new ArrayList<>();
-//        //basic look-up tables
-//        oneToOneTables.add(configurePatientStatus());
-//        oneToOneTables.add(configureAccount());
-//        oneToOneTables.add(configureDosage());
-//        oneToOneTables.add(configureGenericName());
-//        oneToOneTables.add(configureFacility());
-//        oneToOneTables.add(configureIndication());
-//        oneToOneTables.add(configureRegimenChangeReason());
-//        oneToOneTables.add(configureRegimenType());
-//        oneToOneTables.add(configureRegimen());
-//        oneToOneTables.add(configureRegion());
-//        oneToOneTables.add(configureDistrict());
-//        oneToOneTables.add(configureSupportingOrganization());
-//        oneToOneTables.add(configurePatientSource());
-//        oneToOneTables.add(configureServiceType());
-//        oneToOneTables.add(configureDispensingUnit());
-//        oneToOneTables.add(configureVisitType());
-//        oneToOneTables.add(configureTransactionType());
-//        //drugs
-//        oneToOneTables.add(configureDrug());
-//
-//        //person data
-//        oneToOneTables.add(configurePerson());
-//        oneToOneTables.add(configurePersonAddress());
-//
-//        //patient data
-//        oneToOneTables.add(configurePatient());
-//        oneToOneTables.add(configurePatientIdentifier_ArtId());
-//        oneToOneTables.add(configurePatientIdentifier_OpipdId());
-//
-//        //visits
-//        oneToOneTables.add(configureVisit());
-//
-//        //transactions
-//        oneToOneTables.add(configureTransaction());
+        //look-up tables
+        oneToOneTables.add(configurePatientStatus());
+        oneToOneTables.add(configureAccount());
+        oneToOneTables.add(configureDosage());
+        oneToOneTables.add(configureGenericName());
+        oneToOneTables.add(configureFacility());
+        oneToOneTables.add(configureIndication());
+        oneToOneTables.add(configureRegimenChangeReason());
+        oneToOneTables.add(configureRegimenType());
+        oneToOneTables.add(configureRegimen());
+        oneToOneTables.add(configureRegion());
+        oneToOneTables.add(configureDistrict());
+        oneToOneTables.add(configureSupportingOrganization());
+        oneToOneTables.add(configurePatientSource());
+        oneToOneTables.add(configureServiceType());
+        oneToOneTables.add(configureDispensingUnit());
+        oneToOneTables.add(configureVisitType());
+        oneToOneTables.add(configureTransactionType());
+        //drugs
+        oneToOneTables.add(configureDrug());
+
+        //person data
+        oneToOneTables.add(configurePerson());
+        oneToOneTables.add(configurePersonAddress());
+
+        //patient data
+        oneToOneTables.add(configurePatient());
+        oneToOneTables.add(configurePatientIdentifier_ArtId());
+        oneToOneTables.add(configurePatientIdentifier_OpipdId());
+
+        //visits
+        oneToOneTables.add(configureVisit());
+
+        //transactions
+        oneToOneTables.add(configureTransaction());
         oneToOneTables.add(configureTransactionItem());
-//        oneToOneTables.add(configureBatchTransactionItem());
-//        oneToOneTables.add(configurePatientTransactionItem());
+        oneToOneTables.add(configureBatchTransactionItem());
+        oneToOneTables.add(configurePatientTransactionItem());
         return oneToOneTables;
     }
 
