@@ -68,13 +68,13 @@ public class UnitsInOutUpdater implements ExtraProcessor {
                 }
                 if (inRowCount != 0 && inRowCount % SqlExecutor.TRANSACTION_BATCH_SIZE == 0) {
                     dse.executeBatch(inPStmt);
-                    LOGGER.log(Level.FINE, "Commited transaction batch #{0}.",
+                    LOGGER.log(Level.FINER, "Commited transaction batch #{0}.",
                             new Object[]{inBatchNo});
                     inBatchNo++;
                 }
                 if (outRowCount != 0 && outRowCount % SqlExecutor.TRANSACTION_BATCH_SIZE == 0) {
                     dse.executeBatch(outPStmt);
-                    LOGGER.log(Level.FINE, "Commited transaction batch #{0}.",
+                    LOGGER.log(Level.FINER, "Commited transaction batch #{0}.",
                             new Object[]{outBatchNo});
                     outBatchNo++;
                 }

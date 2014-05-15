@@ -56,7 +56,7 @@ public class OneToOneMigrator {
      *
      * @throws java.sql.SQLException
      */
-    public void migrateOneToOnes() throws SQLException {
+    public void migrate() throws SQLException {
         for (OneToOne oneToOne : new TableConfigurator().configureTables()) {
             migrateOneToOne(oneToOne);
         }
@@ -83,10 +83,10 @@ public class OneToOneMigrator {
 
         if (!oto.getPreProcessors().isEmpty()) {
             for (ExtraProcessor preProcessor : oto.getPreProcessors()) {
-                LOGGER.log(Level.INFO, "Pre processor ''{0}'' begins.",
+                LOGGER.log(Level.FINE, "Pre processor ''{0}'' begins.",
                         new Object[]{preProcessor.getClass().getName()});
                 preProcessor.process(oto);
-                LOGGER.log(Level.INFO, "Pre processor ''{0}'' completes.",
+                LOGGER.log(Level.FINE, "Pre processor ''{0}'' completes.",
                         new Object[]{preProcessor.getClass().getName()});
             }
         }
@@ -95,10 +95,10 @@ public class OneToOneMigrator {
         String select = oto.getQuery() == null ? statements.getKey() : oto.getQuery();
         String insert = statements.getValue();
 
-        LOGGER.log(Level.INFO, "Beginning migration from ''{0}'' to ''{1}.",
+        LOGGER.log(Level.FINE, "Beginning migration from ''{0}'' to ''{1}.",
                 new Object[]{oto.getSourceTable(), oto.getDestinationTable()});
-        LOGGER.log(Level.FINE, "Using select statement: ''{0}''", select);
-        LOGGER.log(Level.FINE, "Using insert statement: ''{0}''", insert);
+        LOGGER.log(Level.FINEST, "Using select statement: ''{0}''", select);
+        LOGGER.log(Level.FINEST, "Using insert statement: ''{0}''", insert);
 
         ResultSet rs = sse.executeQuery(select);
         if (rs != null) {
@@ -130,7 +130,7 @@ public class OneToOneMigrator {
                     }
                     if (totalRowCount % SqlExecutor.TRANSACTION_BATCH_SIZE == 0) {
                         dse.executeBatch(pStmt);
-                        LOGGER.log(Level.FINE, "Commited transaction batch #{0}.",
+                        LOGGER.log(Level.FINER, "Commited transaction batch #{0}.",
                                 new Object[]{batchNo});
                         batchNo++;
                     }
@@ -141,10 +141,10 @@ public class OneToOneMigrator {
 
             if (!oto.getPostProcessors().isEmpty()) {
                 for (ExtraProcessor postProcessor : oto.getPostProcessors()) {
-                    LOGGER.log(Level.INFO, "Post processor ''{0}' begins.",
+                    LOGGER.log(Level.FINE, "Post processor ''{0}' begins.",
                             new Object[]{postProcessor.getClass().getName()});
                     postProcessor.process(oto);
-                    LOGGER.log(Level.INFO, "Post processor ''{0}'' completes.",
+                    LOGGER.log(Level.FINE, "Post processor ''{0}'' completes.",
                             new Object[]{postProcessor.getClass().getName()});
                 }
             }
@@ -312,7 +312,7 @@ public class OneToOneMigrator {
             }
             pStmt.setString(1, stringValue);
 
-            LOGGER.log(Level.FINER, "Setting parameter from reference using select statement: ''{0}''", select);
+            LOGGER.log(Level.FINEST, "Setting parameter from reference using select statement: ''{0}''", select);
 
             ResultSet rs = pStmt.executeQuery();
             if (rs.next()) {
@@ -330,7 +330,7 @@ public class OneToOneMigrator {
                             + "VALUES('" + stringValue + "', '" + auditValues.uuid()
                             + "'," + auditValues.createdBy() + " , '" + auditValues.createdOn() + "')";
 
-                    LOGGER.log(Level.FINER, "Adding parameter to reference using insert statement: ''{0}''", insert);
+                    LOGGER.log(Level.FINEST, "Adding parameter to reference using insert statement: ''{0}''", insert);
 
                     value = dse.executeUpdate(insert, true);
                     referenceCache.put(referenceKey, value);

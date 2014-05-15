@@ -172,7 +172,7 @@ public class TransactionVisitUpdater implements ExtraProcessor {
                         pStmt.addBatch();
                         if (rowCount != 0 && rowCount % SqlExecutor.TRANSACTION_BATCH_SIZE == 0) {
                             dse.executeBatch(pStmt);
-                            LOGGER.log(Level.FINE, "Commited transaction batch #{0}.",
+                            LOGGER.log(Level.FINER, "Commited transaction batch #{0}.",
                                     new Object[]{batchNo});
                             batchNo++;
                         }
