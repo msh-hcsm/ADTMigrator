@@ -5,6 +5,7 @@ import com.intellisoftkenya.onetooner.business.Constants;
 import com.intellisoftkenya.onetooner.dao.DestinationSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SqlExecutor;
 import com.intellisoftkenya.onetooner.data.OneToOne;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -152,15 +153,32 @@ public class TransactionVisitUpdater implements ExtraProcessor {
         return visitTxMap;
     }
 
-    private void updateTransactions(List<Map<Integer, List<Integer>>> visitTxMapList) {
+    private void updateTransactions(List<Map<Integer, List<Integer>>> visitTxMapList) throws SQLException {
+        String updateTransaction = "UPDATE `transaction` SET `visit_id` = ? WHERE `transaction`.`id` = ?";
+        PreparedStatement pStmt = dse.createPreparedStatement(updateTransaction);
+        int rowCount = 0;
+        int batchNo = 1;
+
         for (Map<Integer, List<Integer>> map : visitTxMapList) {
             if (map != null) {
                 for (Integer visitId : map.keySet()) {
                     for (Integer txId : map.get(visitId)) {
-//                        System.out.println("Transaction: " + txId + " belongs to Visit: " + visitId);
+                        rowCount++;
+                        pStmt.setInt(1, visitId);
+                        pStmt.setInt(2, txId);
+                        pStmt.addBatch();
+                        if (rowCount != 0 && rowCount % SqlExecutor.TRANSACTION_BATCH_SIZE == 0) {
+                            dse.executeBatch(pStmt);
+                            Logger.getLogger(TransactionVisitUpdater.class.getName()).log(Level.INFO, "Commited transaction batch #{0}.",
+                                    new Object[]{batchNo});
+                            batchNo++;
+                        }
                     }
                 }
             }
         }
+
+        dse.executeBatch(pStmt);
+        pStmt.clearBatch();
     }
 }
