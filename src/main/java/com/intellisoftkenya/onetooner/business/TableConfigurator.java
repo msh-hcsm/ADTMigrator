@@ -524,7 +524,6 @@ public class TableConfigurator {
         columnMappings.put(new Column("Remarks", Types.VARCHAR), new Column("comments", Types.VARCHAR));
 
         oto.setColumnMappings(columnMappings);
-        oto.addPostProcessor(new TransactionVisitUpdater());
         return oto;
     }
 
