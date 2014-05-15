@@ -17,7 +17,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Fuzzily associates patient transactions with visits. The logic is a bit 
+ * complicated and I haven't the time to document it now. Hopefully I'll not
+ * neglect to add it. In the meantime please just read the code.
+ * 
  * @author gitahi
  */
 public class TransactionVisitUpdater implements ExtraProcessor {
