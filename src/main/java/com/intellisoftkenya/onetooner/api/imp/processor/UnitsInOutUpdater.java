@@ -4,6 +4,7 @@ import com.intellisoftkenya.onetooner.api.processor.ExtraProcessor;
 import com.intellisoftkenya.onetooner.dao.DestinationSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SqlExecutor;
 import com.intellisoftkenya.onetooner.data.OneToOne;
+import com.intellisoftkenya.onetooner.log.LoggerFactory;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,6 +23,8 @@ import java.util.logging.Logger;
  * @author gitahi
  */
 public class UnitsInOutUpdater implements ExtraProcessor {
+
+    private static final Logger LOGGER = LoggerFactory.getLoger(UnitsInOutUpdater.class.getName());
 
     private final SqlExecutor dse = DestinationSqlExecutor.getInstance();
 
@@ -45,6 +48,9 @@ public class UnitsInOutUpdater implements ExtraProcessor {
         try {
             int inRowCount = 0;
             int outRowCount = 0;
+            
+            int inBatchNo = 1;
+            int outBatchNo = 1;
 
             rs = dse.executeQuery(select);
 
@@ -62,17 +68,29 @@ public class UnitsInOutUpdater implements ExtraProcessor {
                 }
                 if (inRowCount != 0 && inRowCount % SqlExecutor.TRANSACTION_BATCH_SIZE == 0) {
                     dse.executeBatch(inPStmt);
+                    LOGGER.log(Level.FINE, "Commited transaction batch #{0}.",
+                            new Object[]{inBatchNo});
+                    inBatchNo++;
                 }
                 if (outRowCount != 0 && outRowCount % SqlExecutor.TRANSACTION_BATCH_SIZE == 0) {
                     dse.executeBatch(outPStmt);
+                    LOGGER.log(Level.FINE, "Commited transaction batch #{0}.",
+                            new Object[]{outBatchNo});
+                    outBatchNo++;
                 }
             }
             dse.executeBatch(inPStmt);
             dse.executeBatch(outPStmt);
             inPStmt.clearBatch();
             outPStmt.clearBatch();
+
+            LOGGER.log(Level.INFO, "Nullified {0} transaction_item units_in values.",
+                    new Object[]{inRowCount});
+
+            LOGGER.log(Level.INFO, "Nullified {0} transaction_item units_out values.",
+                    new Object[]{outRowCount});
         } catch (SQLException ex) {
-            Logger.getLogger(UnitsInOutUpdater.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         } finally {
             dse.close(rs);
         }

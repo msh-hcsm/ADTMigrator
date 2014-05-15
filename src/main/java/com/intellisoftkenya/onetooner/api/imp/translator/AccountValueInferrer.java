@@ -3,6 +3,7 @@ package com.intellisoftkenya.onetooner.api.imp.translator;
 import com.intellisoftkenya.onetooner.api.translator.ValueInferrer;
 import com.intellisoftkenya.onetooner.dao.DestinationSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SqlExecutor;
+import com.intellisoftkenya.onetooner.log.LoggerFactory;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -18,6 +19,8 @@ import java.util.logging.Logger;
  */
 public class AccountValueInferrer implements ValueInferrer {
 
+    private static final Logger LOGGER = LoggerFactory.getLoger(AccountValueInferrer.class.getName());
+    
     private final SqlExecutor dse = DestinationSqlExecutor.getInstance();
     private final Map<String, Integer> cache = new HashMap<>();
 
@@ -59,7 +62,7 @@ public class AccountValueInferrer implements ValueInferrer {
                     cache.put(value, ret);
                 }
             } catch (SQLException ex) {
-                Logger.getLogger(AccountValueInferrer.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             } finally {
                 dse.close(rs);
             }

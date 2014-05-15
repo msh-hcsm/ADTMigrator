@@ -1,5 +1,6 @@
 package com.intellisoftkenya.onetooner.dao;
 
+import com.intellisoftkenya.onetooner.log.LoggerFactory;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,6 +16,8 @@ import java.util.logging.Logger;
  * @author gitahi
  */
 public abstract class SqlExecutor {
+    
+    private static final Logger LOGGER = LoggerFactory.getLoger(SqlExecutor.class.getName());
 
     public static final int TRANSACTION_BATCH_SIZE = 1000;
     protected Connection connection;
@@ -41,8 +44,9 @@ public abstract class SqlExecutor {
         try {
             Statement stmt = createStatement();
             rs = stmt.executeQuery(query);
+            LOGGER.log(Level.FINEST, query);
         } catch (SQLException ex) {
-            Logger.getLogger(SqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
         return rs;
     }
@@ -67,6 +71,7 @@ public abstract class SqlExecutor {
                 ret = stmt.executeUpdate(update);
             } else {
                 ret = stmt.executeUpdate(update, Statement.RETURN_GENERATED_KEYS);
+                LOGGER.log(Level.FINEST, update);
                 rs = stmt.getGeneratedKeys();
                 if (rs.next()) {
                     ret = rs.getInt(1);
@@ -76,7 +81,7 @@ public abstract class SqlExecutor {
                 connection.commit();
             }
         } catch (SQLException ex) {
-            Logger.getLogger(SqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
         return ret;
     }
@@ -92,7 +97,7 @@ public abstract class SqlExecutor {
         try {
             return connection.prepareStatement(sql);
         } catch (SQLException ex) {
-            Logger.getLogger(SqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
         return null;
     }
@@ -116,7 +121,7 @@ public abstract class SqlExecutor {
             }
             pStmt.clearBatch();
         } catch (SQLException ex) {
-            Logger.getLogger(SqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
         return ret;
     }
@@ -139,7 +144,7 @@ public abstract class SqlExecutor {
                 }
                 autoCloseable.close();
             } catch (Exception ex) {
-                Logger.getLogger(SqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -161,7 +166,7 @@ public abstract class SqlExecutor {
         try {
             stmt = connection.createStatement();
         } catch (SQLException ex) {
-            Logger.getLogger(SqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
         return stmt;
     }

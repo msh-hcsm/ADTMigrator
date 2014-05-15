@@ -5,6 +5,7 @@ import com.intellisoftkenya.onetooner.business.Constants;
 import com.intellisoftkenya.onetooner.dao.DestinationSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SqlExecutor;
 import com.intellisoftkenya.onetooner.data.OneToOne;
+import com.intellisoftkenya.onetooner.log.LoggerFactory;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,6 +21,8 @@ import java.util.logging.Logger;
  * @author gitahi
  */
 public class TransactionVisitUpdater implements ExtraProcessor {
+
+    private static final Logger LOGGER = LoggerFactory.getLoger(TransactionVisitUpdater.class.getName());
 
     private final SqlExecutor dse = DestinationSqlExecutor.getInstance();
 
@@ -38,7 +41,7 @@ public class TransactionVisitUpdater implements ExtraProcessor {
 
             updateTransactions(visitTxMapList);
         } catch (SQLException ex) {
-            Logger.getLogger(TransactionVisitUpdater.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -123,12 +126,12 @@ public class TransactionVisitUpdater implements ExtraProcessor {
     private Map<Integer, List<Integer>> matchVisitsToTransactions(List<Integer> visitIds,
             List<List<Integer>> transactionIdGroups, String artId) {
         if (visitIds == null || visitIds.isEmpty()) {
-            Logger.getLogger(TransactionVisitUpdater.class.getName()).log(Level.WARNING, "Transactions for Patient with ART ID: ''{0}'' "
+            LOGGER.log(Level.WARNING, "Transactions for Patient with ART ID: ''{0}'' "
                     + "could not be fuzzily be mapped to visits. No visits found.", new Object[]{artId});
             return null;
         }
         if (transactionIdGroups == null || transactionIdGroups.isEmpty()) {
-            Logger.getLogger(TransactionVisitUpdater.class.getName()).log(Level.WARNING, "Visits for Patient with ART ID: ''{0}'' "
+            LOGGER.log(Level.WARNING, "Visits for Patient with ART ID: ''{0}'' "
                     + "could not be fuzzily be mapped to transactions. No transactions found.", new Object[]{artId});
             return null;
         }
@@ -169,7 +172,7 @@ public class TransactionVisitUpdater implements ExtraProcessor {
                         pStmt.addBatch();
                         if (rowCount != 0 && rowCount % SqlExecutor.TRANSACTION_BATCH_SIZE == 0) {
                             dse.executeBatch(pStmt);
-                            Logger.getLogger(TransactionVisitUpdater.class.getName()).log(Level.INFO, "Commited transaction batch #{0}.",
+                            LOGGER.log(Level.FINE, "Commited transaction batch #{0}.",
                                     new Object[]{batchNo});
                             batchNo++;
                         }
@@ -180,5 +183,7 @@ public class TransactionVisitUpdater implements ExtraProcessor {
 
         dse.executeBatch(pStmt);
         pStmt.clearBatch();
+        LOGGER.log(Level.INFO, "Updated {0} transaction(s) with visit information.",
+                new Object[]{rowCount});
     }
 }

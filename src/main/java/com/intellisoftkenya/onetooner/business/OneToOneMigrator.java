@@ -1,6 +1,5 @@
 package com.intellisoftkenya.onetooner.business;
 
-import com.intellisoftkenya.onetooner.Main;
 import com.intellisoftkenya.onetooner.api.processor.ExtraProcessor;
 import com.intellisoftkenya.onetooner.dao.DestinationSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SourceSqlExecutor;
@@ -9,6 +8,7 @@ import com.intellisoftkenya.onetooner.data.Column;
 import com.intellisoftkenya.onetooner.data.OneToOne;
 import com.intellisoftkenya.onetooner.data.Reference;
 import com.intellisoftkenya.onetooner.data.Table;
+import com.intellisoftkenya.onetooner.log.LoggerFactory;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,11 +28,13 @@ import java.util.logging.Logger;
  */
 public class OneToOneMigrator {
 
+    private static final Logger LOGGER = LoggerFactory.getLoger(OneToOneMigrator.class.getName());
+    
     /**
-     * When set to TRUE, this variable mutes actual data migration and just runs 
+     * When set to TRUE, this variable mutes actual data migration and just runs
      * the {@link ExtraProcessor}s on the {@link OneToOne} object passed to 
      * {@link OneToOneMigrator#migrateOneToOne(com.intellisoftkenya.onetooner.data.OneToOne) }.
-     * 
+     *
      * Useful when testing {@link ExtraProcessor}s against data that has already
      * been migrated in order to save time. This variable artificially sets the
      * {@link OneToOne#requireEmpty} variable to FALSE.
@@ -67,23 +69,24 @@ public class OneToOneMigrator {
      * equivalent.
      */
     private void migrateOneToOne(OneToOne oto) throws SQLException {
-        
+
         if (muteMigration) {
             oto.setRequireEmpty(false);
+            LOGGER.log(Level.WARNING, "Migration is muted. Only ExtraProcessors will run.");
         }
-        
+
         if (oto.isRequireEmpty() && !destinationIsEmpty(oto.getDestinationTable())) {
-            Logger.getLogger(Main.class.getName()).log(Level.WARNING, "Skipping migration for table ''{0}''. "
+            LOGGER.log(Level.WARNING, "Skipping migration for table ''{0}''. "
                     + "Destination table ''{1}'' is not empty.", new Object[]{oto.getSourceTable(), oto.getDestinationTable()});
             return;
         }
 
         if (!oto.getPreProcessors().isEmpty()) {
             for (ExtraProcessor preProcessor : oto.getPreProcessors()) {
-                Logger.getLogger(Main.class.getName()).log(Level.INFO, "Pre processor ''{0}'' begins.",
+                LOGGER.log(Level.INFO, "Pre processor ''{0}'' begins.",
                         new Object[]{preProcessor.getClass().getName()});
                 preProcessor.process(oto);
-                Logger.getLogger(Main.class.getName()).log(Level.INFO, "Pre processor ''{0}'' completes.",
+                LOGGER.log(Level.INFO, "Pre processor ''{0}'' completes.",
                         new Object[]{preProcessor.getClass().getName()});
             }
         }
@@ -92,10 +95,10 @@ public class OneToOneMigrator {
         String select = oto.getQuery() == null ? statements.getKey() : oto.getQuery();
         String insert = statements.getValue();
 
-        Logger.getLogger(Main.class.getName()).log(Level.INFO, "Begining migration from ''{0}'' to ''{1}.",
+        LOGGER.log(Level.INFO, "Beginning migration from ''{0}'' to ''{1}.",
                 new Object[]{oto.getSourceTable(), oto.getDestinationTable()});
-        Logger.getLogger(Main.class.getName()).log(Level.INFO, "Using select statement: ''{0}''", select);
-        Logger.getLogger(Main.class.getName()).log(Level.INFO, "Using insert statement: ''{0}''", insert);
+        LOGGER.log(Level.FINE, "Using select statement: ''{0}''", select);
+        LOGGER.log(Level.FINE, "Using insert statement: ''{0}''", insert);
 
         ResultSet rs = sse.executeQuery(select);
         if (rs != null) {
@@ -106,51 +109,51 @@ public class OneToOneMigrator {
             int skippedRowCount = 0;
 
             if (!muteMigration) {
-                        while (rs.next()) {
-                totalRowCount++;
-                boolean execute = false;
-                int index = 1;
-                Map<String, Object> readValues = new HashMap<>();
+                while (rs.next()) {
+                    totalRowCount++;
+                    boolean execute = false;
+                    int index = 1;
+                    Map<String, Object> readValues = new HashMap<>();
 
-                for (Map.Entry<Column, Column> columnMapping
-                        : oto.getColumnMappings().entrySet()) {
-                    execute = setParameter(rs, pStmt, columnMapping, index, readValues) || execute;
-                    index++;
+                    for (Map.Entry<Column, Column> columnMapping
+                            : oto.getColumnMappings().entrySet()) {
+                        execute = setParameter(rs, pStmt, columnMapping, index, readValues) || execute;
+                        index++;
+                    }
+                    pStmt.setString(index++, auditValues.uuid());
+                    pStmt.setInt(index++, auditValues.createdBy());
+                    pStmt.setDate(index++, auditValues.createdOn());
+                    if (execute) {
+                        pStmt.addBatch();
+                    } else {
+                        skippedRowCount++;
+                    }
+                    if (totalRowCount % SqlExecutor.TRANSACTION_BATCH_SIZE == 0) {
+                        dse.executeBatch(pStmt);
+                        LOGGER.log(Level.FINE, "Commited transaction batch #{0}.",
+                                new Object[]{batchNo});
+                        batchNo++;
+                    }
                 }
-                pStmt.setString(index++, auditValues.uuid());
-                pStmt.setInt(index++, auditValues.createdBy());
-                pStmt.setDate(index++, auditValues.createdOn());
-                if (execute) {
-                    pStmt.addBatch();
-                } else {
-                    skippedRowCount++;
-                }
-                if (totalRowCount % SqlExecutor.TRANSACTION_BATCH_SIZE == 0) {
-                    dse.executeBatch(pStmt);
-                    Logger.getLogger(Main.class.getName()).log(Level.INFO, "Commited transaction batch #{0}.",
-                            new Object[]{batchNo});
-                    batchNo++;
-                }
-            }
-            dse.executeBatch(pStmt);
-            pStmt.clearBatch();
+                dse.executeBatch(pStmt);
+                pStmt.clearBatch();
             }
 
             if (!oto.getPostProcessors().isEmpty()) {
                 for (ExtraProcessor postProcessor : oto.getPostProcessors()) {
-                    Logger.getLogger(Main.class.getName()).log(Level.INFO, "Post processor ''{0}' begins.",
+                    LOGGER.log(Level.INFO, "Post processor ''{0}' begins.",
                             new Object[]{postProcessor.getClass().getName()});
                     postProcessor.process(oto);
-                    Logger.getLogger(Main.class.getName()).log(Level.INFO, "Post processor ''{0}'' completes.",
+                    LOGGER.log(Level.INFO, "Post processor ''{0}'' completes.",
                             new Object[]{postProcessor.getClass().getName()});
                 }
             }
 
             if (skippedRowCount > 0) {
-                Logger.getLogger(Main.class.getName()).log(Level.WARNING, "Skipped {0}. "
+                LOGGER.log(Level.WARNING, "Skipped {0} "
                         + "row(s) of the table ''{1}''. Nothing to migrate.", new Object[]{skippedRowCount, oto.getSourceTable()});
             }
-            Logger.getLogger(Main.class.getName()).log(Level.INFO, "Migrated {0} row(s) from ''{1}'' "
+            LOGGER.log(Level.INFO, "Migrated {0} row(s) from ''{1}'' "
                     + "to ''{2}''.", new Object[]{totalRowCount - skippedRowCount, oto.getSourceTable(), oto.getDestinationTable()});
         }
     }
@@ -291,9 +294,6 @@ public class OneToOneMigrator {
      * {@link Column} {@link Reference}.
      */
     private Integer setParameterFromReference(Reference ref, String stringValue) throws SQLException {
-        if ("ARV Bulk store".equalsIgnoreCase(stringValue)) {
-            System.out.println("");
-        }
         String referenceKey = ref.getTable() + "-"
                 + ref.getColumn() + stringValue;
         Integer value = referenceCache.get(referenceKey);
@@ -312,7 +312,7 @@ public class OneToOneMigrator {
             }
             pStmt.setString(1, stringValue);
 
-            Logger.getLogger(Main.class.getName()).log(Level.INFO, "Setting parameter from reference using select statement: ''{0}''", select);
+            LOGGER.log(Level.FINER, "Setting parameter from reference using select statement: ''{0}''", select);
 
             ResultSet rs = pStmt.executeQuery();
             if (rs.next()) {
@@ -330,7 +330,7 @@ public class OneToOneMigrator {
                             + "VALUES('" + stringValue + "', '" + auditValues.uuid()
                             + "'," + auditValues.createdBy() + " , '" + auditValues.createdOn() + "')";
 
-                    Logger.getLogger(Main.class.getName()).log(Level.INFO, "Adding parameter to reference using insert statement: ''{0}''", insert);
+                    LOGGER.log(Level.FINER, "Adding parameter to reference using insert statement: ''{0}''", insert);
 
                     value = dse.executeUpdate(insert, true);
                     referenceCache.put(referenceKey, value);

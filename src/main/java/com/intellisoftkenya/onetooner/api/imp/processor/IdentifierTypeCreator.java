@@ -6,18 +6,21 @@ import com.intellisoftkenya.onetooner.api.processor.ExtraProcessor;
 import com.intellisoftkenya.onetooner.dao.DestinationSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SqlExecutor;
 import com.intellisoftkenya.onetooner.data.OneToOne;
+import com.intellisoftkenya.onetooner.log.LoggerFactory;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * An {@link ExtraProcessor} for creating initial identifier types if they
- * do not exist.
+ * An {@link ExtraProcessor} for creating initial identifier types if they do
+ * not exist.
  *
  * @author gitahi
  */
 public class IdentifierTypeCreator implements ExtraProcessor {
+
+    private static final Logger LOGGER = LoggerFactory.getLoger(IdentifierTypeCreator.class.getName());
 
     private final SqlExecutor dse = DestinationSqlExecutor.getInstance();
 
@@ -50,6 +53,7 @@ public class IdentifierTypeCreator implements ExtraProcessor {
                         + auditValues.uuid() + "', " + auditValues.createdBy() + ", '"
                         + auditValues.createdOn() + "');",
                         false);
+                LOGGER.log(Level.INFO, "Created ART ID identifier type.");
             }
             if (addOpdIpdId) {
                 dse.executeUpdate("INSERT INTO identifier_type"
@@ -58,9 +62,10 @@ public class IdentifierTypeCreator implements ExtraProcessor {
                         + auditValues.uuid() + "', " + auditValues.createdBy() + ", '"
                         + auditValues.createdOn() + "');",
                         false);
+                LOGGER.log(Level.INFO, "Created OPDIPD ID identifier type.");
             }
         } catch (SQLException ex) {
-            Logger.getLogger(IdentifierTypeCreator.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 }

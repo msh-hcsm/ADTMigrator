@@ -1,11 +1,11 @@
 package com.intellisoftkenya.onetooner.api.imp.processor;
 
-import com.intellisoftkenya.onetooner.Main;
 import com.intellisoftkenya.onetooner.api.processor.ExtraProcessor;
 import com.intellisoftkenya.onetooner.dao.DestinationSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SourceSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SqlExecutor;
 import com.intellisoftkenya.onetooner.data.OneToOne;
+import com.intellisoftkenya.onetooner.log.LoggerFactory;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,6 +24,8 @@ import java.util.logging.Logger;
  */
 public class VisitUpdater implements ExtraProcessor {
 
+    private static final Logger LOGGER = LoggerFactory.getLoger(VisitUpdater.class.getName());
+    
     private final SqlExecutor sse = SourceSqlExecutor.getInstance();
     private final SqlExecutor dse = DestinationSqlExecutor.getInstance();
 
@@ -49,6 +51,8 @@ public class VisitUpdater implements ExtraProcessor {
             PreparedStatement pStmt = dse.createPreparedStatement(update);
 
             int counter = 0;
+            int batchNo = 1;
+            
             for (Map<String, Object> patient : patientMap.values()) {
                 counter++;
                 List<Map<String, Object>> visits = (List<Map<String, Object>>) patient.get("visits");
@@ -67,17 +71,18 @@ public class VisitUpdater implements ExtraProcessor {
                 }
                 if (counter % SqlExecutor.TRANSACTION_BATCH_SIZE == 0) {
                     dse.executeBatch(pStmt);
-                    Logger.getLogger(Main.class.getName()).log(Level.INFO, "Commited transaction batch #{0}.",
-                            new Object[]{counter});
+                    LOGGER.log(Level.FINE, "Commited transaction batch #{0}.",
+                            new Object[]{batchNo});
+                    batchNo++;
                 }
             }
             dse.executeBatch(pStmt);
 
-            Logger.getLogger(Main.class.getName()).log(Level.INFO, "Post processed {0} row(s)",
+            LOGGER.log(Level.INFO, "Updated {0} visit(s) with baseline information.",
                     new Object[]{counter});
 
         } catch (SQLException ex) {
-            Logger.getLogger(VisitUpdater.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 

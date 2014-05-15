@@ -1,5 +1,6 @@
 package com.intellisoftkenya.onetooner.dao;
 
+import com.intellisoftkenya.onetooner.log.LoggerFactory;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -12,6 +13,7 @@ import java.util.logging.Logger;
  */
 public class SourceSqlExecutor extends SqlExecutor {
 
+    private static final Logger LOGGER = LoggerFactory.getLoger(SourceSqlExecutor.class.getName());
     protected static SqlExecutor instance;
 
     private SourceSqlExecutor() {
@@ -21,7 +23,7 @@ public class SourceSqlExecutor extends SqlExecutor {
                     + "={Microsoft Access Driver (*.mdb, *.accdb)}; "
                     + "DBQ=C:\\ARVDatabase\\Datafiles\\ARVDispensingDatabase_be.mdb");
         } catch (ClassNotFoundException | SQLException ex) {
-            Logger.getLogger(SourceSqlExecutor.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 
