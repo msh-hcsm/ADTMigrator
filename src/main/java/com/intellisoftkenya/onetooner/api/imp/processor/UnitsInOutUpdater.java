@@ -29,7 +29,7 @@ public class UnitsInOutUpdater implements ExtraProcessor {
     private final SqlExecutor dse = DestinationSqlExecutor.getInstance();
 
     @Override
-    public void process(OneToOne oto) {
+    public void process(OneToOne oto) throws Exception {
         String select = "SELECT \n"
                 + "`transaction_item`.`id`, `transaction_type`.`name` AS transaction_type\n"
                 + "FROM \n"
@@ -89,8 +89,6 @@ public class UnitsInOutUpdater implements ExtraProcessor {
 
             LOGGER.log(Level.INFO, "Nullified {0} transaction_item units_out values.",
                     new Object[]{outRowCount});
-        } catch (SQLException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
         } finally {
             dse.close(rs);
         }

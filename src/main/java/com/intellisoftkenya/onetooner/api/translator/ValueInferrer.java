@@ -15,6 +15,8 @@ public interface ValueInferrer {
      * @param value the source value by which to make the inference.
      * 
      * @return the inferred value.
+     * 
+     * @throws java.lang.Exception if anything goes wrong when trying to infer.
      */
-    public Integer infer(String value);
+    public Integer infer(String value) throws Exception ;
 }

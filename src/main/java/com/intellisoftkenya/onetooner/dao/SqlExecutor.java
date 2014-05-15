@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  * @author gitahi
  */
 public abstract class SqlExecutor {
-    
+
     private static final Logger LOGGER = LoggerFactory.getLoger(SqlExecutor.class.getName());
 
     public static final int TRANSACTION_BATCH_SIZE = 1000;
@@ -39,49 +39,41 @@ public abstract class SqlExecutor {
      *
      * @return the ResultSet returned by the query
      */
-    public ResultSet executeQuery(String query) {
+    public ResultSet executeQuery(String query) throws SQLException {
         ResultSet rs = null;
-        try {
-            Statement stmt = createStatement();
-            rs = stmt.executeQuery(query);
-            LOGGER.log(Level.FINEST, query);
-        } catch (SQLException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-        }
+        Statement stmt = createStatement();
+        rs = stmt.executeQuery(query);
+        LOGGER.log(Level.FINEST, query);
         return rs;
     }
 
     /**
-     * Executes an insert or update statement. This method will call connection.commit()
-     * if connection.getAutoCommit() returns false;
+     * Executes an insert or update statement. This method will call
+     * connection.commit() if connection.getAutoCommit() returns false;
      *
      * @param update the statement to execute.
      * @param generatedValue whether or not to return the auto-generated integer
      * value of an auto-increment database column
      *
-     * @return the auto-generated integer value if specified, the number of affected
-     * rows otherwise.
+     * @return the auto-generated integer value if specified, the number of
+     * affected rows otherwise.
      */
-    public int executeUpdate(String update, boolean generatedValue) {
+    public int executeUpdate(String update, boolean generatedValue) throws SQLException {
         ResultSet rs;
         int ret = 0;
-        try {
-            Statement stmt = createStatement();
-            if (!generatedValue) {
-                ret = stmt.executeUpdate(update);
-            } else {
-                ret = stmt.executeUpdate(update, Statement.RETURN_GENERATED_KEYS);
-                LOGGER.log(Level.FINEST, update);
-                rs = stmt.getGeneratedKeys();
-                if (rs.next()) {
-                    ret = rs.getInt(1);
-                }
+        Statement stmt = createStatement();
+        if (!generatedValue) {
+            ret = stmt.executeUpdate(update);
+        } else {
+            ret = stmt.executeUpdate(update, Statement.RETURN_GENERATED_KEYS);
+            LOGGER.log(Level.FINEST, update);
+            rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                ret = rs.getInt(1);
             }
-            if (!connection.getAutoCommit()) {
-                connection.commit();
-            }
-        } catch (SQLException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+        }
+        if (!connection.getAutoCommit()) {
+            connection.commit();
         }
         return ret;
     }
@@ -92,14 +84,11 @@ public abstract class SqlExecutor {
      * @param sql the statement to prepare
      *
      * @return the PreparedStatement
+     *
+     * @throws java.sql.SQLException
      */
-    public PreparedStatement createPreparedStatement(String sql) {
-        try {
-            return connection.prepareStatement(sql);
-        } catch (SQLException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-        }
-        return null;
+    public PreparedStatement createPreparedStatement(String sql) throws SQLException {
+        return connection.prepareStatement(sql);
     }
 
     /**
@@ -112,17 +101,13 @@ public abstract class SqlExecutor {
      * @return an array of integers containing the number of rows affected by
      * each command.
      */
-    public int[] executeBatch(PreparedStatement pStmt) {
+    public int[] executeBatch(PreparedStatement pStmt) throws SQLException {
         int[] ret = null;
-        try {
-            ret = pStmt.executeBatch();
-            if (!connection.getAutoCommit()) {
-                connection.commit();
-            }
-            pStmt.clearBatch();
-        } catch (SQLException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+        ret = pStmt.executeBatch();
+        if (!connection.getAutoCommit()) {
+            connection.commit();
         }
+        pStmt.clearBatch();
         return ret;
     }
 
@@ -160,14 +145,11 @@ public abstract class SqlExecutor {
      * Creates a Statement.
      *
      * @return the Statement created
+     *
+     * @throws java.sql.SQLException
      */
-    protected Statement createStatement() {
-        Statement stmt = null;
-        try {
-            stmt = connection.createStatement();
-        } catch (SQLException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-        }
+    protected Statement createStatement() throws SQLException {
+        Statement stmt = connection.createStatement();
         return stmt;
     }
 }

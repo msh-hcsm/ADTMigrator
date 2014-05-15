@@ -34,14 +34,9 @@ public class DestinationSqlExecutor extends SqlExecutor {
         return instance;
     }
 
-    public void executeUpdate(String update) {
-        PreparedStatement pStmt;
-        try {
-            pStmt = connection.prepareStatement(update);
-            pStmt.executeUpdate();
-            connection.commit();
-        } catch (SQLException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-        }
+    public void executeUpdate(String update) throws SQLException {
+        PreparedStatement pStmt = connection.prepareStatement(update);
+        pStmt.executeUpdate();
+        connection.commit();
     }
 }

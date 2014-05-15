@@ -15,6 +15,8 @@ public interface ValueTranslator {
      * @param value the source value to be translated.
      * 
      * @return the result of the translation.
+     * 
+     * @throws java.lang.Exception if anything goes wrong during translation.
      */
-    public String translate(String value);
+    public String translate(String value) throws Exception;
 }

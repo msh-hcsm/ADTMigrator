@@ -56,7 +56,7 @@ public class OneToOneMigrator {
      *
      * @throws java.sql.SQLException
      */
-    public void migrate() throws SQLException {
+    public void migrate() throws Exception {
         for (OneToOne oneToOne : new TableConfigurator().configureTables()) {
             migrateOneToOne(oneToOne);
         }
@@ -68,7 +68,7 @@ public class OneToOneMigrator {
      * Migrate a given {@link OneToOne} table from the Source to its Destination
      * equivalent.
      */
-    private void migrateOneToOne(OneToOne oto) throws SQLException {
+    private void migrateOneToOne(OneToOne oto) throws SQLException, Exception {
 
         if (muteMigration) {
             oto.setRequireEmpty(false);
@@ -257,7 +257,7 @@ public class OneToOneMigrator {
      */
     private boolean setParameter(ResultSet rs, PreparedStatement pStmt,
             Map.Entry<Column, Column> columnMapping, int index, Map<String, Object> alreadyRead)
-            throws SQLException {
+            throws SQLException, Exception {
         String adtColumnName = columnMapping.getKey().getName();
         Object value;
         if (adtColumnName == null) {
@@ -293,7 +293,7 @@ public class OneToOneMigrator {
      * deduced or created based on a table relationship as described by a
      * {@link Column} {@link Reference}.
      */
-    private Integer setParameterFromReference(Reference ref, String stringValue) throws SQLException {
+    private Integer setParameterFromReference(Reference ref, String stringValue) throws SQLException, Exception {
         String referenceKey = ref.getTable() + "-"
                 + ref.getColumn() + stringValue;
         Integer value = referenceCache.get(referenceKey);

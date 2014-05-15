@@ -29,43 +29,39 @@ public class IdentifierTypeCreator implements ExtraProcessor {
      * don't.
      */
     @Override
-    public void process(OneToOne oto) {
-        try {
-            AuditValues auditValues = new AuditValues();
+    public void process(OneToOne oto) throws Exception {
+        AuditValues auditValues = new AuditValues();
 
-            boolean addArtId = true;
-            boolean addOpdIpdId = true;
-            ResultSet rs = dse.executeQuery("SELECT id FROM identifier_type WHERE id IN ("
-                    + Constants.ART_IDENTIFIER_TYPE_ID + ", "
-                    + Constants.OPIP_IDENTIFIER_TYPE_ID + ")");
-            while (rs.next()) {
-                if (rs.getInt("id") == Constants.ART_IDENTIFIER_TYPE_ID) {
-                    addArtId = false;
-                }
-                if (rs.getInt("id") == Constants.OPIP_IDENTIFIER_TYPE_ID) {
-                    addOpdIpdId = false;
-                }
+        boolean addArtId = true;
+        boolean addOpdIpdId = true;
+        ResultSet rs = dse.executeQuery("SELECT id FROM identifier_type WHERE id IN ("
+                + Constants.ART_IDENTIFIER_TYPE_ID + ", "
+                + Constants.OPIP_IDENTIFIER_TYPE_ID + ")");
+        while (rs.next()) {
+            if (rs.getInt("id") == Constants.ART_IDENTIFIER_TYPE_ID) {
+                addArtId = false;
             }
-            if (addArtId) {
-                dse.executeUpdate("INSERT INTO identifier_type"
-                        + "(id, `name`, `uuid`, created_by, created_on) "
-                        + "VALUES(" + Constants.ART_IDENTIFIER_TYPE_ID + ", 'ART ID', '"
-                        + auditValues.uuid() + "', " + auditValues.createdBy() + ", '"
-                        + auditValues.createdOn() + "');",
-                        false);
-                LOGGER.log(Level.INFO, "Created ART ID identifier type.");
+            if (rs.getInt("id") == Constants.OPIP_IDENTIFIER_TYPE_ID) {
+                addOpdIpdId = false;
             }
-            if (addOpdIpdId) {
-                dse.executeUpdate("INSERT INTO identifier_type"
-                        + "(id, `name`, `uuid`, created_by, created_on) "
-                        + "VALUES(" + Constants.OPIP_IDENTIFIER_TYPE_ID + ", 'OPDIPD ID', '"
-                        + auditValues.uuid() + "', " + auditValues.createdBy() + ", '"
-                        + auditValues.createdOn() + "');",
-                        false);
-                LOGGER.log(Level.INFO, "Created OPDIPD ID identifier type.");
-            }
-        } catch (SQLException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+        }
+        if (addArtId) {
+            dse.executeUpdate("INSERT INTO identifier_type"
+                    + "(id, `name`, `uuid`, created_by, created_on) "
+                    + "VALUES(" + Constants.ART_IDENTIFIER_TYPE_ID + ", 'ART ID', '"
+                    + auditValues.uuid() + "', " + auditValues.createdBy() + ", '"
+                    + auditValues.createdOn() + "');",
+                    false);
+            LOGGER.log(Level.INFO, "Created ART ID identifier type.");
+        }
+        if (addOpdIpdId) {
+            dse.executeUpdate("INSERT INTO identifier_type"
+                    + "(id, `name`, `uuid`, created_by, created_on) "
+                    + "VALUES(" + Constants.OPIP_IDENTIFIER_TYPE_ID + ", 'OPDIPD ID', '"
+                    + auditValues.uuid() + "', " + auditValues.createdBy() + ", '"
+                    + auditValues.createdOn() + "');",
+                    false);
+            LOGGER.log(Level.INFO, "Created OPDIPD ID identifier type.");
         }
     }
 }

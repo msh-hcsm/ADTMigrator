@@ -25,7 +25,7 @@ public class AccountValueInferrer implements ValueInferrer {
     private final Map<String, Integer> cache = new HashMap<>();
 
     @Override
-    public Integer infer(String value) {
+    public Integer infer(String value) throws Exception {
         if ("1".equalsIgnoreCase(value)) {
             return readId("KEMSA");
         } else if ("2".equalsIgnoreCase(value)) {
@@ -50,7 +50,7 @@ public class AccountValueInferrer implements ValueInferrer {
      * Read the FDT integer database id for this name value in the account
      * table.
      */
-    private Integer readId(String value) {
+    private Integer readId(String value) throws Exception {
         Integer ret = cache.get(value);
         if (ret == null) {
             String select = "SELECT id FROM account WHERE name = '" + value + "'";
@@ -61,8 +61,6 @@ public class AccountValueInferrer implements ValueInferrer {
                     ret = rs.getInt("id");
                     cache.put(value, ret);
                 }
-            } catch (SQLException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
             } finally {
                 dse.close(rs);
             }

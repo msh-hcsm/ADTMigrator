@@ -27,22 +27,18 @@ public class TransactionVisitUpdater implements ExtraProcessor {
     private final SqlExecutor dse = DestinationSqlExecutor.getInstance();
 
     @Override
-    public void process(OneToOne oto) {
-        try {
-            Map<String, List<Integer>> visitMap = fillVisits();
-            Map<String, List<List<Integer>>> transactionMap = fillTransactions();
+    public void process(OneToOne oto) throws Exception {
+        Map<String, List<Integer>> visitMap = fillVisits();
+        Map<String, List<List<Integer>>> transactionMap = fillTransactions();
 
-            List<Map<Integer, List<Integer>>> visitTxMapList = new ArrayList<>();
+        List<Map<Integer, List<Integer>>> visitTxMapList = new ArrayList<>();
 
-            for (String artId : transactionMap.keySet()) {
-                visitTxMapList.add(matchVisitsToTransactions(visitMap.get(artId),
-                        transactionMap.get(artId), artId));
-            }
-
-            updateTransactions(visitTxMapList);
-        } catch (SQLException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+        for (String artId : transactionMap.keySet()) {
+            visitTxMapList.add(matchVisitsToTransactions(visitMap.get(artId),
+                    transactionMap.get(artId), artId));
         }
+
+        updateTransactions(visitTxMapList);
     }
 
     private Map<String, List<Integer>> fillVisits() throws SQLException {

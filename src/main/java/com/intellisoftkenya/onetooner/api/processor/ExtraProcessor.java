@@ -21,6 +21,8 @@ public interface ExtraProcessor {
      * object.
      * 
      * @param oto the {@link OneToOne} object associated with this processor
+     * 
+     * @throws java.lang.Exception if anything goes wrong with the processing
      */
-    public void process(OneToOne oto);
+    public void process(OneToOne oto) throws Exception ;
 }

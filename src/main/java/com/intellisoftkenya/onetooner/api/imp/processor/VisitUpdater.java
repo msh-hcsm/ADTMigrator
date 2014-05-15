@@ -25,65 +25,60 @@ import java.util.logging.Logger;
 public class VisitUpdater implements ExtraProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLoger(VisitUpdater.class.getName());
-    
+
     private final SqlExecutor sse = SourceSqlExecutor.getInstance();
     private final SqlExecutor dse = DestinationSqlExecutor.getInstance();
 
     /**
-     * Retrospectively updates visit information that comes from the patient 
+     * Retrospectively updates visit information that comes from the patient
      * record in the ADT database.
      */
     @Override
-    public void process(OneToOne oto) {
-        try {
-            Map<String, Map<String, Object>> patientMap = loadPatients();
+    public void process(OneToOne oto) throws Exception {
+        Map<String, Map<String, Object>> patientMap = loadPatients();
 
-            String update = "UPDATE "
-                    + "visit "
-                    + "SET "
-                    + "pregnant = ?, "
-                    + "other_drugs = ?, "
-                    + "tb_confirmed = ?, "
-                    + "patient_status_id = ?, "
-                    + "next_appointment_date = ? "
-                    + "WHERE "
-                    + "legacy_pk = ?";
-            PreparedStatement pStmt = dse.createPreparedStatement(update);
+        String update = "UPDATE "
+                + "visit "
+                + "SET "
+                + "pregnant = ?, "
+                + "other_drugs = ?, "
+                + "tb_confirmed = ?, "
+                + "patient_status_id = ?, "
+                + "next_appointment_date = ? "
+                + "WHERE "
+                + "legacy_pk = ?";
+        PreparedStatement pStmt = dse.createPreparedStatement(update);
 
-            int counter = 0;
-            int batchNo = 1;
-            
-            for (Map<String, Object> patient : patientMap.values()) {
-                counter++;
-                List<Map<String, Object>> visits = (List<Map<String, Object>>) patient.get("visits");
-                if (visits != null) {
-                    Map<String, Object> lastVisit = visits.get(visits.size() - 1);
-                    if (lastVisit != null) {
-                        pStmt.setBoolean(1, (Boolean) patient.get("Pregnant"));
-                        pStmt.setString(2, (String) patient.get("OtherDrugs"));
-                        pStmt.setBoolean(3, (Boolean) patient.get("TB"));
-                        pStmt.setInt(4, 232);
-                        Date date = (Date) patient.get("DateOfNextAppointment");
-                        pStmt.setDate(5, date == null ? null : new java.sql.Date(date.getTime()));
-                        pStmt.setInt(6, (Integer) lastVisit.get("PatientTranNo"));
-                        pStmt.addBatch();
-                    }
-                }
-                if (counter % SqlExecutor.TRANSACTION_BATCH_SIZE == 0) {
-                    dse.executeBatch(pStmt);
-                    LOGGER.log(Level.FINER, "Commited transaction batch #{0}.",
-                            new Object[]{batchNo});
-                    batchNo++;
+        int counter = 0;
+        int batchNo = 1;
+
+        for (Map<String, Object> patient : patientMap.values()) {
+            counter++;
+            List<Map<String, Object>> visits = (List<Map<String, Object>>) patient.get("visits");
+            if (visits != null) {
+                Map<String, Object> lastVisit = visits.get(visits.size() - 1);
+                if (lastVisit != null) {
+                    pStmt.setBoolean(1, (Boolean) patient.get("Pregnant"));
+                    pStmt.setString(2, (String) patient.get("OtherDrugs"));
+                    pStmt.setBoolean(3, (Boolean) patient.get("TB"));
+                    pStmt.setInt(4, 232);
+                    Date date = (Date) patient.get("DateOfNextAppointment");
+                    pStmt.setDate(5, date == null ? null : new java.sql.Date(date.getTime()));
+                    pStmt.setInt(6, (Integer) lastVisit.get("PatientTranNo"));
+                    pStmt.addBatch();
                 }
             }
-            dse.executeBatch(pStmt);
-
-            LOGGER.log(Level.INFO, "Updated {0} visit(s) with baseline information.",
-                    new Object[]{counter});
-
-        } catch (SQLException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            if (counter % SqlExecutor.TRANSACTION_BATCH_SIZE == 0) {
+                dse.executeBatch(pStmt);
+                LOGGER.log(Level.FINER, "Commited transaction batch #{0}.",
+                        new Object[]{batchNo});
+                batchNo++;
+            }
         }
+        dse.executeBatch(pStmt);
+
+        LOGGER.log(Level.INFO, "Updated {0} visit(s) with baseline information.",
+                new Object[]{counter});
     }
 
     private Map<String, Map<String, Object>> loadPatients() throws SQLException {
