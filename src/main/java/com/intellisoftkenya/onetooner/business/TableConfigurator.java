@@ -34,44 +34,45 @@ public class TableConfigurator {
      */
     public List<OneToOne> configureTables() {
         List<OneToOne> oneToOneTables = new ArrayList<>();
-        //look-up tables
-        oneToOneTables.add(configurePatientStatus());
-        oneToOneTables.add(configureAccount());
-        oneToOneTables.add(configureDosage());
-        oneToOneTables.add(configureGenericName());
-        oneToOneTables.add(configureFacility());
-        oneToOneTables.add(configureIndication());
-        oneToOneTables.add(configureRegimenChangeReason());
-        oneToOneTables.add(configureRegimenType());
-        oneToOneTables.add(configureRegimen());
-        oneToOneTables.add(configureRegion());
-        oneToOneTables.add(configureDistrict());
-        oneToOneTables.add(configureSupportingOrganization());
-        oneToOneTables.add(configurePatientSource());
-        oneToOneTables.add(configureServiceType());
-        oneToOneTables.add(configureDispensingUnit());
-        oneToOneTables.add(configureVisitType());
-        oneToOneTables.add(configureTransactionType());
-        //drugs
-        oneToOneTables.add(configureDrug());
-
-        //person data
-        oneToOneTables.add(configurePerson());
-        oneToOneTables.add(configurePersonAddress());
-
-        //patient data
-        oneToOneTables.add(configurePatient());
-        oneToOneTables.add(configurePatientIdentifier_ArtId());
-        oneToOneTables.add(configurePatientIdentifier_OpipdId());
-
-        //visits
-        oneToOneTables.add(configureVisit());
-
-        //transactions
-        oneToOneTables.add(configureTransaction());
-        oneToOneTables.add(configureTransactionItem());
-        oneToOneTables.add(configureBatchTransactionItem());
-        oneToOneTables.add(configurePatientTransactionItem());
+//        //look-up tables
+//        oneToOneTables.add(configurePatientStatus());
+//        oneToOneTables.add(configureAccount());
+//        oneToOneTables.add(configureDosage());
+//        oneToOneTables.add(configureGenericName());
+//        oneToOneTables.add(configureFacility());
+//        oneToOneTables.add(configureIndication());
+//        oneToOneTables.add(configureRegimenChangeReason());
+//        oneToOneTables.add(configureRegimenType());
+//        oneToOneTables.add(configureRegimen());
+//        oneToOneTables.add(configureRegion());
+//        oneToOneTables.add(configureDistrict());
+//        oneToOneTables.add(configureSupportingOrganization());
+//        oneToOneTables.add(configurePatientSource());
+//        oneToOneTables.add(configureServiceType());
+//        oneToOneTables.add(configureDispensingUnit());
+//        oneToOneTables.add(configureVisitType());
+//        oneToOneTables.add(configureTransactionType());
+//        //drugs
+//        oneToOneTables.add(configureDrug());
+//
+//        //person data
+//        oneToOneTables.add(configurePerson());
+//        oneToOneTables.add(configurePersonAddress());
+//
+//        //patient data
+//        oneToOneTables.add(configurePatient());
+//        oneToOneTables.add(configurePatientIdentifier_ArtId());
+//        oneToOneTables.add(configurePatientIdentifier_OpipdId());
+//
+//        //visits
+//        oneToOneTables.add(configureVisit());
+//
+//        //transactions
+        oneToOneTables.add(configureTransaction_Stock());
+        oneToOneTables.add(configureTransaction_Patient());
+//        oneToOneTables.add(configureTransactionItem());
+//        oneToOneTables.add(configureBatchTransactionItem());
+//        oneToOneTables.add(configurePatientTransactionItem());
         return oneToOneTables;
     }
 
@@ -394,7 +395,7 @@ public class TableConfigurator {
 
     private OneToOne configurePatientIdentifier_ArtId() {
         OneToOne oto = new OneToOne(new Table("tblARTPatientMasterInformation", Table.orderBy("ArtID")),
-                new Table("patient_identifier"), false);
+                new Table("patient_identifier"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column("ArtID", Types.VARCHAR), new Column("identifier", Types.VARCHAR));
@@ -509,7 +510,7 @@ public class TableConfigurator {
         return oto;
     }
 
-    private OneToOne configureTransaction() {
+    private OneToOne configureTransaction_Stock() {
         OneToOne oto = new OneToOne(new Table("tblARVDrugStockTransactions", Table.orderBy("StockTranNo")),
                 new Table("transaction"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
@@ -517,12 +518,45 @@ public class TableConfigurator {
         Column transactionTypeId = new Column("transaction_type_id", Types.INTEGER);
         transactionTypeId.setReference(new Reference("transaction_type", "legacy_pk"));
         columnMappings.put(new Column("TransactionType", Types.VARCHAR), transactionTypeId);
-        
+
         columnMappings.put(new Column("StockTranNo", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
         columnMappings.put(new Column("RefOrderNo", Types.INTEGER), new Column("reference_no", Types.VARCHAR));
         columnMappings.put(new Column("TranDate", Types.DATE), new Column("date", Types.DATE));
         columnMappings.put(new Column("Remarks", Types.VARCHAR), new Column("comments", Types.VARCHAR));
 
+        oto.setQuery("SELECT StockTranNo, TransactionType, RefOrderNo, TranDate, Remarks FROM tblARVDrugStockTransactions\n"
+                + "WHERE Remarks NOT LIKE 'Dispensed to Patient No: %'\n"
+                + "OR Remarks IS NULL\n"
+                + "ORDER BY StockTranNo ASC");
+        oto.setColumnMappings(columnMappings);
+        return oto;
+    }
+
+    private OneToOne configureTransaction_Patient() {
+        OneToOne oto = new OneToOne(new Table("tblARTPatientTransactions", Table.orderBy("MIN(PatientTranNo)")),
+                new Table("transaction"), false);
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
+
+        columnMappings.put(new Column("TransactionType", Types.VARCHAR), new Column("transaction_type_id", Types.INTEGER, 192));
+        columnMappings.put(new Column("PatientTranNo_", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
+
+        Column visitId = new Column("visit_id", Types.INTEGER);
+        visitId.setReference(new Reference("visit", "legacy_pk"));
+        columnMappings.put(new Column("PatientTranNo_", Types.INTEGER), visitId);
+
+        columnMappings.put(new Column("DateofVisit", Types.DATE), new Column("date", Types.DATE));
+        columnMappings.put(new Column("Comment_", Types.VARCHAR), new Column("comments", Types.VARCHAR));
+
+        oto.setQuery("SELECT "
+                + "MIN(PatientTranNo) AS PatientTranNo_, "
+                + "DateofVisit, "
+                + "MIN(Comment) AS Comment_,"
+                + "ARTID "
+                + "FROM "
+                + "tblARTPatientTransactions "
+                + "GROUP BY "
+                + "DateofVisit, ARTID "
+                + "ORDER BY MIN(PatientTranNo)");
         oto.setColumnMappings(columnMappings);
         return oto;
     }
