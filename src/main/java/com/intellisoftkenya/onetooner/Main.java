@@ -18,7 +18,7 @@ public class Main {
         try {
             new OneToOneMigrator().migrate();
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Migration aborted! See logs for details.", ex);
         }
     }
 }

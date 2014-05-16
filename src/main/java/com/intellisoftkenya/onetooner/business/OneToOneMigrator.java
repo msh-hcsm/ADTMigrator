@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 public class OneToOneMigrator {
 
     private static final Logger LOGGER = LoggerFactory.getLoger(OneToOneMigrator.class.getName());
-    
+
     /**
      * When set to TRUE, this variable mutes actual data migration and just runs
      * the {@link ExtraProcessor}s on the {@link OneToOne} object passed to 
@@ -57,11 +57,15 @@ public class OneToOneMigrator {
      * @throws java.sql.SQLException
      */
     public void migrate() throws Exception {
+        LOGGER.log(Level.INFO, "Migration started.");
+        
         for (OneToOne oneToOne : new TableConfigurator().configureTables()) {
             migrateOneToOne(oneToOne);
         }
         sse.close();
         dse.close();
+        
+        LOGGER.log(Level.INFO, "Migration successfully completed!");
     }
 
     /**
@@ -76,7 +80,7 @@ public class OneToOneMigrator {
         }
 
         if (oto.isRequireEmpty() && !destinationIsEmpty(oto.getDestinationTable())) {
-            LOGGER.log(Level.WARNING, "Skipping migration for table ''{0}''. "
+            LOGGER.log(Level.WARNING, "Skipped migration for table ''{0}''. "
                     + "Destination table ''{1}'' is not empty.", new Object[]{oto.getSourceTable(), oto.getDestinationTable()});
             return;
         }
