@@ -41,6 +41,12 @@ public class OneToOneMigrator {
      */
     private final boolean muteMigration = false;
 
+    /**
+     * Causes deletion of all data in a destination table if migration into it
+     * fails for any reason.
+     */
+    private final boolean deleteOnFailure = true;
+
     private final SqlExecutor sse = SourceSqlExecutor.getInstance();
     private final SqlExecutor dse = DestinationSqlExecutor.getInstance();
 
@@ -57,19 +63,38 @@ public class OneToOneMigrator {
      * @throws java.sql.SQLException
      */
     public void migrate() throws Exception {
-        try {
-            LOGGER.log(Level.INFO, "Process started.");
+        LOGGER.log(Level.INFO, "Process started.");
 
-            for (OneToOne oneToOne : new TableConfigurator().configureTables()) {
+        for (OneToOne oneToOne : new TableConfigurator().configureTables()) {
+            try {
                 migrateOneToOne(oneToOne);
+            } catch (Exception ex) {
+                String source = oneToOne.getSourceTable().getName();
+                String destination = oneToOne.getDestinationTable().getName();
+                LOGGER.log(Level.SEVERE, "An error occured while migrating data from ''{0}'' to ''{1}''.",
+                        new Object[]{source, destination});
+                if (deleteOnFailure) {
+                    LOGGER.log(Level.INFO, "Attempting to delete any data there may be in ''{0}''.",
+                            new Object[]{destination});
+                    try {
+                        int affected = deleteOneToOne(oneToOne);
+                        LOGGER.log(Level.INFO, "Deleted {0} records from ''{1}''. Fix the errors and re-run the process.",
+                                new Object[]{affected, destination});
+                    } catch (SQLException sex) {
+                        LOGGER.log(Level.INFO, "Deleting from from ''{0}'' failed. Manually delete records "
+                                + "from ''{0}''. fix the errors and re-run the process.",
+                                new Object[]{destination});
+                        throw sex;
+                    }
+                }
+                throw new MigrationException("Process aborted! See logs for details.",
+                        oneToOne, ex);
             }
-            sse.close();
-            dse.close();
-
-            LOGGER.log(Level.INFO, "Process successfully completed!");
-        } catch (Exception ex) {
-            throw new Exception("Migration aborted! See logs for details.", ex);
         }
+        sse.close();
+        dse.close();
+
+        LOGGER.log(Level.INFO, "Process successfully completed!");
     }
 
     /**
@@ -296,7 +321,7 @@ public class OneToOneMigrator {
                         && destinationColumn.getType() != Types.VARCHAR
                         && destinationColumn.getType() != Types.NVARCHAR) {
                     throw new RuntimeException("Only database columns that support Strings i.e. (java.sql.Types "
-                            + Types.CHAR + ", " + Types.VARCHAR + ", and " + Types.NVARCHAR 
+                            + Types.CHAR + ", " + Types.VARCHAR + ", and " + Types.NVARCHAR
                             + ") can have prefix values defined. The column '" + destinationColumn.getName()
                             + "' is of java.sql.Type(s) " + destinationColumn.getType());
                 }
@@ -369,5 +394,9 @@ public class OneToOneMigrator {
             }
         }
         return value;
+    }
+
+    private int deleteOneToOne(OneToOne oto) throws SQLException {
+        return dse.executeUpdate("DELETE FROM " + oto.getDestinationTable().getName(), false);
     }
 }

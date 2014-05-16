@@ -33,46 +33,46 @@ public class TableConfigurator {
      */
     public List<OneToOne> configureTables() {
         List<OneToOne> oneToOneTables = new ArrayList<>();
-//        //look-up tables
-//        oneToOneTables.add(configurePatientStatus());
-//        oneToOneTables.add(configureAccount());
-//        oneToOneTables.add(configureDosage());
-//        oneToOneTables.add(configureGenericName());
-//        oneToOneTables.add(configureFacility());
-//        oneToOneTables.add(configureIndication());
-//        oneToOneTables.add(configureRegimenChangeReason());
-//        oneToOneTables.add(configureRegimenType());
-//        oneToOneTables.add(configureRegimen());
-//        oneToOneTables.add(configureRegion());
-//        oneToOneTables.add(configureDistrict());
-//        oneToOneTables.add(configureSupportingOrganization());
-//        oneToOneTables.add(configurePatientSource());
-//        oneToOneTables.add(configureServiceType());
-//        oneToOneTables.add(configureDispensingUnit());
-//        oneToOneTables.add(configureVisitType());
-//        oneToOneTables.add(configureTransactionType());
-//        //drugs
-//        oneToOneTables.add(configureDrug());
-//
-//        //person data
-//        oneToOneTables.add(configurePerson());
-//        oneToOneTables.add(configurePersonAddress());
-//
-//        //patient data
-//        oneToOneTables.add(configurePatient());
-//        oneToOneTables.add(configurePatientIdentifier_ArtId());
-//        oneToOneTables.add(configurePatientIdentifier_OpipdId());
-//
-//        //visits
-//        oneToOneTables.add(configureVisit());
-//
-//        //transactions
-//        oneToOneTables.add(configureTransaction_Stock());
-//        oneToOneTables.add(configureTransaction_Patient());
-//        oneToOneTables.add(configureTransactionItem_Stock());
+        //look-up tables
+        oneToOneTables.add(configurePatientStatus());
+        oneToOneTables.add(configureAccount());
+        oneToOneTables.add(configureDosage());
+        oneToOneTables.add(configureGenericName());
+        oneToOneTables.add(configureFacility());
+        oneToOneTables.add(configureIndication());
+        oneToOneTables.add(configureRegimenChangeReason());
+        oneToOneTables.add(configureRegimenType());
+        oneToOneTables.add(configureRegimen());
+        oneToOneTables.add(configureRegion());
+        oneToOneTables.add(configureDistrict());
+        oneToOneTables.add(configureSupportingOrganization());
+        oneToOneTables.add(configurePatientSource());
+        oneToOneTables.add(configureServiceType());
+        oneToOneTables.add(configureDispensingUnit());
+        oneToOneTables.add(configureVisitType());
+        oneToOneTables.add(configureTransactionType());
+        //drugs
+        oneToOneTables.add(configureDrug());
+
+        //person data
+        oneToOneTables.add(configurePerson());
+        oneToOneTables.add(configurePersonAddress());
+
+        //patient data
+        oneToOneTables.add(configurePatient());
+        oneToOneTables.add(configurePatientIdentifier_ArtId());
+        oneToOneTables.add(configurePatientIdentifier_OpipdId());
+
+        //visits
+        oneToOneTables.add(configureVisit());
+
+        //transactions
+        oneToOneTables.add(configureTransaction_Stock());
+        oneToOneTables.add(configureTransaction_Patient());
+        oneToOneTables.add(configureTransactionItem_Stock());
         oneToOneTables.add(configureTransactionItem_Patient());
-//        oneToOneTables.add(configureBatchTransactionItem());
-//        oneToOneTables.add(configurePatientTransactionItem());
+        oneToOneTables.add(configureBatchTransactionItem());
+        oneToOneTables.add(configurePatientTransactionItem());
         return oneToOneTables;
     }
 
@@ -592,7 +592,6 @@ public class TableConfigurator {
                 + "ORDER BY StockTranNo ASC");
         oto.setColumnMappings(columnMappings);
 
-        oto.addPostProcessor(new UnitsInOutUpdater());
         return oto;
     }
 
@@ -641,13 +640,16 @@ public class TableConfigurator {
         columnMappings.put(new Column("Expirydate", Types.DATE), new Column("date_of_expiry", Types.DATE));
 
         Column patientId = new Column("transaction_item_id", Types.INTEGER);
-        patientId.setReference(new Reference("transaction_item", "legacy_pk"));
+        patientId.setReference(new Reference("transaction_item", "legacy_pk", "S"));
         columnMappings.put(new Column("StockTranNo", Types.VARCHAR), patientId);
 
-        oto.setQuery("SELECT StockTranNo, Npacks, PackSize, Expirydate "
-                + "FROM tblARVDrugStockTransactions "
-                + "WHERE PackSize IS NOT NULL AND Npacks IS NOT NULL "
-                + "AND TransactionType <> " + Constants.DISPENSED_TO_PATIENTS_TX_TYPE);
+        oto.setQuery("SELECT StockTranNo, Npacks, PackSize, BatchNo, Expirydate \n"
+                + "FROM tblARVDrugStockTransactions\n"
+                + "WHERE (Remarks NOT LIKE 'Dispensed to Patient No: %'\n"
+                + "OR Remarks IS NULL)\n"
+                + "AND PackSize IS NOT NULL\n"
+                + "AND Npacks IS NOT NULL\n"
+                + "ORDER BY StockTranNo ASC");
         oto.setColumnMappings(columnMappings);
         return oto;
     }
@@ -662,13 +664,20 @@ public class TableConfigurator {
         columnMappings.put(new Column("duration", Types.DATE), new Column("duration", Types.INTEGER));
 
         Column transactionItemId = new Column("transaction_item_id", Types.INTEGER);
-        transactionItemId.setReference(new Reference("transaction_item", "legacy_pk"));
+        transactionItemId.setReference(new Reference("transaction_item", "legacy_pk", "P"));
         columnMappings.put(new Column("PatientTranNo", Types.VARCHAR), transactionItemId);
 
         Column dosage = new Column("dosage_id", Types.INTEGER);
         dosage.setReference(new Reference("dosage", true));
         columnMappings.put(new Column("Dose", Types.VARCHAR), dosage);
 
+        oto.setQuery("SELECT "
+                + "PatientTranNo, "
+                + "duration, "
+                + "Dose "
+                + "FROM "
+                + "tblARTPatientTransactions "
+                + "ORDER BY PatientTranNo ASC");
         oto.setColumnMappings(columnMappings);
         return oto;
     }
