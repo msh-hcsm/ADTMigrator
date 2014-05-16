@@ -1,11 +1,8 @@
 package com.intellisoftkenya.onetooner.data;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 /**
  * A database column.
- * 
+ *
  * @author gitahi
  */
 public class Column extends NamedDatabaseObject {
@@ -29,6 +26,16 @@ public class Column extends NamedDatabaseObject {
      */
     private Object value;
 
+    /**
+     * A String value that may optionally be appended in front of the values for
+     * this column in the destination. This is typically necessary if data from
+     * more than one source table is going to a single destination table and key
+     * values from the different source tables belong to the same set and hence
+     * have the potential to collide. Prefixing is activated by setting this
+     * value to anything other than null.
+     */
+    private String prefix;
+
     public Column(String name, int type) {
         super(name);
         this.type = type;
@@ -37,6 +44,11 @@ public class Column extends NamedDatabaseObject {
     public Column(String name, int type, Object value) {
         this(name, type);
         this.value = value;
+    }
+
+    public Column(String name, int type, String prefix) {
+        this(name, type);
+        this.prefix = prefix;
     }
 
     public int getType() {
@@ -57,5 +69,13 @@ public class Column extends NamedDatabaseObject {
 
     public void setValue(Object value) {
         this.value = value;
+    }
+
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
     }
 }

@@ -68,7 +68,7 @@ public class OneToOneMigrator {
 
             LOGGER.log(Level.INFO, "Process successfully completed!");
         } catch (Exception ex) {
-            throw  new Exception("Migration aborted! See logs for details.", ex);
+            throw new Exception("Migration aborted! See logs for details.", ex);
         }
     }
 
@@ -266,30 +266,45 @@ public class OneToOneMigrator {
     private boolean setParameter(ResultSet rs, PreparedStatement pStmt,
             Map.Entry<Column, Column> columnMapping, int index, Map<String, Object> alreadyRead)
             throws SQLException, Exception {
-        String adtColumnName = columnMapping.getKey().getName();
+
+        Column sourceColumn = columnMapping.getKey();
+        Column destinationColumn = columnMapping.getValue();
+
+        String sourceColumnName = sourceColumn.getName();
         Object value;
-        if (columnMapping.getValue().getValue() != null) {
-            value = columnMapping.getValue().getValue();
+        if (destinationColumn.getValue() != null) {
+            value = destinationColumn.getValue();
         } else {
-            if (alreadyRead.containsKey(adtColumnName)) {
-                value = alreadyRead.get(adtColumnName);
+            if (alreadyRead.containsKey(sourceColumnName)) {
+                value = alreadyRead.get(sourceColumnName);
             } else {
-                value = rs.getObject(adtColumnName);
-                alreadyRead.put(adtColumnName, value);
+                value = rs.getObject(sourceColumnName);
+                alreadyRead.put(sourceColumnName, value);
             }
         }
-        if (columnMapping.getValue().getReference() != null) {
+        if (destinationColumn.getReference() != null) {
             if (value != null) {
-                value = setParameterFromReference(columnMapping.getValue().getReference(), value.toString());
+                value = setParameterFromReference(destinationColumn.getReference(), value.toString());
             }
         }
 
         if (value == null) {
             pStmt.setNull(index, Types.INTEGER);
         } else {
-            pStmt.setObject(index, value, columnMapping.getValue().getType());
+            if (destinationColumn.getPrefix() != null) {
+                if (destinationColumn.getType() != Types.CHAR
+                        && destinationColumn.getType() != Types.VARCHAR
+                        && destinationColumn.getType() != Types.NVARCHAR) {
+                    throw new RuntimeException("Only database columns that support Strings i.e. (java.sql.Types "
+                            + Types.CHAR + ", " + Types.VARCHAR + ", and " + Types.NVARCHAR 
+                            + ") can have prefix values defined. The column '" + destinationColumn.getName()
+                            + "' is of java.sql.Type(s) " + destinationColumn.getType());
+                }
+                value = destinationColumn.getPrefix() + value.toString();
+            }
+            pStmt.setObject(index, value, destinationColumn.getType());
         }
-        if (columnMapping.getValue().getName().equals("legacy_pk")) {//don't mark insert for execution on account of source table primary key
+        if (destinationColumn.getName().equals("legacy_pk")) {//don't mark insert for execution on account of source table primary key
             return false;
         } else {
             return (value != null);

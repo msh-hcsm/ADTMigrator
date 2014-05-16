@@ -519,7 +519,7 @@ public class TableConfigurator {
         transactionTypeId.setReference(new Reference("transaction_type", "legacy_pk"));
         columnMappings.put(new Column("TransactionType", Types.VARCHAR), transactionTypeId);
 
-        columnMappings.put(new Column("StockTranNo", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
+        columnMappings.put(new Column("StockTranNo", Types.INTEGER), new Column("legacy_pk", Types.VARCHAR, "S"));
         columnMappings.put(new Column("RefOrderNo", Types.INTEGER), new Column("reference_no", Types.VARCHAR));
         columnMappings.put(new Column("TranDate", Types.DATE), new Column("date", Types.DATE));
         columnMappings.put(new Column("Remarks", Types.VARCHAR), new Column("comments", Types.VARCHAR));
@@ -538,7 +538,7 @@ public class TableConfigurator {
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column("TransactionType", Types.VARCHAR), new Column("transaction_type_id", Types.INTEGER, 192));
-        columnMappings.put(new Column("PatientTranNo_", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
+        columnMappings.put(new Column("PatientTranNo_", Types.INTEGER), new Column("legacy_pk", Types.VARCHAR, "P"));
 
         Column visitId = new Column("visit_id", Types.INTEGER);
         visitId.setReference(new Reference("visit", "legacy_pk"));
