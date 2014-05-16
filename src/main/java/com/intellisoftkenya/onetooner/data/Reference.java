@@ -26,6 +26,13 @@ public class Reference {
     private String pk = "id";
 
     /**
+     * A String value that may optionally be appended in front of the values for
+     * this column before using it to reference a destination table. It is used
+     * in conjunction with {@link Column#prefix}.
+     */
+    private String prefix;
+
+    /**
      * Whether or not an attempt should be made to infer the referenced value by
      * some custom means if such a value cannot be established normally. Useful
      * when a source column contains legacy data that is not part of an existing
@@ -97,6 +104,11 @@ public class Reference {
         this.borrowable = borrowable;
     }
 
+    public Reference(String table, String column, String prefix) {
+        this(table, column);
+        this.prefix = prefix;
+    }
+
     public String getTable() {
         return table;
     }
@@ -115,6 +127,14 @@ public class Reference {
 
     public void setPk(String pk) {
         this.pk = pk;
+    }
+
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
     }
 
     public boolean isInferable() {

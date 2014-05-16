@@ -333,6 +333,9 @@ public class OneToOneMigrator {
                 pStmt = dse.createPreparedStatement(select);
                 preparedQueryCache.put(select, pStmt);
             }
+            if (ref.getPrefix() != null) {
+                stringValue = ref.getPrefix() + stringValue;
+            }
             pStmt.setString(1, stringValue);
 
             LOGGER.log(Level.FINEST, "Setting parameter from reference using select statement: ''{0}''", select);

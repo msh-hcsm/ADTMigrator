@@ -68,9 +68,9 @@ public class TableConfigurator {
 //        oneToOneTables.add(configureVisit());
 //
 //        //transactions
-        oneToOneTables.add(configureTransaction_Stock());
-        oneToOneTables.add(configureTransaction_Patient());
-//        oneToOneTables.add(configureTransactionItem());
+//        oneToOneTables.add(configureTransaction_Stock());
+//        oneToOneTables.add(configureTransaction_Patient());
+        oneToOneTables.add(configureTransactionItem_Stock());
 //        oneToOneTables.add(configureBatchTransactionItem());
 //        oneToOneTables.add(configurePatientTransactionItem());
         return oneToOneTables;
@@ -561,7 +561,7 @@ public class TableConfigurator {
         return oto;
     }
 
-    private OneToOne configureTransactionItem() {
+    private OneToOne configureTransactionItem_Stock() {
         OneToOne oto = new OneToOne(new Table("tblARVDrugStockTransactions", Table.orderBy("StockTranNo")),
                 new Table("transaction_item"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
@@ -571,7 +571,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("ARVDrugsID", Types.VARCHAR), drugId);
 
         Column transactionId = new Column("transaction_id", Types.INTEGER);
-        transactionId.setReference(new Reference("transaction", "legacy_pk"));
+        transactionId.setReference(new Reference("transaction", "legacy_pk", "S"));
         columnMappings.put(new Column("StockTranNo", Types.INTEGER), transactionId);
 
         Column accountId = new Column("account_id", Types.INTEGER);
@@ -586,7 +586,12 @@ public class TableConfigurator {
         columnMappings.put(new Column("Qty", Types.DATE), new Column("units_in", Types.DECIMAL));
         columnMappings.put(new Column("Qty", Types.VARCHAR), new Column("units_out", Types.DECIMAL));
 
+        oto.setQuery("SELECT StockTranNo, ARVDrugsID, SourceorDestination, BatchNo, Qty FROM tblARVDrugStockTransactions\n"
+                + "WHERE Remarks NOT LIKE 'Dispensed to Patient No: %'\n"
+                + "OR Remarks IS NULL\n"
+                + "ORDER BY StockTranNo ASC");
         oto.setColumnMappings(columnMappings);
+
         oto.addPostProcessor(new TransactionVisitUpdater());
         oto.addPostProcessor(new UnitsInOutUpdater());
         return oto;
