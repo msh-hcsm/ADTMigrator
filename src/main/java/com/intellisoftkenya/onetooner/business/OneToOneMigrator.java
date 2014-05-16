@@ -57,15 +57,19 @@ public class OneToOneMigrator {
      * @throws java.sql.SQLException
      */
     public void migrate() throws Exception {
-        LOGGER.log(Level.INFO, "Migration started.");
-        
-        for (OneToOne oneToOne : new TableConfigurator().configureTables()) {
-            migrateOneToOne(oneToOne);
+        try {
+            LOGGER.log(Level.INFO, "Process started.");
+
+            for (OneToOne oneToOne : new TableConfigurator().configureTables()) {
+                migrateOneToOne(oneToOne);
+            }
+            sse.close();
+            dse.close();
+
+            LOGGER.log(Level.INFO, "Process successfully completed!");
+        } catch (Exception ex) {
+            throw  new Exception("Migration aborted! See logs for details.", ex);
         }
-        sse.close();
-        dse.close();
-        
-        LOGGER.log(Level.INFO, "Migration successfully completed!");
     }
 
     /**
@@ -264,7 +268,7 @@ public class OneToOneMigrator {
             throws SQLException, Exception {
         String adtColumnName = columnMapping.getKey().getName();
         Object value;
-        if (adtColumnName == null) {
+        if (columnMapping.getValue().getValue() != null) {
             value = columnMapping.getValue().getValue();
         } else {
             if (alreadyRead.containsKey(adtColumnName)) {
