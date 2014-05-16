@@ -8,7 +8,6 @@ import com.intellisoftkenya.onetooner.dao.SqlExecutor;
 import com.intellisoftkenya.onetooner.data.OneToOne;
 import com.intellisoftkenya.onetooner.log.LoggerFactory;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

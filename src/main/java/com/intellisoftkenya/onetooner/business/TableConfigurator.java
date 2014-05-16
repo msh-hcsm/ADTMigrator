@@ -67,12 +67,12 @@ public class TableConfigurator {
         oneToOneTables.add(configureVisit());
 
         //transactions
-        oneToOneTables.add(configureTransaction_Stock());
-        oneToOneTables.add(configureTransaction_Patient());
-        oneToOneTables.add(configureTransactionItem_Stock());
-        oneToOneTables.add(configureTransactionItem_Patient());
-        oneToOneTables.add(configureBatchTransactionItem());
-        oneToOneTables.add(configurePatientTransactionItem());
+//        oneToOneTables.add(configureTransaction_Stock());
+//        oneToOneTables.add(configureTransaction_Patient());
+//        oneToOneTables.add(configureTransactionItem_Stock());
+//        oneToOneTables.add(configureTransactionItem_Patient());
+//        oneToOneTables.add(configureBatchTransactionItem());
+//        oneToOneTables.add(configurePatientTransactionItem());
         return oneToOneTables;
     }
 

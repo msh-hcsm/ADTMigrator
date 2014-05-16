@@ -38,11 +38,11 @@ public abstract class SqlExecutor {
      * @param query the query to execute
      *
      * @return the ResultSet returned by the query
+     * @throws java.sql.SQLException
      */
     public ResultSet executeQuery(String query) throws SQLException {
-        ResultSet rs = null;
         Statement stmt = createStatement();
-        rs = stmt.executeQuery(query);
+        ResultSet rs = stmt.executeQuery(query);
         LOGGER.log(Level.FINEST, query);
         return rs;
     }
@@ -57,10 +57,11 @@ public abstract class SqlExecutor {
      *
      * @return the auto-generated integer value if specified, the number of
      * affected rows otherwise.
+     * @throws java.sql.SQLException
      */
     public int executeUpdate(String update, boolean generatedValue) throws SQLException {
         ResultSet rs;
-        int ret = 0;
+        int ret;
         Statement stmt = createStatement();
         if (!generatedValue) {
             ret = stmt.executeUpdate(update);
@@ -100,9 +101,11 @@ public abstract class SqlExecutor {
      *
      * @return an array of integers containing the number of rows affected by
      * each command.
+     * 
+     * @throws java.sql.SQLException
      */
     public int[] executeBatch(PreparedStatement pStmt) throws SQLException {
-        int[] ret = null;
+        int[] ret;
         ret = pStmt.executeBatch();
         if (!connection.getAutoCommit()) {
             connection.commit();
