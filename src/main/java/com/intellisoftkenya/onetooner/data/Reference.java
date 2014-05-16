@@ -109,6 +109,12 @@ public class Reference {
         this.prefix = prefix;
     }
 
+    public Reference(String table, String column, boolean borrowable, String prefix) {
+        this(table, column);
+        this.borrowable = borrowable;
+        this.prefix = prefix;
+    }
+
     public String getTable() {
         return table;
     }

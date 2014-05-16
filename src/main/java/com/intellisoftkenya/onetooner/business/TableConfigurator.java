@@ -3,7 +3,6 @@ package com.intellisoftkenya.onetooner.business;
 import com.intellisoftkenya.onetooner.api.imp.translator.DrugCategoryValueTranslator;
 import com.intellisoftkenya.onetooner.api.imp.translator.AccountTypeValueTranslator;
 import com.intellisoftkenya.onetooner.api.imp.processor.IdentifierTypeCreator;
-import com.intellisoftkenya.onetooner.api.imp.processor.TransactionVisitUpdater;
 import com.intellisoftkenya.onetooner.api.imp.processor.UnitsInOutUpdater;
 import com.intellisoftkenya.onetooner.api.imp.processor.VisitUpdater;
 import com.intellisoftkenya.onetooner.api.imp.translator.AccountValueInferrer;
@@ -70,7 +69,8 @@ public class TableConfigurator {
 //        //transactions
 //        oneToOneTables.add(configureTransaction_Stock());
 //        oneToOneTables.add(configureTransaction_Patient());
-        oneToOneTables.add(configureTransactionItem_Stock());
+//        oneToOneTables.add(configureTransactionItem_Stock());
+        oneToOneTables.add(configureTransactionItem_Patient());
 //        oneToOneTables.add(configureBatchTransactionItem());
 //        oneToOneTables.add(configurePatientTransactionItem());
         return oneToOneTables;
@@ -581,7 +581,7 @@ public class TableConfigurator {
         accountId.setReference(reference);
         columnMappings.put(new Column("SourceorDestination", Types.VARCHAR), accountId);
 
-        columnMappings.put(new Column("StockTranNo", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
+        columnMappings.put(new Column("StockTranNo", Types.INTEGER), new Column("legacy_pk", Types.VARCHAR, "S"));
         columnMappings.put(new Column("BatchNo", Types.VARCHAR), new Column("batch_no", Types.VARCHAR));
         columnMappings.put(new Column("Qty", Types.DATE), new Column("units_in", Types.DECIMAL));
         columnMappings.put(new Column("Qty", Types.VARCHAR), new Column("units_out", Types.DECIMAL));
@@ -592,7 +592,40 @@ public class TableConfigurator {
                 + "ORDER BY StockTranNo ASC");
         oto.setColumnMappings(columnMappings);
 
-        oto.addPostProcessor(new TransactionVisitUpdater());
+        oto.addPostProcessor(new UnitsInOutUpdater());
+        return oto;
+    }
+
+    private OneToOne configureTransactionItem_Patient() {
+        OneToOne oto = new OneToOne(new Table("tblARTPatientTransactions", Table.orderBy("PatientTranNo")),
+                new Table("transaction_item"), false);
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
+
+        Column drugId = new Column("drug_id", Types.INTEGER);
+        drugId.setReference(new Reference("drug", "name"));
+        columnMappings.put(new Column("Drugname", Types.VARCHAR), drugId);
+
+        Column transactionId = new Column("transaction_id", Types.INTEGER);
+        transactionId.setReference(new Reference("transaction", "legacy_pk", true, "P"));
+        columnMappings.put(new Column("PatientTranNo", Types.INTEGER), transactionId);
+
+        columnMappings.put(new Column(null, Types.VARCHAR), new Column("account_id", Types.INTEGER, 634));
+
+        columnMappings.put(new Column("PatientTranNo", Types.INTEGER), new Column("legacy_pk", Types.VARCHAR, "P"));
+        columnMappings.put(new Column("BatchNo", Types.VARCHAR), new Column("batch_no", Types.VARCHAR));
+        columnMappings.put(new Column("ARVQty", Types.DATE), new Column("units_in", Types.DECIMAL));
+        columnMappings.put(new Column("ARVQty", Types.VARCHAR), new Column("units_out", Types.DECIMAL));
+
+        oto.setQuery("SELECT "
+                + "PatientTranNo, "
+                + "Drugname, "
+                + "BatchNo,"
+                + "ARVQty "
+                + "FROM "
+                + "tblARTPatientTransactions "
+                + "ORDER BY PatientTranNo ASC");
+        oto.setColumnMappings(columnMappings);
+
         oto.addPostProcessor(new UnitsInOutUpdater());
         return oto;
     }
