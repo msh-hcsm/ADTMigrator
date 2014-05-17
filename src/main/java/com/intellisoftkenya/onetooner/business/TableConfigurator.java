@@ -34,8 +34,9 @@ public class TableConfigurator {
      * Configure {@link OneToOne} tables for migration.
      *
      * @return a list of the tables configured.
-     * 
-     * @throws java.lang.Exception if anything  goes wrong when configuring tables.
+     *
+     * @throws java.lang.Exception if anything goes wrong when configuring
+     * tables.
      */
     public List<OneToOne> configureTables() throws Exception {
         List<OneToOne> oneToOneTables = new ArrayList<>();
@@ -82,6 +83,48 @@ public class TableConfigurator {
         return oneToOneTables;
     }
 
+    private OneToOne configurePatientStatus() {
+        OneToOne oto = new OneToOne(new Table("tblCurrentStatus", Table.orderBy("CurrentStatusID")),
+                new Table("patient_status"));
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
+        columnMappings.put(
+                new Column("CurrentStatusID", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
+        columnMappings.put(
+                new Column("CurrentStatus", Types.VARCHAR), new Column("name", Types.VARCHAR));
+        oto.setColumnMappings(columnMappings);
+        return oto;
+    }
+
+    private OneToOne configureAccount() {
+        OneToOne oto = new OneToOne(new Table("tblARVStockTranSourceorDestination", Table.orderBy("SDNo")),
+                new Table("account"));
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
+        columnMappings.put(
+                new Column("SDNo_", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
+        columnMappings.put(
+                new Column("SourceorDestination_", Types.VARCHAR), new Column("name", Types.VARCHAR));
+
+        Column accountTypeId = new Column("account_type_id", Types.INTEGER);
+        accountTypeId.setReference(new Reference("account_type", true, new AccountTypeValueTranslator()));
+        columnMappings.put(new Column("SourceorDestination_", Types.VARCHAR), accountTypeId);
+
+        oto.setColumnMappings(columnMappings);
+
+        oto.setQuery("SELECT MIN(SDNo) AS SDNo_, MIN(SourceorDestination) AS SourceorDestination_\n"
+                + "FROM tblARVStockTranSourceorDestination WHERE SourceorDestination IS NOT NULL\n"
+                + "GROUP BY SDNo\n"
+                + "UNION\n"
+                + "SELECT MIN(SCode) AS SCode_, MIN(Source) AS Source_ FROM\n"
+                + "tblSource WHERE Source IS NOT NULL\n"
+                + "GROUP BY SCode\n"
+                + "UNION\n"
+                + "SELECT MIN(DCode) AS DCode_, MIN(Destination) AS Destination_\n"
+                + "FROM tblDestination WHERE Destination IS NOT NULL\n"
+                + "GROUP BY Dcode");
+
+        return oto;
+    }
+
     private OneToOne configureDosage() {
         OneToOne oto = new OneToOne(new Table("tblDose", Table.orderBy("dose")),
                 new Table("dosage"));
@@ -96,42 +139,6 @@ public class TableConfigurator {
         return oto;
     }
 
-    private OneToOne configureSupportingOrganization() {
-        OneToOne oto = new OneToOne(new Table("tblClientSupportDetails", Table.orderBy("ClientSupportID")),
-                new Table("supporting_organization"));
-        Map<Column, Column> columnMappings = new LinkedHashMap<>();
-        columnMappings.put(
-                new Column("ClientSupportID", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
-        columnMappings.put(
-                new Column("ClientSupportDesciption", Types.VARCHAR), new Column("name", Types.VARCHAR));
-        oto.setColumnMappings(columnMappings);
-        return oto;
-    }
-
-    private OneToOne configureAccount() {
-        OneToOne oto = new OneToOne(new Table("tblARVStockTranSourceorDestination", Table.orderBy("SDNo")),
-                new Table("account"));
-        Map<Column, Column> columnMappings = new LinkedHashMap<>();
-        columnMappings.put(
-                new Column("SDNo", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
-        columnMappings.put(
-                new Column("SourceorDestination", Types.VARCHAR), new Column("name", Types.VARCHAR));
-
-        Column accountTypeId = new Column("account_type_id", Types.INTEGER);
-        accountTypeId.setReference(new Reference("account_type", true, new AccountTypeValueTranslator()));
-        columnMappings.put(new Column("SourceorDestination", Types.VARCHAR), accountTypeId);
-
-        oto.setColumnMappings(columnMappings);
-
-        oto.setQuery("SELECT SDNo, SourceorDestination FROM tblARVStockTranSourceorDestination WHERE SourceorDestination IS NOT NULL\n"
-                + "UNION\n"
-                + "SELECT SCode, Source FROM tblSource WHERE Source IS NOT NULL\n"
-                + "UNION\n"
-                + "SELECT DCode, Destination FROM tblDestination WHERE Destination IS NOT NULL\n");
-
-        return oto;
-    }
-
     private OneToOne configureGenericName() {
         OneToOne oto = new OneToOne(new Table("tblGenericName", Table.orderBy("GenID")),
                 new Table("generic_name"));
@@ -140,47 +147,6 @@ public class TableConfigurator {
                 new Column("GenID", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
         columnMappings.put(
                 new Column("GenericName", Types.VARCHAR), new Column("name", Types.VARCHAR));
-        oto.setColumnMappings(columnMappings);
-        return oto;
-    }
-
-    private OneToOne configurePatientStatus() {
-        OneToOne oto = new OneToOne(new Table("tblCurrentStatus", Table.orderBy("CurrentStatusID")),
-                new Table("patient_status"));
-        Map<Column, Column> columnMappings = new LinkedHashMap<>();
-        columnMappings.put(
-                new Column("CurrentStatusID", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
-        columnMappings.put(
-                new Column("CurrentStatus", Types.VARCHAR), new Column("name", Types.VARCHAR));
-        oto.setColumnMappings(columnMappings);
-        return oto;
-    }
-
-    private OneToOne configureRegion() {
-        OneToOne oto = new OneToOne(new Table("tblRegion", Table.orderBy("Rcode")),
-                new Table("region"));
-        Map<Column, Column> columnMappings = new LinkedHashMap<>();
-        columnMappings.put(
-                new Column("Rcode", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
-        columnMappings.put(
-                new Column("Region", Types.VARCHAR), new Column("name", Types.VARCHAR));
-        oto.setColumnMappings(columnMappings);
-        return oto;
-    }
-
-    private OneToOne configureDistrict() {
-        OneToOne oto = new OneToOne(new Table("tblDistricts", Table.orderBy("DCode")),
-                new Table("district"));
-        Map<Column, Column> columnMappings = new LinkedHashMap<>();
-        columnMappings.put(
-                new Column("DCode", Types.INTEGER), new Column("code", Types.INTEGER));
-        columnMappings.put(
-                new Column("DistrictName", Types.VARCHAR), new Column("name", Types.VARCHAR));
-
-        Column region = new Column("region_id", Types.INTEGER);
-        region.setReference(new Reference("region", true));
-        columnMappings.put(new Column("Region", Types.VARCHAR), region);
-
         oto.setColumnMappings(columnMappings);
         return oto;
     }
@@ -235,6 +201,77 @@ public class TableConfigurator {
         return oto;
     }
 
+    private OneToOne configureRegimen() {
+        OneToOne oto = new OneToOne(new Table("tblRegimen", Table.orderBy("Regimencode")),
+                new Table("regimen"));
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
+
+        columnMappings.put(new Column("Regimencode", Types.VARCHAR), new Column("code", Types.VARCHAR));
+        columnMappings.put(new Column("Regimen", Types.VARCHAR), new Column("name", Types.VARCHAR));
+        columnMappings.put(new Column("Line", Types.INTEGER), new Column("line", Types.INTEGER));
+        columnMappings.put(new Column("Remarks", Types.VARCHAR), new Column("comments", Types.VARCHAR));
+        columnMappings.put(new Column("show", Types.BOOLEAN), new Column("visible", Types.BOOLEAN));
+
+        Column serviceType = new Column("service_type_id", Types.INTEGER);
+        serviceType.setReference(new Reference("service_type", "legacy_pk"));
+        columnMappings.put(new Column("TypeoService", Types.INTEGER), serviceType);
+
+        Column regimenType = new Column("regimen_type_id", Types.INTEGER);
+        regimenType.setReference(new Reference("regimen_type", "legacy_pk"));
+        columnMappings.put(new Column("Category", Types.INTEGER), regimenType);
+
+        Column regimenStatus = new Column("regimen_status_id", Types.INTEGER);
+        regimenStatus.setReference(new Reference("regimen_status", true));
+        columnMappings.put(new Column("Status", Types.VARCHAR), regimenStatus);
+
+        oto.setColumnMappings(columnMappings);
+        return oto;
+    }
+
+    private OneToOne configureRegion() {
+        OneToOne oto = new OneToOne(new Table("tblRegion", Table.orderBy("Rcode")),
+                new Table("region"));
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
+        columnMappings.put(
+                new Column("Rcode_", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
+        columnMappings.put(
+                new Column("Region_", Types.VARCHAR), new Column("name", Types.VARCHAR));
+        
+        oto.setQuery("SELECT MIN(Rcode) AS Rcode_, MIN(Region) AS Region_\n"
+                + "FROM tblRegion GROUP BY Rcode ORDER BY Rcode");
+        oto.setColumnMappings(columnMappings);
+        return oto;
+    }
+
+    private OneToOne configureDistrict() {
+        OneToOne oto = new OneToOne(new Table("tblDistricts", Table.orderBy("DCode")),
+                new Table("district"));
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
+        columnMappings.put(
+                new Column("DCode", Types.INTEGER), new Column("code", Types.INTEGER));
+        columnMappings.put(
+                new Column("DistrictName", Types.VARCHAR), new Column("name", Types.VARCHAR));
+
+        Column region = new Column("region_id", Types.INTEGER);
+        region.setReference(new Reference("region", true));
+        columnMappings.put(new Column("Region", Types.VARCHAR), region);
+
+        oto.setColumnMappings(columnMappings);
+        return oto;
+    }
+
+    private OneToOne configureSupportingOrganization() {
+        OneToOne oto = new OneToOne(new Table("tblClientSupportDetails", Table.orderBy("ClientSupportID")),
+                new Table("supporting_organization"));
+        Map<Column, Column> columnMappings = new LinkedHashMap<>();
+        columnMappings.put(
+                new Column("ClientSupportID", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
+        columnMappings.put(
+                new Column("ClientSupportDesciption", Types.VARCHAR), new Column("name", Types.VARCHAR));
+        oto.setColumnMappings(columnMappings);
+        return oto;
+    }
+
     private OneToOne configurePatientSource() {
         OneToOne oto = new OneToOne(new Table("tblSourceOfClient", Table.orderBy("SourceID")),
                 new Table("patient_source"));
@@ -252,9 +289,12 @@ public class TableConfigurator {
                 new Table("service_type"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
-                new Column("TypeOfServiceID", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
+                new Column("TypeOfServiceID_", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
         columnMappings.put(
-                new Column("TypeofService", Types.VARCHAR), new Column("name", Types.VARCHAR));
+                new Column("TypeofService_", Types.VARCHAR), new Column("name", Types.VARCHAR));
+        
+        oto.setQuery("SELECT MIN(TypeOfServiceID) AS TypeOfServiceID_, MIN(TypeofService) AS TypeofService_\n"
+                + "FROM tblTypeOfService GROUP BY TypeOfServiceID ORDER BY TypeOfServiceID");
         oto.setColumnMappings(columnMappings);
         return oto;
     }
@@ -434,33 +474,6 @@ public class TableConfigurator {
         return oto;
     }
 
-    private OneToOne configureRegimen() {
-        OneToOne oto = new OneToOne(new Table("tblRegimen", Table.orderBy("Regimencode")),
-                new Table("regimen"));
-        Map<Column, Column> columnMappings = new LinkedHashMap<>();
-
-        columnMappings.put(new Column("Regimencode", Types.VARCHAR), new Column("code", Types.VARCHAR));
-        columnMappings.put(new Column("Regimen", Types.VARCHAR), new Column("name", Types.VARCHAR));
-        columnMappings.put(new Column("Line", Types.INTEGER), new Column("line", Types.INTEGER));
-        columnMappings.put(new Column("Remarks", Types.VARCHAR), new Column("comments", Types.VARCHAR));
-        columnMappings.put(new Column("show", Types.BOOLEAN), new Column("visible", Types.BOOLEAN));
-
-        Column serviceType = new Column("service_type_id", Types.INTEGER);
-        serviceType.setReference(new Reference("service_type", "legacy_pk"));
-        columnMappings.put(new Column("TypeoService", Types.INTEGER), serviceType);
-
-        Column regimenType = new Column("regimen_type_id", Types.INTEGER);
-        regimenType.setReference(new Reference("regimen_type", "legacy_pk"));
-        columnMappings.put(new Column("Category", Types.INTEGER), regimenType);
-
-        Column regimenStatus = new Column("regimen_status_id", Types.INTEGER);
-        regimenStatus.setReference(new Reference("regimen_status", true));
-        columnMappings.put(new Column("Status", Types.VARCHAR), regimenStatus);
-
-        oto.setColumnMappings(columnMappings);
-        return oto;
-    }
-
     private OneToOne configureVisit() {
         OneToOne oto = new OneToOne(new Table("tblARTPatientTransactions", Table.orderBy("MIN(PatientTranNo)")),
                 new Table("visit"));
@@ -523,16 +536,18 @@ public class TableConfigurator {
 
         Column transactionTypeId = new Column("transaction_type_id", Types.INTEGER);
         transactionTypeId.setReference(new Reference("transaction_type", "legacy_pk"));
-        columnMappings.put(new Column("TransactionType", Types.VARCHAR), transactionTypeId);
+        columnMappings.put(new Column("TransactionType_", Types.VARCHAR), transactionTypeId);
 
-        columnMappings.put(new Column("StockTranNo", Types.INTEGER), new Column("legacy_pk", Types.VARCHAR, "S"));
-        columnMappings.put(new Column("RefOrderNo", Types.INTEGER), new Column("reference_no", Types.VARCHAR));
-        columnMappings.put(new Column("TranDate", Types.DATE), new Column("date", Types.DATE));
-        columnMappings.put(new Column("Remarks", Types.VARCHAR), new Column("comments", Types.VARCHAR));
+        columnMappings.put(new Column("StockTranNo_", Types.INTEGER), new Column("legacy_pk", Types.VARCHAR, "S"));
+        columnMappings.put(new Column("RefOrderNo_", Types.INTEGER), new Column("reference_no", Types.VARCHAR));
+        columnMappings.put(new Column("TranDate_", Types.DATE), new Column("date", Types.DATE));
+        columnMappings.put(new Column("Remarks_", Types.VARCHAR), new Column("comments", Types.VARCHAR));
 
-        oto.setQuery("SELECT StockTranNo, TransactionType, RefOrderNo, TranDate, Remarks FROM tblARVDrugStockTransactions\n"
-                + "WHERE Remarks NOT LIKE 'Dispensed to Patient No: %'\n"
+        oto.setQuery("SELECT MIN(StockTranNo) AS StockTranNo_, MIN(TransactionType) AS TransactionType_,\n"
+                + "MIN(RefOrderNo) AS RefOrderNo_, MIN(TranDate) AS TranDate_, MIN(Remarks) AS Remarks_\n"
+                + "FROM tblARVDrugStockTransactions WHERE Remarks NOT LIKE 'Dispensed to Patient No: %'\n"
                 + "OR Remarks IS NULL\n"
+                + "GROUP BY StockTranNo\n"
                 + "ORDER BY StockTranNo ASC");
         oto.setColumnMappings(columnMappings);
         return oto;
@@ -576,27 +591,28 @@ public class TableConfigurator {
 
         Column drugId = new Column("drug_id", Types.INTEGER);
         drugId.setReference(new Reference("drug", "name"));
-        columnMappings.put(new Column("ARVDrugsID", Types.VARCHAR), drugId);
+        columnMappings.put(new Column("ARVDrugsID_", Types.VARCHAR), drugId);
 
         Column transactionId = new Column("transaction_id", Types.INTEGER);
         transactionId.setReference(new Reference("transaction", "legacy_pk", "S"));
-        columnMappings.put(new Column("StockTranNo", Types.INTEGER), transactionId);
+        columnMappings.put(new Column("StockTranNo_", Types.INTEGER), transactionId);
 
         Column accountId = new Column("account_id", Types.INTEGER);
         Reference reference = new Reference("account", "name");
         reference.setInferable(true);
         reference.setValueInferrer(new AccountValueInferrer());
         accountId.setReference(reference);
-        columnMappings.put(new Column("SourceorDestination", Types.VARCHAR), accountId);
+        columnMappings.put(new Column("SourceorDestination_", Types.VARCHAR), accountId);
 
-        columnMappings.put(new Column("StockTranNo", Types.INTEGER), new Column("legacy_pk", Types.VARCHAR, "S"));
-        columnMappings.put(new Column("BatchNo", Types.VARCHAR), new Column("batch_no", Types.VARCHAR));
-        columnMappings.put(new Column("Qty", Types.DATE), new Column("units_in", Types.DECIMAL));
-        columnMappings.put(new Column("Qty", Types.VARCHAR), new Column("units_out", Types.DECIMAL));
+        columnMappings.put(new Column("StockTranNo_", Types.INTEGER), new Column("legacy_pk", Types.VARCHAR, "S"));
+        columnMappings.put(new Column("BatchNo_", Types.VARCHAR), new Column("batch_no", Types.VARCHAR));
+        columnMappings.put(new Column("Qty_", Types.DATE), new Column("units_in", Types.DECIMAL));
+        columnMappings.put(new Column("Qty_", Types.VARCHAR), new Column("units_out", Types.DECIMAL));
 
-        oto.setQuery("SELECT StockTranNo, ARVDrugsID, SourceorDestination, BatchNo, Qty FROM tblARVDrugStockTransactions\n"
-                + "WHERE Remarks NOT LIKE 'Dispensed to Patient No: %'\n"
-                + "OR Remarks IS NULL\n"
+        oto.setQuery("SELECT MIN(StockTranNo) AS StockTranNo_, MIN(ARVDrugsID) AS ARVDrugsID_, MIN(SourceorDestination)\n"
+                + "AS SourceorDestination_, MIN(BatchNo) AS BatchNo_, MIN(Qty) AS Qty_ FROM tblARVDrugStockTransactions\n"
+                + "WHERE Remarks NOT LIKE 'Dispensed to Patient No: %' OR Remarks IS NULL\n"
+                + "GROUP BY StockTranNo\n"
                 + "ORDER BY StockTranNo ASC");
         oto.setColumnMappings(columnMappings);
 
