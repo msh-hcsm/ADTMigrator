@@ -6,10 +6,14 @@ import com.intellisoftkenya.onetooner.api.imp.processor.IdentifierTypeCreator;
 import com.intellisoftkenya.onetooner.api.imp.processor.UnitsInOutUpdater;
 import com.intellisoftkenya.onetooner.api.imp.processor.VisitUpdater;
 import com.intellisoftkenya.onetooner.api.imp.translator.AccountValueInferrer;
+import com.intellisoftkenya.onetooner.dao.DestinationSqlExecutor;
+import com.intellisoftkenya.onetooner.dao.SqlExecutor;
 import com.intellisoftkenya.onetooner.data.Column;
 import com.intellisoftkenya.onetooner.data.OneToOne;
 import com.intellisoftkenya.onetooner.data.Reference;
 import com.intellisoftkenya.onetooner.data.Table;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -30,48 +34,50 @@ public class TableConfigurator {
      * Configure {@link OneToOne} tables for migration.
      *
      * @return a list of the tables configured.
+     * 
+     * @throws java.lang.Exception if anything  goes wrong when configuring tables.
      */
-    public List<OneToOne> configureTables() {
+    public List<OneToOne> configureTables() throws Exception {
         List<OneToOne> oneToOneTables = new ArrayList<>();
-//        //look-up tables
-//        oneToOneTables.add(configurePatientStatus());
-//        oneToOneTables.add(configureAccount());
-//        oneToOneTables.add(configureDosage());
-//        oneToOneTables.add(configureGenericName());
-//        oneToOneTables.add(configureFacility());
-//        oneToOneTables.add(configureIndication());
-//        oneToOneTables.add(configureRegimenChangeReason());
-//        oneToOneTables.add(configureRegimenType());
-//        oneToOneTables.add(configureRegimen());
-//        oneToOneTables.add(configureRegion());
-//        oneToOneTables.add(configureDistrict());
-//        oneToOneTables.add(configureSupportingOrganization());
-//        oneToOneTables.add(configurePatientSource());
-//        oneToOneTables.add(configureServiceType());
-//        oneToOneTables.add(configureDispensingUnit());
-//        oneToOneTables.add(configureVisitType());
-//        oneToOneTables.add(configureTransactionType());
-//        //drugs
-//        oneToOneTables.add(configureDrug());
-//
-//        //person data
-//        oneToOneTables.add(configurePerson());
-//        oneToOneTables.add(configurePersonAddress());
-//
-//        //patient data
-//        oneToOneTables.add(configurePatient());
-//        oneToOneTables.add(configurePatientIdentifier_ArtId());
-//        oneToOneTables.add(configurePatientIdentifier_OpipdId());
-//
-//        //visits
-//        oneToOneTables.add(configureVisit());
-//
-//        //transactions
-//        oneToOneTables.add(configureTransaction_Stock());
-//        oneToOneTables.add(configureTransaction_Patient());
-//        oneToOneTables.add(configureTransactionItem_Stock());
-//        oneToOneTables.add(configureTransactionItem_Patient());
-//        oneToOneTables.add(configureBatchTransactionItem());
+        //look-up tables
+        oneToOneTables.add(configurePatientStatus());
+        oneToOneTables.add(configureAccount());
+        oneToOneTables.add(configureDosage());
+        oneToOneTables.add(configureGenericName());
+        oneToOneTables.add(configureFacility());
+        oneToOneTables.add(configureIndication());
+        oneToOneTables.add(configureRegimenChangeReason());
+        oneToOneTables.add(configureRegimenType());
+        oneToOneTables.add(configureRegimen());
+        oneToOneTables.add(configureRegion());
+        oneToOneTables.add(configureDistrict());
+        oneToOneTables.add(configureSupportingOrganization());
+        oneToOneTables.add(configurePatientSource());
+        oneToOneTables.add(configureServiceType());
+        oneToOneTables.add(configureDispensingUnit());
+        oneToOneTables.add(configureVisitType());
+        oneToOneTables.add(configureTransactionType());
+        //drugs
+        oneToOneTables.add(configureDrug());
+
+        //person data
+        oneToOneTables.add(configurePerson());
+        oneToOneTables.add(configurePersonAddress());
+
+        //patient data
+        oneToOneTables.add(configurePatient());
+        oneToOneTables.add(configurePatientIdentifier_ArtId());
+        oneToOneTables.add(configurePatientIdentifier_OpipdId());
+
+        //visits
+        oneToOneTables.add(configureVisit());
+
+        //transactions
+        oneToOneTables.add(configureTransaction_Stock());
+        oneToOneTables.add(configureTransaction_Patient());
+        oneToOneTables.add(configureTransactionItem_Stock());
+        oneToOneTables.add(configureTransactionItem_Patient());
+        oneToOneTables.add(configureBatchTransactionItem());
         oneToOneTables.add(configurePatientTransactionItem());
         return oneToOneTables;
     }
@@ -532,12 +538,14 @@ public class TableConfigurator {
         return oto;
     }
 
-    private OneToOne configureTransaction_Patient() {
+    private OneToOne configureTransaction_Patient() throws SQLException {
         OneToOne oto = new OneToOne(new Table("tblARTPatientTransactions", Table.orderBy("MIN(PatientTranNo)")),
                 new Table("transaction"), false);
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
-        columnMappings.put(new Column("TransactionType", Types.VARCHAR), new Column("transaction_type_id", Types.INTEGER, 214));
+        columnMappings.put(new Column("TransactionType", Types.VARCHAR),
+                new Column("transaction_type_id", Types.INTEGER,
+                        readId("transaction_type", "Dispensed to Patients")));
         columnMappings.put(new Column("PatientTranNo_", Types.INTEGER), new Column("legacy_pk", Types.VARCHAR, "P"));
 
         Column visitId = new Column("visit_id", Types.INTEGER);
@@ -595,7 +603,7 @@ public class TableConfigurator {
         return oto;
     }
 
-    private OneToOne configureTransactionItem_Patient() {
+    private OneToOne configureTransactionItem_Patient() throws SQLException {
         OneToOne oto = new OneToOne(new Table("tblARTPatientTransactions", Table.orderBy("PatientTranNo")),
                 new Table("transaction_item"), false);
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
@@ -608,7 +616,9 @@ public class TableConfigurator {
         transactionId.setReference(new Reference("transaction", "legacy_pk", true, "P"));
         columnMappings.put(new Column("PatientTranNo_", Types.INTEGER), transactionId);
 
-        columnMappings.put(new Column(null, Types.VARCHAR), new Column("account_id", Types.INTEGER, 658));
+        columnMappings.put(new Column(null, Types.VARCHAR),
+                new Column("account_id", Types.INTEGER,
+                        readId("account", "PATIENTS")));
 
         columnMappings.put(new Column("PatientTranNo_", Types.INTEGER), new Column("legacy_pk", Types.VARCHAR, "P"));
         columnMappings.put(new Column("BatchNo_", Types.VARCHAR), new Column("batch_no", Types.VARCHAR));
@@ -682,5 +692,26 @@ public class TableConfigurator {
                 + "ORDER BY PatientTranNo ASC");
         oto.setColumnMappings(columnMappings);
         return oto;
+    }
+
+    private final SqlExecutor dse = DestinationSqlExecutor.getInstance();
+
+    public Integer readId(String table, String value) throws SQLException {
+        return readId(table, "name", value);
+    }
+
+    public Integer readId(String table, String column, String value) throws SQLException {
+        return readId(table, "id", column, value);
+    }
+
+    public Integer readId(String table, String pk, String column, String value) throws SQLException {
+        Integer id = null;
+        ResultSet rs = dse.executeQuery("SELECT " + pk + " FROM " + table
+                + " WHERE " + column + " = '" + value + "'");
+        if (rs.next()) {
+            id = rs.getInt("id");
+        }
+        dse.close(rs);
+        return id;
     }
 }
