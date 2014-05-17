@@ -1,10 +1,11 @@
 package com.intellisoftkenya.onetooner.log;
 
-import java.io.IOException;
-import java.util.logging.FileHandler;
+import com.intellisoftkenya.onetooner.PropertyManager;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
 /**
  *
@@ -12,22 +13,30 @@ import java.util.logging.SimpleFormatter;
  */
 public class LoggerFactory {
 
-    private static final int LIMIT = 102400;
-    private static final int COUNT = 1;
-    private static final String FILE_NAME = "C:\\Users\\gitahi\\Documents\\logs\\onetooner%u.log";
+    private static List<Handler> handlers;
+    
+    public static void addHandler(Handler handler) {
+        if (handlers == null) {
+            handlers = new ArrayList<>();
+        }
+        handlers.add(handler);
+    }
+    
+    public static void setHandlers(List<Handler> handlers) {
+        if (handlers != null) {
+            LoggerFactory.handlers = handlers;
+        }
+    }
 
     public static Logger getLoger(String name) {
         Logger logger = Logger.getLogger(name);
-        FileHandler fileHandler;
-        try {
-            fileHandler = new FileHandler(FILE_NAME, LIMIT, COUNT, false);
-            logger.addHandler(fileHandler);
-            SimpleFormatter formatter = new SimpleFormatter();
-            fileHandler.setFormatter(formatter);
-            return logger;
-        } catch (IOException | SecurityException ex) {
-            Logger.getLogger(LoggerFactory.class.getName()).log(Level.SEVERE, null, ex);
+        logger.setLevel(Level.parse(PropertyManager.getProperty("logging.level")));
+        if (handlers != null && !handlers.isEmpty()) {
+            for (Handler handler : handlers) {
+                logger.addHandler(handler);
+            }
         }
-        return null;
+        return logger;
+
     }
 }
