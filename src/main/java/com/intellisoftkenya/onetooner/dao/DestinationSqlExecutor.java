@@ -1,5 +1,6 @@
 package com.intellisoftkenya.onetooner.dao;
 
+import com.intellisoftkenya.onetooner.PropertyManager;
 import com.intellisoftkenya.onetooner.log.LoggerFactory;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -17,10 +18,15 @@ public class DestinationSqlExecutor extends SqlExecutor {
     private static final Logger LOGGER = LoggerFactory.getLoger(DestinationSqlExecutor.class.getName());
     protected static SqlExecutor instance;
 
+    private String driver = PropertyManager.getProperty("destination.driver");
+    private String url = PropertyManager.getProperty("destination.url");
+    private String username = PropertyManager.getProperty("destination.username");
+    private String password = PropertyManager.getProperty("destination.password");
+
     private DestinationSqlExecutor() {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/fdt", "root", "2806");
+            Class.forName(driver);
+            connection = DriverManager.getConnection(url, username, password);
             connection.setAutoCommit(false);
         } catch (ClassNotFoundException | SQLException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
@@ -39,4 +45,12 @@ public class DestinationSqlExecutor extends SqlExecutor {
         pStmt.executeUpdate();
         connection.commit();
     }
+
+    @Override
+    public void close() {
+        super.close();
+        instance = null;
+    }
+    
+    
 }
