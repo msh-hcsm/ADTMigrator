@@ -172,11 +172,18 @@ public class SettingsDialog extends javax.swing.JDialog {
 
         loggingLevelLabel.setText("Level");
 
-        loggingLevelComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "OFF", "SEVERE", "WARNING", "INFO", "CONFIG", "FINE", "FINEST", "ALL" }));
+        loggingLevelComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SEVERE", "WARNING", "INFO", "FINE", "FINER", "FINEST", "ALL", "OFF" }));
+        loggingLevelComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loggingLevelComboBoxActionPerformed(evt);
+            }
+        });
 
         loggingLevelTextArea.setEditable(false);
         loggingLevelTextArea.setColumns(20);
+        loggingLevelTextArea.setLineWrap(true);
         loggingLevelTextArea.setRows(5);
+        loggingLevelTextArea.setWrapStyleWord(true);
         loggingLevelScrollPane.setViewportView(loggingLevelTextArea);
 
         javax.swing.GroupLayout loggingPanelLayout = new javax.swing.GroupLayout(loggingPanel);
@@ -282,6 +289,13 @@ public class SettingsDialog extends javax.swing.JDialog {
         restoreDefaults();
     }//GEN-LAST:event_defaultsButtonActionPerformed
 
+    private void loggingLevelComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loggingLevelComboBoxActionPerformed
+        String level = (String) loggingLevelComboBox.getSelectedItem();
+        if (level != null) {
+            explainLevel(level);
+        }
+    }//GEN-LAST:event_loggingLevelComboBoxActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton closeButton;
     private javax.swing.JButton defaultsButton;
@@ -343,12 +357,48 @@ public class SettingsDialog extends javax.swing.JDialog {
         PropertyManager.saveProperties();
         close();
     }
-    
+
     private void restoreDefaults() {
         loadProperties(true);
     }
 
     private void close() {
         this.dispose();
+    }
+
+    private void explainLevel(String level) {
+        switch (level) {
+            case "SEVERE":
+                loggingLevelTextArea.setText(level + ": Messages indicating serious failure.");
+                break;
+            case "WARNING":
+                loggingLevelTextArea.setText(level + ": Messages indicating a potential problem.");
+                break;
+            case "INFO":
+                loggingLevelTextArea.setText(level + ": General informational messages. (Recommended)");
+                break;
+            case "FINE":
+                loggingLevelTextArea.setText(level + ": Tracing information.");
+                break;
+            case "FINER":
+                loggingLevelTextArea.setText(level + ": Fairly detailed tracing information.");
+                break;
+            case "FINEST":
+                loggingLevelTextArea.setText(level + ": Highly detailed training information. (A lot of output, use judiciously)");
+                break;
+            case "ALL":
+                loggingLevelTextArea.setText(level + ": All messages. (A lot of output, use judiciously)");
+                break;
+            case "OFF":
+                loggingLevelTextArea.setText(level + ": No messages will be logged. (Note recommended)");
+                break;
+            default:
+                loggingLevelTextArea.setText("");
+                break;
+        }
+        loggingLevelTextArea.append("\n\nExcept for ALL and OFF, all other logging levels are hierarchical. "
+                + "Therefore selecting a given logging level activates that level and all levels above it. "
+                + "The level INFO is most reasonable for most purposes. Generally use lower levels only "
+                + "when trying to diagnose a problem.");
     }
 }
