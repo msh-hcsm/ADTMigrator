@@ -12,7 +12,7 @@ import java.util.Map;
  *
  * @author gitahi
  */
-public class OneToOne {
+public class OneToOne implements Comparable<OneToOne> {
 
     /**
      * The Source {@link Table}.
@@ -54,14 +54,22 @@ public class OneToOne {
      */
     private List<ExtraProcessor> postProcessors;
 
-    public OneToOne(Table sourceTable, Table destinationTable) {
+    /**
+     * The order for the destination table for this object when deleting a bunch
+     * of OneToOne tables. Should be based on table relationships to prevent
+     * foreign key constraint violations.
+     */
+    private final Integer deletionOrder;
+
+    public OneToOne(Integer deletionOrder, Table sourceTable, Table destinationTable) {
+        this.deletionOrder = deletionOrder;
         this.sourceTable = sourceTable;
         this.destinationTable = destinationTable;
     }
 
-    public OneToOne(Table sourceTable, Table destinationTable, boolean requireEmpty) {
-        this.sourceTable = sourceTable;
-        this.destinationTable = destinationTable;
+    public OneToOne(Integer deletionOrder, Table sourceTable, Table destinationTable,
+            boolean requireEmpty) {
+        this(deletionOrder, sourceTable, destinationTable);
         this.requireEmpty = requireEmpty;
     }
 
@@ -117,5 +125,10 @@ public class OneToOne {
 
     public void addPostProcessor(ExtraProcessor postProcessor) {
         getPostProcessors().add(postProcessor);
+    }
+
+    @Override
+    public int compareTo(OneToOne oto) {
+        return this.deletionOrder.compareTo(oto.deletionOrder);
     }
 }

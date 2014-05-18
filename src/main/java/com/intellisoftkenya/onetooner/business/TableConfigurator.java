@@ -83,7 +83,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configurePatientStatus() {
-        OneToOne oto = new OneToOne(new Table("tblCurrentStatus", Table.orderBy("CurrentStatusID")),
+        OneToOne oto = new OneToOne(31, new Table("tblCurrentStatus", Table.orderBy("CurrentStatusID")),
                 new Table("patient_status"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -95,7 +95,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configureAccount() {
-        OneToOne oto = new OneToOne(new Table("tblARVStockTranSourceorDestination", Table.orderBy("SDNo")),
+        OneToOne oto = new OneToOne(23, new Table("tblARVStockTranSourceorDestination", Table.orderBy("SDNo")),
                 new Table("account"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -125,7 +125,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configureDosage() {
-        OneToOne oto = new OneToOne(new Table("tblDose", Table.orderBy("dose")),
+        OneToOne oto = new OneToOne(27, new Table("tblDose", Table.orderBy("dose")),
                 new Table("dosage"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -139,7 +139,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configureGenericName() {
-        OneToOne oto = new OneToOne(new Table("tblGenericName", Table.orderBy("GenID")),
+        OneToOne oto = new OneToOne(13, new Table("tblGenericName", Table.orderBy("GenID")),
                 new Table("generic_name"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -151,7 +151,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configureFacility() {
-        OneToOne oto = new OneToOne(new Table("tblHealthFacilities", Table.orderBy("MFLCode")),
+        OneToOne oto = new OneToOne(30, new Table("tblHealthFacilities", Table.orderBy("MFLCode")),
                 new Table("facility"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -165,7 +165,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configureIndication() {
-        OneToOne oto = new OneToOne(new Table("tblIndication", Table.orderBy("indicationCode")),
+        OneToOne oto = new OneToOne(26, new Table("tblIndication", Table.orderBy("indicationCode")),
                 new Table("indication"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -177,7 +177,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configureRegimenChangeReason() {
-        OneToOne oto = new OneToOne(new Table("tblReasonforChange", Table.orderBy("ReasonForChangeID")),
+        OneToOne oto = new OneToOne(22, new Table("tblReasonforChange", Table.orderBy("ReasonForChangeID")),
                 new Table("regimen_change_reason"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -189,7 +189,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configureRegimenType() {
-        OneToOne oto = new OneToOne(new Table("tblRegimenCategory", Table.orderBy("CategoryID")),
+        OneToOne oto = new OneToOne(16, new Table("tblRegimenCategory", Table.orderBy("CategoryID")),
                 new Table("regimen_type"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -201,7 +201,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configureRegimen() {
-        OneToOne oto = new OneToOne(new Table("tblRegimen", Table.orderBy("Regimencode")),
+        OneToOne oto = new OneToOne(15, new Table("tblRegimen", Table.orderBy("Regimencode")),
                 new Table("regimen"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
@@ -228,7 +228,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configureRegion() {
-        OneToOne oto = new OneToOne(new Table("tblRegion", Table.orderBy("Rcode")),
+        OneToOne oto = new OneToOne(29, new Table("tblRegion", Table.orderBy("Rcode")),
                 new Table("region"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -243,7 +243,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configureDistrict() {
-        OneToOne oto = new OneToOne(new Table("tblDistricts", Table.orderBy("DCode")),
+        OneToOne oto = new OneToOne(28, new Table("tblDistricts", Table.orderBy("DCode")),
                 new Table("district"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -260,7 +260,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configureSupportingOrganization() {
-        OneToOne oto = new OneToOne(new Table("tblClientSupportDetails", Table.orderBy("ClientSupportID")),
+        OneToOne oto = new OneToOne(21, new Table("tblClientSupportDetails", Table.orderBy("ClientSupportID")),
                 new Table("supporting_organization"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -272,7 +272,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configurePatientSource() {
-        OneToOne oto = new OneToOne(new Table("tblSourceOfClient", Table.orderBy("SourceID")),
+        OneToOne oto = new OneToOne(14, new Table("tblSourceOfClient", Table.orderBy("SourceID")),
                 new Table("patient_source"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -284,7 +284,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configureServiceType() {
-        OneToOne oto = new OneToOne(new Table("tblTypeOfService", Table.orderBy("TypeOfServiceID")),
+        OneToOne oto = new OneToOne(18, new Table("tblTypeOfService", Table.orderBy("TypeOfServiceID")),
                 new Table("service_type"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -299,7 +299,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configureDispensingUnit() {
-        OneToOne oto = new OneToOne(new Table("tblUnit", Table.orderBy("Unit")),
+        OneToOne oto = new OneToOne(19, new Table("tblUnit", Table.orderBy("Unit")),
                 new Table("dispensing_unit"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -309,7 +309,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configureVisitType() {
-        OneToOne oto = new OneToOne(new Table("tblVisitTransaction", Table.orderBy("TransactionCode")),
+        OneToOne oto = new OneToOne(20, new Table("tblVisitTransaction", Table.orderBy("TransactionCode")),
                 new Table("visit_type"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -321,7 +321,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configureTransactionType() {
-        OneToOne oto = new OneToOne(new Table("tblStockTransactionType", Table.orderBy("TransactionType")),
+        OneToOne oto = new OneToOne(10, new Table("tblStockTransactionType", Table.orderBy("TransactionType")),
                 new Table("transaction_type"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
@@ -333,7 +333,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configureDrug() {
-        OneToOne oto = new OneToOne(new Table("tblARVDrugStockMain", Table.orderBy("ARVDrugsID")),
+        OneToOne oto = new OneToOne(11, new Table("tblARVDrugStockMain", Table.orderBy("ARVDrugsID")),
                 new Table("drug"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
@@ -364,7 +364,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configurePerson() {
-        OneToOne oto = new OneToOne(new Table("tblARTPatientMasterInformation", Table.orderBy("ArtID")),
+        OneToOne oto = new OneToOne(5, new Table("tblARTPatientMasterInformation", Table.orderBy("ArtID")),
                 new Table("person"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
@@ -384,7 +384,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configurePersonAddress() {
-        OneToOne oto = new OneToOne(new Table("tblARTPatientMasterInformation", Table.orderBy("ArtID")),
+        OneToOne oto = new OneToOne(2, new Table("tblARTPatientMasterInformation", Table.orderBy("ArtID")),
                 new Table("person_address"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
@@ -402,7 +402,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configurePatient() {
-        OneToOne oto = new OneToOne(new Table("tblARTPatientMasterInformation", Table.orderBy("ArtID")),
+        OneToOne oto = new OneToOne(4, new Table("tblARTPatientMasterInformation", Table.orderBy("ArtID")),
                 new Table("patient"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
@@ -439,7 +439,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configurePatientIdentifier_ArtId() {
-        OneToOne oto = new OneToOne(new Table("tblARTPatientMasterInformation", Table.orderBy("ArtID")),
+        OneToOne oto = new OneToOne(1, new Table("tblARTPatientMasterInformation", Table.orderBy("ArtID")),
                 new Table("patient_identifier"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
@@ -456,7 +456,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configurePatientIdentifier_OpipdId() {
-        OneToOne oto = new OneToOne(new Table("tblARTPatientMasterInformation", Table.orderBy("OPIPNO")),
+        OneToOne oto = new OneToOne(1, new Table("tblARTPatientMasterInformation", Table.orderBy("OPIPNO")),
                 new Table("patient_identifier"), false);
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
@@ -474,7 +474,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configureVisit() {
-        OneToOne oto = new OneToOne(new Table("tblARTPatientTransactions", Table.orderBy("MIN(PatientTranNo)")),
+        OneToOne oto = new OneToOne(3, new Table("tblARTPatientTransactions", Table.orderBy("MIN(PatientTranNo)")),
                 new Table("visit"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
@@ -529,7 +529,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configureTransaction_Stock() {
-        OneToOne oto = new OneToOne(new Table("tblARVDrugStockTransactions", Table.orderBy("StockTranNo")),
+        OneToOne oto = new OneToOne(9, new Table("tblARVDrugStockTransactions", Table.orderBy("StockTranNo")),
                 new Table("transaction"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
@@ -553,7 +553,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configureTransaction_Patient() throws SQLException {
-        OneToOne oto = new OneToOne(new Table("tblARTPatientTransactions", Table.orderBy("MIN(PatientTranNo)")),
+        OneToOne oto = new OneToOne(9, new Table("tblARTPatientTransactions", Table.orderBy("MIN(PatientTranNo)")),
                 new Table("transaction"), false);
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
@@ -585,7 +585,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configureTransactionItem_Stock() {
-        OneToOne oto = new OneToOne(new Table("tblARVDrugStockTransactions", Table.orderBy("StockTranNo")),
+        OneToOne oto = new OneToOne(8, new Table("tblARVDrugStockTransactions", Table.orderBy("StockTranNo")),
                 new Table("transaction_item"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
@@ -620,7 +620,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configureTransactionItem_Patient() throws SQLException {
-        OneToOne oto = new OneToOne(new Table("tblARTPatientTransactions", Table.orderBy("PatientTranNo")),
+        OneToOne oto = new OneToOne(8, new Table("tblARTPatientTransactions", Table.orderBy("PatientTranNo")),
                 new Table("transaction_item"), false);
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
@@ -658,7 +658,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configureBatchTransactionItem() {
-        OneToOne oto = new OneToOne(new Table("tblARVDrugStockTransactions", Table.orderBy("StockTranNo")),
+        OneToOne oto = new OneToOne(6, new Table("tblARVDrugStockTransactions", Table.orderBy("StockTranNo")),
                 new Table("batch_transaction_item"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
@@ -683,7 +683,7 @@ public class TableConfigurator {
     }
 
     private OneToOne configurePatientTransactionItem() {
-        OneToOne oto = new OneToOne(new Table("tblARTPatientTransactions", Table.orderBy("PatientTranNo")),
+        OneToOne oto = new OneToOne(7, new Table("tblARTPatientTransactions", Table.orderBy("PatientTranNo")),
                 new Table("patient_transaction_item"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
