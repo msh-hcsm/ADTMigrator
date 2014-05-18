@@ -297,7 +297,7 @@ public class OneToOneMigrator {
 
         String sourceColumnName = sourceColumn.getName();
         Object value;
-        if (destinationColumn.getValue() != null) {
+        if (sourceColumn.getName() == null) {
             value = destinationColumn.getValue();
         } else {
             if (alreadyRead.containsKey(sourceColumnName)) {

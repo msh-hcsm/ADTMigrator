@@ -3,16 +3,15 @@ package com.intellisoftkenya.onetooner.business;
 import com.intellisoftkenya.onetooner.api.imp.translator.DrugCategoryValueTranslator;
 import com.intellisoftkenya.onetooner.api.imp.translator.AccountTypeValueTranslator;
 import com.intellisoftkenya.onetooner.api.imp.processor.IdentifierTypeCreator;
+import com.intellisoftkenya.onetooner.api.imp.processor.LookupValuePkProcessor;
 import com.intellisoftkenya.onetooner.api.imp.processor.UnitsInOutUpdater;
 import com.intellisoftkenya.onetooner.api.imp.processor.VisitUpdater;
 import com.intellisoftkenya.onetooner.api.imp.translator.AccountValueInferrer;
-import com.intellisoftkenya.onetooner.dao.DestinationSqlExecutor;
-import com.intellisoftkenya.onetooner.dao.SqlExecutor;
 import com.intellisoftkenya.onetooner.data.Column;
+import com.intellisoftkenya.onetooner.data.LookupValue;
 import com.intellisoftkenya.onetooner.data.OneToOne;
 import com.intellisoftkenya.onetooner.data.Reference;
 import com.intellisoftkenya.onetooner.data.Table;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -236,7 +235,7 @@ public class TableConfigurator {
                 new Column("Rcode_", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
         columnMappings.put(
                 new Column("Region_", Types.VARCHAR), new Column("name", Types.VARCHAR));
-        
+
         oto.setQuery("SELECT MIN(Rcode) AS Rcode_, MIN(Region) AS Region_\n"
                 + "FROM tblRegion GROUP BY Rcode ORDER BY Rcode");
         oto.setColumnMappings(columnMappings);
@@ -292,7 +291,7 @@ public class TableConfigurator {
                 new Column("TypeOfServiceID_", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
         columnMappings.put(
                 new Column("TypeofService_", Types.VARCHAR), new Column("name", Types.VARCHAR));
-        
+
         oto.setQuery("SELECT MIN(TypeOfServiceID) AS TypeOfServiceID_, MIN(TypeofService) AS TypeofService_\n"
                 + "FROM tblTypeOfService GROUP BY TypeOfServiceID ORDER BY TypeOfServiceID");
         oto.setColumnMappings(columnMappings);
@@ -559,8 +558,8 @@ public class TableConfigurator {
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column(null, Types.VARCHAR),
-                new Column("transaction_type_id", Types.INTEGER,
-                        readId("transaction_type", "Dispensed to Patients")));
+                new Column("transaction_type_id", Types.INTEGER, 
+                        new LookupValue("transaction_type", "Dispensed to Patients")));
         columnMappings.put(new Column("PatientTranNo_", Types.INTEGER), new Column("legacy_pk", Types.VARCHAR, "P"));
 
         Column visitId = new Column("visit_id", Types.INTEGER);
@@ -581,6 +580,7 @@ public class TableConfigurator {
                 + "DateofVisit, ARTID "
                 + "ORDER BY MIN(PatientTranNo)");
         oto.setColumnMappings(columnMappings);
+        oto.addPreProcessor(new LookupValuePkProcessor());
         return oto;
     }
 
@@ -633,8 +633,8 @@ public class TableConfigurator {
         columnMappings.put(new Column("PatientTranNo_", Types.INTEGER), transactionId);
 
         columnMappings.put(new Column(null, Types.VARCHAR),
-                new Column("account_id", Types.INTEGER,
-                        readId("account", "PATIENTS")));
+                new Column("account_id", Types.INTEGER, 
+                        new LookupValue("account", "PATIENTS")));
 
         columnMappings.put(new Column("PatientTranNo_", Types.INTEGER), new Column("legacy_pk", Types.VARCHAR, "P"));
         columnMappings.put(new Column("BatchNo_", Types.VARCHAR), new Column("batch_no", Types.VARCHAR));
@@ -652,6 +652,7 @@ public class TableConfigurator {
                 + "ORDER BY PatientTranNo ASC");
         oto.setColumnMappings(columnMappings);
 
+        oto.addPreProcessor(new LookupValuePkProcessor());
         oto.addPostProcessor(new UnitsInOutUpdater());
         return oto;
     }
@@ -708,26 +709,5 @@ public class TableConfigurator {
                 + "ORDER BY PatientTranNo ASC");
         oto.setColumnMappings(columnMappings);
         return oto;
-    }
-
-    private final SqlExecutor dse = DestinationSqlExecutor.getInstance();
-
-    public Integer readId(String table, String value) throws SQLException {
-        return readId(table, "name", value);
-    }
-
-    public Integer readId(String table, String column, String value) throws SQLException {
-        return readId(table, "id", column, value);
-    }
-
-    public Integer readId(String table, String pk, String column, String value) throws SQLException {
-        Integer id = null;
-        ResultSet rs = dse.executeQuery("SELECT " + pk + " FROM " + table
-                + " WHERE " + column + " = '" + value + "'");
-        if (rs.next()) {
-            id = rs.getInt("id");
-        }
-        dse.close(rs);
-        return id;
     }
 }
