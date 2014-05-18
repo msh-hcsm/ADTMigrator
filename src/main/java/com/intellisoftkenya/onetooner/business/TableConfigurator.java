@@ -70,16 +70,16 @@ public class TableConfigurator {
         oneToOneTables.add(configurePatientIdentifier_ArtId());
         oneToOneTables.add(configurePatientIdentifier_OpipdId());
 
-//        //visits
-//        oneToOneTables.add(configureVisit());
-//
-//        //transactions
-//        oneToOneTables.add(configureTransaction_Stock());
-//        oneToOneTables.add(configureTransaction_Patient());
-//        oneToOneTables.add(configureTransactionItem_Stock());
-//        oneToOneTables.add(configureTransactionItem_Patient());
-//        oneToOneTables.add(configureBatchTransactionItem());
-//        oneToOneTables.add(configurePatientTransactionItem());
+        //visits
+        oneToOneTables.add(configureVisit());
+
+        //transactions
+        oneToOneTables.add(configureTransaction_Stock());
+        oneToOneTables.add(configureTransaction_Patient());
+        oneToOneTables.add(configureTransactionItem_Stock());
+        oneToOneTables.add(configureTransactionItem_Patient());
+        oneToOneTables.add(configureBatchTransactionItem());
+        oneToOneTables.add(configurePatientTransactionItem());
         return oneToOneTables;
     }
 
@@ -558,7 +558,7 @@ public class TableConfigurator {
                 new Table("transaction"), false);
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
-        columnMappings.put(new Column("TransactionType", Types.VARCHAR),
+        columnMappings.put(new Column(null, Types.VARCHAR),
                 new Column("transaction_type_id", Types.INTEGER,
                         readId("transaction_type", "Dispensed to Patients")));
         columnMappings.put(new Column("PatientTranNo_", Types.INTEGER), new Column("legacy_pk", Types.VARCHAR, "P"));
