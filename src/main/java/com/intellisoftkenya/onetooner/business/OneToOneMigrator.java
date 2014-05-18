@@ -56,6 +56,10 @@ public class OneToOneMigrator {
     private final AuditValues auditValues = new AuditValues();
     private Integer borrowableValue = null;
 
+    public boolean isDeleteOnFailure() {
+        return deleteOnFailure;
+    }
+
     /**
      * Migrate all tables that have a logical one-to-one mapping between the
      * Source and the Destination.
@@ -91,8 +95,7 @@ public class OneToOneMigrator {
                         oneToOne, ex);
             }
         }
-        sse.close();
-        dse.close();
+        close();
 
         LOGGER.log(Level.INFO, "Process successfully completed!");
     }
@@ -101,7 +104,7 @@ public class OneToOneMigrator {
      * Migrate a given {@link OneToOne} table from the Source to its Destination
      * equivalent.
      */
-    private void migrateOneToOne(OneToOne oto) throws SQLException, Exception {
+    public void migrateOneToOne(OneToOne oto) throws SQLException, Exception {
 
         if (muteMigration) {
             oto.setRequireEmpty(false);
@@ -396,7 +399,12 @@ public class OneToOneMigrator {
         return value;
     }
 
-    private int deleteOneToOne(OneToOne oto) throws SQLException {
+    public int deleteOneToOne(OneToOne oto) throws SQLException {
         return dse.executeUpdate("DELETE FROM " + oto.getDestinationTable().getName(), false);
+    }
+
+    public void close() {
+        sse.close();
+        dse.close();
     }
 }

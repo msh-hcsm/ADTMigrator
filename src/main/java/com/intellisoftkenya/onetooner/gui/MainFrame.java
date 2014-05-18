@@ -1,16 +1,20 @@
 package com.intellisoftkenya.onetooner.gui;
 
-import com.intellisoftkenya.onetooner.PropertyManager;
+import com.intellisoftkenya.onetooner.business.MigrationException;
 import com.intellisoftkenya.onetooner.business.OneToOneMigrator;
+import com.intellisoftkenya.onetooner.business.TableConfigurator;
+import com.intellisoftkenya.onetooner.data.OneToOne;
 import com.intellisoftkenya.onetooner.log.LoggerFactory;
 import com.intellisoftkenya.onetooner.log.UILogHandler;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
-import javax.swing.border.TitledBorder;
 
 /**
  *
@@ -25,6 +29,7 @@ public class MainFrame extends javax.swing.JFrame {
      */
     public MainFrame() {
         initComponents();
+        statusLabel.setText("");
         setIconImage(new ImageIcon(getClass().getResource("/icons/migrator-icon.png")).getImage());
         registerLogHandlers();
         LOGGER = LoggerFactory.getLoger(MainFrame.class.getName());
@@ -46,6 +51,7 @@ public class MainFrame extends javax.swing.JFrame {
         settingsScrollPane = new javax.swing.JScrollPane();
         settingsTextArea = new javax.swing.JTextArea();
         progressBar = new javax.swing.JProgressBar();
+        statusLabel = new javax.swing.JLabel();
         logsPanel = new javax.swing.JPanel();
         logsScrollPane = new javax.swing.JScrollPane();
         logsTextArea = new javax.swing.JTextArea();
@@ -88,6 +94,8 @@ public class MainFrame extends javax.swing.JFrame {
         settingsTextArea.setRows(5);
         settingsScrollPane.setViewportView(settingsTextArea);
 
+        statusLabel.setText("status");
+
         javax.swing.GroupLayout buttonsPanelLayout = new javax.swing.GroupLayout(buttonsPanel);
         buttonsPanel.setLayout(buttonsPanelLayout);
         buttonsPanelLayout.setHorizontalGroup(
@@ -102,7 +110,8 @@ public class MainFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(buttonsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(settingsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 419, Short.MAX_VALUE)
-                    .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(statusLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         buttonsPanelLayout.setVerticalGroup(
@@ -112,9 +121,11 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGroup(buttonsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(exitButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(buttonsPanelLayout.createSequentialGroup()
-                        .addComponent(settingsScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(settingsScrollPane)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(statusLabel))
                     .addGroup(buttonsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(startButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(settingsButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
@@ -181,7 +192,7 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButtonActionPerformed
-        new MigrationWorker().execute();
+        new MigrationWorker(progressBar).execute();
     }//GEN-LAST:event_startButtonActionPerformed
 
     private void settingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingsButtonActionPerformed
@@ -191,6 +202,19 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_settingsButtonActionPerformed
 
     private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButtonActionPerformed
+        if (!startButton.isEnabled()) {
+            Object[] options = {"Yes",
+                "No"};
+            if (JOptionPane.showOptionDialog(this, "The process is still in progress. "
+                    + "Exiting now might leave your destination database in an inconsistent state.\n"
+                    + "Do you still want to quit?",
+                    "Are you sure?",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE,
+                    null, options, options[1]) == JOptionPane.NO_OPTION) {
+                return;
+            }
+        }
         System.exit(0);
     }//GEN-LAST:event_exitButtonActionPerformed
 
@@ -210,6 +234,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane settingsScrollPane;
     private javax.swing.JTextArea settingsTextArea;
     private javax.swing.JButton startButton;
+    private javax.swing.JLabel statusLabel;
     // End of variables declaration//GEN-END:variables
 
     private void registerLogHandlers() {
@@ -224,28 +249,74 @@ public class MainFrame extends javax.swing.JFrame {
         this.validate();
     }
 
-    private class MigrationWorker extends SwingWorker<Object, Object> {
+    private class MigrationWorker extends SwingWorker<Object, Integer> {
+
+        private final JProgressBar pb;
+
+        public MigrationWorker(JProgressBar pb) {
+            this.pb = pb;
+        }
 
         @Override
         protected Object doInBackground() throws Exception {
+            startButton.setEnabled(false);
+            OneToOneMigrator migrator = new OneToOneMigrator();
             try {
-                new OneToOneMigrator().migrate();
+                LOGGER.log(Level.INFO, "Process started.");
+
+                List<OneToOne> otos = new TableConfigurator().configureTables();
+                int i = 1;
+                int n = otos.size();
+                pb.setMaximum(n);
+                for (OneToOne oto : otos) {
+                    try {
+                        migrator.migrateOneToOne(oto);
+                        publish(i);
+                        statusLabel.setText("Executing step " + i + " of " + n);
+                        i++;
+                    } catch (Exception ex) {
+                        statusLabel.setText("Completed! (Executed " + i + " out of " + n + " steps)");
+                        String source = oto.getSourceTable().getName();
+                        String destination = oto.getDestinationTable().getName();
+                        LOGGER.log(Level.SEVERE, "An error occured while migrating data from ''{0}'' to ''{1}''.",
+                                new Object[]{source, destination});
+                        if (migrator.isDeleteOnFailure()) {
+                            LOGGER.log(Level.INFO, "Attempting to delete any data there may be in ''{0}''.",
+                                    new Object[]{destination});
+                            try {
+                                int affected = migrator.deleteOneToOne(oto);
+                                LOGGER.log(Level.INFO, "Deleted {0} records from ''{1}''. Fix the errors and re-run the process.",
+                                        new Object[]{affected, destination});
+                            } catch (SQLException sex) {
+                                LOGGER.log(Level.INFO, "Deleting from from ''{0}'' failed. Manually delete records "
+                                        + "from ''{0}''. fix the errors and re-run the process.",
+                                        new Object[]{destination});
+                                throw sex;
+                            }
+                        }
+                        throw new MigrationException("Process aborted! See logs for details.",
+                                oto, ex);
+                    }
+                }
+                statusLabel.setText("Completed! (Executed " + i + " out of " + n + " steps)");
+                LOGGER.log(Level.INFO, "Process successfully completed!");
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, "Migration error!.", ex);
+            } finally {
+                migrator.close();
             }
             return null;
         }
 
         @Override
         protected void done() {
-            super.done(); //To change body of generated methods, choose Tools | Templates.
+            startButton.setEnabled(true);
         }
 
         @Override
-        protected void process(List<Object> chunks) {
-            super.process(chunks); //To change body of generated methods, choose Tools | Templates.
+        protected void process(List<Integer> chunks) {
+            int i = chunks.get(chunks.size() - 1);
+            pb.setValue(i);
         }
-        
-        
     }
 }
