@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import javax.swing.ImageIcon;
+import javax.swing.SwingWorker;
 import javax.swing.border.TitledBorder;
 
 /**
@@ -180,11 +181,7 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButtonActionPerformed
-        try {
-            new OneToOneMigrator().migrate();
-        } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "Migration error!.", ex);
-        }
+        new MigrationWorker().execute();
     }//GEN-LAST:event_startButtonActionPerformed
 
     private void settingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingsButtonActionPerformed
@@ -231,5 +228,18 @@ public class MainFrame extends javax.swing.JFrame {
     private void refreshLogLevel() {
         ((TitledBorder) logsPanel.getBorder()).setTitle("Logs "
                 + "(" + PropertyManager.getProperty("logging.level") + ")");
+    }
+
+    private class MigrationWorker extends SwingWorker<Object, Object> {
+
+        @Override
+        protected Object doInBackground() throws Exception {
+            try {
+                new OneToOneMigrator().migrate();
+            } catch (Exception ex) {
+                LOGGER.log(Level.SEVERE, "Migration error!.", ex);
+            }
+            return null;
+        }
     }
 }
