@@ -4,6 +4,7 @@ import com.intellisoftkenya.onetooner.PropertyManager;
 import com.intellisoftkenya.onetooner.business.OneToOneMigrator;
 import com.intellisoftkenya.onetooner.log.LoggerFactory;
 import com.intellisoftkenya.onetooner.log.UILogHandler;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -25,7 +26,6 @@ public class MainFrame extends javax.swing.JFrame {
     public MainFrame() {
         initComponents();
         setIconImage(new ImageIcon(getClass().getResource("/icons/migrator-icon.png")).getImage());
-        refreshLogLevel();
         registerLogHandlers();
         LOGGER = LoggerFactory.getLoger(MainFrame.class.getName());
     }
@@ -160,9 +160,9 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(buttonsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(logsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(clearLogsButton)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(clearLogsButton)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -188,7 +188,6 @@ public class MainFrame extends javax.swing.JFrame {
         SettingsDialog sd = new SettingsDialog(this, true);
         sd.setLocationRelativeTo(null);
         sd.setVisible(true);
-        refreshLogLevel();
     }//GEN-LAST:event_settingsButtonActionPerformed
 
     private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButtonActionPerformed
@@ -225,11 +224,6 @@ public class MainFrame extends javax.swing.JFrame {
         this.validate();
     }
 
-    private void refreshLogLevel() {
-        ((TitledBorder) logsPanel.getBorder()).setTitle("Logs "
-                + "(" + PropertyManager.getProperty("logging.level") + ")");
-    }
-
     private class MigrationWorker extends SwingWorker<Object, Object> {
 
         @Override
@@ -241,5 +235,17 @@ public class MainFrame extends javax.swing.JFrame {
             }
             return null;
         }
+
+        @Override
+        protected void done() {
+            super.done(); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        protected void process(List<Object> chunks) {
+            super.process(chunks); //To change body of generated methods, choose Tools | Templates.
+        }
+        
+        
     }
 }
