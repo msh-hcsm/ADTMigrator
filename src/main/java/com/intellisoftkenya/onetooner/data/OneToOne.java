@@ -30,10 +30,12 @@ public class OneToOne implements Comparable<OneToOne> {
     private Map<Column, Column> columnMappings;
 
     /**
-     * Whether or not migration should require that the destination table be
-     * empty before proceeding. Set to true by default.
+     * The column = value to be used in an SQL where clause for the destination
+     * table associated with this object to determine if the table is sufficiently
+     * empty for migration to proceed. See 
+     * {@link OneToOneMigrator#isEmptyEnough(com.intellisoftkenya.onetooner.data.OneToOne) }
      */
-    private boolean requireEmpty = true;
+    private String emptinessCondition;
 
     /**
      * A custom select query to be used to read from the Source table instead of
@@ -68,9 +70,9 @@ public class OneToOne implements Comparable<OneToOne> {
     }
 
     public OneToOne(Integer deletionOrder, Table sourceTable, Table destinationTable,
-            boolean requireEmpty) {
+            String requireEmpty) {
         this(deletionOrder, sourceTable, destinationTable);
-        this.requireEmpty = requireEmpty;
+        this.emptinessCondition = requireEmpty;
     }
 
     public Table getSourceTable() {
@@ -97,12 +99,12 @@ public class OneToOne implements Comparable<OneToOne> {
         this.query = query;
     }
 
-    public boolean isRequireEmpty() {
-        return requireEmpty;
+    public String getEmptinessCondition() {
+        return emptinessCondition;
     }
 
-    public void setRequireEmpty(boolean requireEmpty) {
-        this.requireEmpty = requireEmpty;
+    public void setEmptinessCondition(String emptinessCondition) {
+        this.emptinessCondition = emptinessCondition;
     }
 
     public List<ExtraProcessor> getPreProcessors() {

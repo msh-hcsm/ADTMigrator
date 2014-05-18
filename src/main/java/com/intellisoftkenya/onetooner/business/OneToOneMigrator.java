@@ -106,14 +106,11 @@ public class OneToOneMigrator {
      */
     public void migrateOneToOne(OneToOne oto) throws SQLException, Exception {
 
-        if (muteMigration) {
-            oto.setRequireEmpty(false);
-            LOGGER.log(Level.WARNING, "Migration is muted. Only ExtraProcessors will run.");
-        }
-
-        if (oto.isRequireEmpty() && !destinationIsEmpty(oto.getDestinationTable())) {
-            LOGGER.log(Level.WARNING, "Skipped migration for table ''{0}''. "
-                    + "Destination table ''{1}'' is not empty.", new Object[]{oto.getSourceTable(), oto.getDestinationTable()});
+        if (!isEmptyEnough(oto)) {
+            if (!muteMigration) {
+                LOGGER.log(Level.WARNING, "Skipped migration for table ''{0}''. "
+                        + "Destination table ''{1}'' is not empty enough.", new Object[]{oto.getSourceTable(), oto.getDestinationTable()});
+            }
             return;
         }
 
@@ -406,5 +403,21 @@ public class OneToOneMigrator {
     public void close() {
         sse.close();
         dse.close();
+    }
+
+    private boolean isEmptyEnough(OneToOne oto) throws SQLException {
+        if (muteMigration) {
+            LOGGER.log(Level.WARNING, "Migration from {0} to {1} is muted. Only ExtraProcessors will run.",
+                    new Object[]{oto.getSourceTable().getName(), oto.getDestinationTable().getName()});
+            return false;
+        }
+        String skipIfQuery = "SELECT * FROM " + oto.getDestinationTable().getName();
+        if (oto.getEmptinessCondition() != null) {
+            skipIfQuery += (" WHERE " + oto.getEmptinessCondition());
+        }
+        ResultSet rs = dse.executeQuery(skipIfQuery);
+        boolean emptyEnough = !rs.next();
+        dse.close(rs);
+        return emptyEnough;
     }
 }

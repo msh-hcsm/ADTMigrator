@@ -440,7 +440,7 @@ public class TableConfigurator {
 
     private OneToOne configurePatientIdentifier_ArtId() {
         OneToOne oto = new OneToOne(1, new Table("tblARTPatientMasterInformation", Table.orderBy("ArtID")),
-                new Table("patient_identifier"));
+                new Table("patient_identifier"), "identifier_type_id = " + Constants.ART_IDENTIFIER_TYPE_ID);
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column("ArtID", Types.VARCHAR), new Column("identifier", Types.VARCHAR));
@@ -457,7 +457,7 @@ public class TableConfigurator {
 
     private OneToOne configurePatientIdentifier_OpipdId() {
         OneToOne oto = new OneToOne(1, new Table("tblARTPatientMasterInformation", Table.orderBy("OPIPNO")),
-                new Table("patient_identifier"), false);
+                new Table("patient_identifier"), "identifier_type_id = " + Constants.OPIP_IDENTIFIER_TYPE_ID);
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column("OPIPNO", Types.VARCHAR), new Column("identifier", Types.VARCHAR));
@@ -530,7 +530,7 @@ public class TableConfigurator {
 
     private OneToOne configureTransaction_Stock() {
         OneToOne oto = new OneToOne(9, new Table("tblARVDrugStockTransactions", Table.orderBy("StockTranNo")),
-                new Table("transaction"));
+                new Table("transaction"), "legacy_pk LIKE 'S%'");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         Column transactionTypeId = new Column("transaction_type_id", Types.INTEGER);
@@ -554,7 +554,7 @@ public class TableConfigurator {
 
     private OneToOne configureTransaction_Patient() throws SQLException {
         OneToOne oto = new OneToOne(9, new Table("tblARTPatientTransactions", Table.orderBy("MIN(PatientTranNo)")),
-                new Table("transaction"), false);
+                new Table("transaction"), "legacy_pk LIKE 'P%'");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column(null, Types.VARCHAR),
@@ -586,7 +586,7 @@ public class TableConfigurator {
 
     private OneToOne configureTransactionItem_Stock() {
         OneToOne oto = new OneToOne(8, new Table("tblARVDrugStockTransactions", Table.orderBy("StockTranNo")),
-                new Table("transaction_item"));
+                new Table("transaction_item"), "legacy_pk LIKE 'S%'");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         Column drugId = new Column("drug_id", Types.INTEGER);
@@ -621,7 +621,7 @@ public class TableConfigurator {
 
     private OneToOne configureTransactionItem_Patient() throws SQLException {
         OneToOne oto = new OneToOne(8, new Table("tblARTPatientTransactions", Table.orderBy("PatientTranNo")),
-                new Table("transaction_item"), false);
+                new Table("transaction_item"), "legacy_pk LIKE 'P%'");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         Column drugId = new Column("drug_id", Types.INTEGER);
