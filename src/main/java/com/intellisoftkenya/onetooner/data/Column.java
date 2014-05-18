@@ -21,9 +21,8 @@ public class Column extends NamedDatabaseObject {
 
     /**
      * An optional default value that may be inserted for this column on the
-     * Destination side. It is activated by setting it to anything other than
-     * null. When activated, this column should be mapped to a source column
-     * whose name is set to null.
+     * Destination side. It is activated by the name of the source column mapped
+     * to this destination column to null.
      */
     private Object value;
 
