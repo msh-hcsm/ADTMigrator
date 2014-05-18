@@ -11,7 +11,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Manages application properties. Supports reading and writing to an external
+ * properties file as well as restoring default values.
+ * 
  * @author gitahi
  */
 public class PropertyManager {
@@ -24,6 +26,9 @@ public class PropertyManager {
     }
 
     /**
+     * Gets the property value given it's key. Optionally may be instructed to
+     * return the default instead of the current value.
+     * 
      * @param name the property key
      * @param def if true, the default value rather that the current property
      * value is returned
@@ -60,14 +65,30 @@ public class PropertyManager {
         return "";
     }
 
+    /**
+     * Gets the property value given it's key.
+     * 
+     * @param name the property key
+     * 
+     * @return the property value.
+     */
     public static String getProperty(String name) {
         return getProperty(name, false);
     }
 
+    /**
+     * Sets the property given it's key and value.
+     * 
+     * @param key the property key
+     * @param value the property value
+     */
     public static void setProperty(String key, String value) {
         properties.setProperty(key, value);
     }
 
+    /**
+     * Persists the current property setting to a properties file.
+     */
     public static void saveProperties() {
         OutputStream outputStream = null;
         try {
@@ -88,6 +109,9 @@ public class PropertyManager {
         }
     }
 
+    /**
+     * Loads all property values from a properties file.
+     */
     private static void loadProperties() {
         InputStream inputStream = null;
         try {
