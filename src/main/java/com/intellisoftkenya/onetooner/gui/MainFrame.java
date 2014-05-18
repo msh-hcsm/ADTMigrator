@@ -120,7 +120,9 @@ public class MainFrame extends javax.swing.JFrame {
         settingsTextArea.setEditable(false);
         settingsTextArea.setColumns(20);
         settingsTextArea.setForeground(new java.awt.Color(0, 0, 204));
+        settingsTextArea.setLineWrap(true);
         settingsTextArea.setRows(5);
+        settingsTextArea.setWrapStyleWord(true);
         settingsScrollPane.setViewportView(settingsTextArea);
 
         javax.swing.GroupLayout buttonsPanelLayout = new javax.swing.GroupLayout(buttonsPanel);
@@ -339,10 +341,10 @@ public class MainFrame extends javax.swing.JFrame {
         settingsTextArea.append("Source Username: " + PropertyManager.getProperty("source.username") + "\n");
         settingsTextArea.append("Source Password: " + PropertyManager.getProperty("source.password") + "\n");
 
-        settingsTextArea.append("Source Driver: " + PropertyManager.getProperty("destination.driver") + "\n");
-        settingsTextArea.append("Source URL: " + PropertyManager.getProperty("destination.url") + "\n");
-        settingsTextArea.append("Source Username: " + PropertyManager.getProperty("destination.username") + "\n");
-        settingsTextArea.append("Source Password: " + PropertyManager.getProperty("destination.password"));
+        settingsTextArea.append("Destination Driver: " + PropertyManager.getProperty("destination.driver") + "\n");
+        settingsTextArea.append("Destination URL: " + PropertyManager.getProperty("destination.url") + "\n");
+        settingsTextArea.append("Destination Username: " + PropertyManager.getProperty("destination.username") + "\n");
+        settingsTextArea.append("Destination Password: " + PropertyManager.getProperty("destination.password"));
 
     }
 

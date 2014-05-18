@@ -264,10 +264,11 @@ public class SettingsDialog extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(loggingPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(okButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(closeButton)
-                    .addComponent(defaultsButton))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(defaultsButton)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(okButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(closeButton)))
                 .addContainerGap())
         );
 
@@ -390,7 +391,7 @@ public class SettingsDialog extends javax.swing.JDialog {
                 loggingLevelTextArea.setText(level + ": All messages. (A lot of output, use judiciously)");
                 break;
             case "OFF":
-                loggingLevelTextArea.setText(level + ": No messages will be logged. (Note recommended)");
+                loggingLevelTextArea.setText(level + ": No messages will be logged. (Not recommended)");
                 break;
             default:
                 loggingLevelTextArea.setText("");
