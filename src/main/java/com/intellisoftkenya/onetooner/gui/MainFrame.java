@@ -27,6 +27,7 @@ import javax.swing.SwingWorker;
 public class MainFrame extends javax.swing.JFrame {
 
     private static Logger LOGGER;
+    private boolean pause = false;
 
     /**
      * Creates new form MainFrame
@@ -51,8 +52,9 @@ public class MainFrame extends javax.swing.JFrame {
 
         buttonsPanel = new javax.swing.JPanel();
         startButton = new javax.swing.JButton();
-        settingsButton = new javax.swing.JButton();
         clearDestinationButton = new javax.swing.JButton();
+        schedulePauseButton = new javax.swing.JButton();
+        settingsButton = new javax.swing.JButton();
         exitButton = new javax.swing.JButton();
         settingsScrollPane = new javax.swing.JScrollPane();
         settingsTextArea = new javax.swing.JTextArea();
@@ -75,16 +77,6 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        settingsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/settings-icon.png"))); // NOI18N
-        settingsButton.setText("Settings");
-        settingsButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        settingsButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        settingsButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                settingsButtonActionPerformed(evt);
-            }
-        });
-
         clearDestinationButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/clear-icon.png"))); // NOI18N
         clearDestinationButton.setText("Clear destination");
         clearDestinationButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -92,6 +84,26 @@ public class MainFrame extends javax.swing.JFrame {
         clearDestinationButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 clearDestinationButtonActionPerformed(evt);
+            }
+        });
+
+        schedulePauseButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/pause-icon.png"))); // NOI18N
+        schedulePauseButton.setText("Schedule pause");
+        schedulePauseButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        schedulePauseButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        schedulePauseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                schedulePauseButtonActionPerformed(evt);
+            }
+        });
+
+        settingsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/settings-icon.png"))); // NOI18N
+        settingsButton.setText("Settings");
+        settingsButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        settingsButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        settingsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                settingsButtonActionPerformed(evt);
             }
         });
 
@@ -119,13 +131,15 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(startButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(settingsButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(clearDestinationButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(schedulePauseButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(settingsButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(exitButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(settingsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
+                .addComponent(settingsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 319, Short.MAX_VALUE)
                 .addContainerGap())
         );
         buttonsPanelLayout.setVerticalGroup(
@@ -137,7 +151,8 @@ public class MainFrame extends javax.swing.JFrame {
                     .addGroup(buttonsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(startButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(settingsButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(clearDestinationButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(clearDestinationButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(schedulePauseButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(settingsScrollPane))
                 .addContainerGap())
         );
@@ -210,6 +225,7 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButtonActionPerformed
+        pause = false;
         showStatus("", Color.BLACK);
         new MigrationWorker(progressBar).execute();
     }//GEN-LAST:event_startButtonActionPerformed
@@ -230,9 +246,14 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_clearLogsButtonActionPerformed
 
     private void clearDestinationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearDestinationButtonActionPerformed
+        pause = false;
         showStatus("", Color.BLACK);
         new DeletionWorker(progressBar).execute();
     }//GEN-LAST:event_clearDestinationButtonActionPerformed
+
+    private void schedulePauseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_schedulePauseButtonActionPerformed
+        pause = true;
+    }//GEN-LAST:event_schedulePauseButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel buttonsPanel;
@@ -243,6 +264,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane logsScrollPane;
     private javax.swing.JTextArea logsTextArea;
     private javax.swing.JProgressBar progressBar;
+    private javax.swing.JButton schedulePauseButton;
     private javax.swing.JButton settingsButton;
     private javax.swing.JScrollPane settingsScrollPane;
     private javax.swing.JTextArea settingsTextArea;
@@ -342,6 +364,7 @@ public class MainFrame extends javax.swing.JFrame {
             long start = new Date().getTime();
             long finish;
             startButton.setEnabled(false);
+            clearDestinationButton.setEnabled(false);
             OneToOneMigrator migrator = new OneToOneMigrator();
             try {
                 LOGGER.log(Level.INFO, "Process started.");
@@ -356,6 +379,11 @@ public class MainFrame extends javax.swing.JFrame {
                         i++;
                         publish(i);
                         showStatus("Executed step " + i + " of " + n, Color.BLACK);
+                        if (pause) {
+                            showStatus("Paused! (Executed " + i + " out of " + n + " steps)", Color.BLACK);
+                            LOGGER.log(Level.INFO, "Process paused!");
+                            return null;
+                        }
                     } catch (Exception ex) {
                         showStatus("Aborted! (Executed " + i + " out of " + n + " steps)", Color.RED);
                         String source = oto.getSourceTable().getName();
@@ -395,6 +423,7 @@ public class MainFrame extends javax.swing.JFrame {
         @Override
         protected void done() {
             startButton.setEnabled(true);
+            clearDestinationButton.setEnabled(true);
         }
 
         @Override
@@ -416,6 +445,7 @@ public class MainFrame extends javax.swing.JFrame {
         protected Object doInBackground() throws Exception {
             long start = new Date().getTime();
             long finish;
+            startButton.setEnabled(false);
             clearDestinationButton.setEnabled(false);
             OneToOneMigrator migrator = new OneToOneMigrator();
             try {
@@ -434,6 +464,11 @@ public class MainFrame extends javax.swing.JFrame {
                         i++;
                         publish(i);
                         showStatus("Executed step " + i + " of " + n, Color.BLACK);
+                        if (pause) {
+                            showStatus("Paused! (Executed " + i + " out of " + n + " steps)", Color.BLACK);
+                            LOGGER.log(Level.INFO, "Process paused!");
+                            return null;
+                        }
                     } catch (SQLException ex) {
                         showStatus("Aborted! (Executed " + i + " out of " + n + " steps)", Color.RED);
                         String destination = oto.getDestinationTable().getName();
@@ -457,6 +492,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         @Override
         protected void done() {
+            startButton.setEnabled(true);
             clearDestinationButton.setEnabled(true);
         }
 
