@@ -2,6 +2,7 @@ package com.intellisoftkenya.onetooner.api.imp.translator;
 
 import com.intellisoftkenya.onetooner.api.translator.ValueInferrer;
 import com.intellisoftkenya.onetooner.dao.DestinationSqlExecutor;
+import com.intellisoftkenya.onetooner.dao.SourceSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SqlExecutor;
 import com.intellisoftkenya.onetooner.log.LoggerFactory;
 import java.sql.ResultSet;
@@ -20,38 +21,57 @@ import java.util.logging.Logger;
 public class AccountValueInferrer implements ValueInferrer {
 
     private static final Logger LOGGER = LoggerFactory.getLoger(AccountValueInferrer.class.getName());
-    
+
     private final SqlExecutor dse = DestinationSqlExecutor.getInstance();
-    private final Map<String, Integer> cache = new HashMap<>();
+    private final SqlExecutor sse = SourceSqlExecutor.getInstance();
+
+    private final Map<String, Integer> idCache = new HashMap<>();
+    private final Map<String, String> nameCache = new HashMap<>();
 
     @Override
     public Integer infer(String value) throws Exception {
-        if ("1".equalsIgnoreCase(value)) {
-            return readId("KEMSA");
-        } else if ("2".equalsIgnoreCase(value)) {
-            return readId("KENYA PHARMA");
-        } else if ("3".equalsIgnoreCase(value)) {
-            return readId("DRUG STORE");
-        } else if ("4".equalsIgnoreCase(value)) {
-            return readId("PATIENT RETURNS");
-        } else if ("ARV Bulk store".equalsIgnoreCase(value)) {
-            return readId("BULK STORE");
-        } else if ("PATIENT RETURNS".equalsIgnoreCase(value)) {
-            return readId("PATIENT RETURNS");
-        } else if ("SATILITE SITES".equalsIgnoreCase(value)) {
-            return readId("SATELLITE SITES");
-        } else if ("99".equalsIgnoreCase(value)) {
-            return readId("STOCK TAKE");
+        String name = readName(value);
+        if (name != null) {
+            return readId(name);
         }
         return null;
+    }
+
+    private String readName(String value) throws SQLException {
+        String ret = nameCache.get(value);
+        if (ret == null) {
+            Integer intValue;
+            try {
+                intValue = Integer.parseInt(value);
+            } catch (NumberFormatException ex) {
+                LOGGER.log(Level.WARNING, "The value " + value 
+                        + " cannot be inferred since it is not an integer. Returning null.", ex);
+                return null;
+            }
+            String select = "SELECT MIN(SDNo) AS SDNo_, MIN(SourceorDestination) AS SourceorDestination_\n"
+                    + "FROM tblARVStockTranSourceorDestination WHERE SourceorDestination IS NOT NULL\n"
+                    + "AND SDNo = " + intValue + "\n"
+                    + "GROUP BY SDNo";
+            ResultSet rs = null;
+            try {
+                rs = sse.executeQuery(select);
+                if (rs.next()) {
+                    ret = rs.getString("SourceorDestination_");
+                    nameCache.put(value, ret);
+                }
+            } finally {
+                dse.close(rs);
+            }
+        }
+        return ret;
     }
 
     /**
      * Read the FDT integer database id for this name value in the account
      * table.
      */
-    private Integer readId(String value) throws Exception {
-        Integer ret = cache.get(value);
+    private Integer readId(String value) throws SQLException {
+        Integer ret = idCache.get(value);
         if (ret == null) {
             String select = "SELECT id FROM account WHERE name = '" + value + "'";
             ResultSet rs = null;
@@ -59,7 +79,7 @@ public class AccountValueInferrer implements ValueInferrer {
                 rs = dse.executeQuery(select);
                 if (rs.next()) {
                     ret = rs.getInt("id");
-                    cache.put(value, ret);
+                    idCache.put(value, ret);
                 }
             } finally {
                 dse.close(rs);
