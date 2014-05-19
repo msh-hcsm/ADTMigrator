@@ -363,7 +363,8 @@ public class OneToOneMigrator {
             }
             pStmt.setString(1, stringValue);
 
-            LOGGER.log(Level.FINEST, "Setting parameter from reference using select statement: ''{0}''", select);
+            LOGGER.log(Level.FINEST, "Setting parameter from reference using select statement: ''{0}'' : {1}", 
+                    new Object[]{select, stringValue});
 
             ResultSet rs = pStmt.executeQuery();
             if (rs.next()) {

@@ -1,9 +1,7 @@
 package com.intellisoftkenya.onetooner;
 
-import com.intellisoftkenya.onetooner.business.OneToOneMigrator;
 import com.intellisoftkenya.onetooner.gui.MainFrame;
 import com.intellisoftkenya.onetooner.log.LoggerFactory;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 
