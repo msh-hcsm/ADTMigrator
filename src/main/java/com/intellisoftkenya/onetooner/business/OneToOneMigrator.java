@@ -389,7 +389,8 @@ public class OneToOneMigrator {
                 }
                 if (value == null && !ref.isOptional()) {
                     LOGGER.log(Level.SEVERE, "A lookup table is missing a referenced value and the value could not be "
-                            + "inferred, created or borrowed. The associated select statement is:\n ''{0}'' : {1}",
+                            + "inferred, created or borrowed. The associated select statement is:\n ''{0}'' : {1}. "
+                            + "Could the record have been skipped?",
                     new Object[]{select, stringValue});
                     throw new Exception("Required reference to lookup table value not satisfied.");
                 }

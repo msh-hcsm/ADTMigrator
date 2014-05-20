@@ -32,7 +32,8 @@ public class Column extends NamedDatabaseObject {
      * more than one source table is going to a single destination table and key
      * values from the different source tables belong to the same set and hence
      * have the potential to collide. Prefixing is activated by setting this
-     * value to anything other than null.
+     * value to anything other than null. Choose a prefix value that is unlikely
+     * to collide with real data for the intended column.
      */
     private String prefix;
 

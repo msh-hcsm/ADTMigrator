@@ -538,7 +538,7 @@ public class TableConfigurator {
         transactionTypeId.setReference(new Reference("transaction_type", "legacy_pk", false));
         columnMappings.put(new Column("TransactionType_", Types.VARCHAR), transactionTypeId);
 
-        columnMappings.put(new Column("StockTranNo_", Types.INTEGER), new Column("legacy_pk", Types.VARCHAR, "S"));
+        columnMappings.put(new Column("StockTranNo_", Types.INTEGER), new Column("legacy_pk", Types.VARCHAR, "Stck"));
         columnMappings.put(new Column("RefOrderNo_", Types.INTEGER), new Column("reference_no", Types.VARCHAR));
         columnMappings.put(new Column("TranDate_", Types.DATE), new Column("date", Types.DATE));
         columnMappings.put(new Column("Remarks_", Types.VARCHAR), new Column("comments", Types.VARCHAR));
@@ -561,7 +561,7 @@ public class TableConfigurator {
         columnMappings.put(new Column(null, Types.VARCHAR),
                 new Column("transaction_type_id", Types.INTEGER, 
                         new LookupValue("transaction_type", "Dispensed to Patients")));
-        columnMappings.put(new Column("PatientTranNo_", Types.INTEGER), new Column("legacy_pk", Types.VARCHAR, "P"));
+        columnMappings.put(new Column("PatientTranNo_", Types.INTEGER), new Column("legacy_pk", Types.VARCHAR, "Prsn"));
 
         Column visitId = new Column("visit_id", Types.INTEGER);
         visitId.setReference(new Reference("visit", "legacy_pk"));
@@ -595,7 +595,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("ARVDrugsID_", Types.VARCHAR), drugId);
 
         Column transactionId = new Column("transaction_id", Types.INTEGER);
-        transactionId.setReference(new Reference("transaction", "legacy_pk", "S", false));
+        transactionId.setReference(new Reference("transaction", "legacy_pk", "Stck", false));
         columnMappings.put(new Column("StockTranNo_", Types.INTEGER), transactionId);
 
         Column accountId = new Column("account_id", Types.INTEGER);
@@ -605,7 +605,7 @@ public class TableConfigurator {
         accountId.setReference(reference);
         columnMappings.put(new Column("SourceorDestination_", Types.VARCHAR), accountId);
 
-        columnMappings.put(new Column("StockTranNo_", Types.INTEGER), new Column("legacy_pk", Types.VARCHAR, "S"));
+        columnMappings.put(new Column("StockTranNo_", Types.INTEGER), new Column("legacy_pk", Types.VARCHAR, "Stck"));
         columnMappings.put(new Column("BatchNo_", Types.VARCHAR), new Column("batch_no", Types.VARCHAR));
         columnMappings.put(new Column("Qty_", Types.DATE), new Column("units_in", Types.DECIMAL));
         columnMappings.put(new Column("Qty_", Types.VARCHAR), new Column("units_out", Types.DECIMAL));
@@ -630,14 +630,14 @@ public class TableConfigurator {
         columnMappings.put(new Column("Drugname_", Types.VARCHAR), drugId);
 
         Column transactionId = new Column("transaction_id", Types.INTEGER);
-        transactionId.setReference(new Reference("transaction", "legacy_pk", true, "P", false));
+        transactionId.setReference(new Reference("transaction", "legacy_pk", true, "Prsn", false));
         columnMappings.put(new Column("PatientTranNo_", Types.INTEGER), transactionId);
 
         columnMappings.put(new Column(null, Types.VARCHAR),
                 new Column("account_id", Types.INTEGER, 
                         new LookupValue("account", "PATIENTS")));
 
-        columnMappings.put(new Column("PatientTranNo_", Types.INTEGER), new Column("legacy_pk", Types.VARCHAR, "P"));
+        columnMappings.put(new Column("PatientTranNo_", Types.INTEGER), new Column("legacy_pk", Types.VARCHAR, "Prsn"));
         columnMappings.put(new Column("BatchNo_", Types.VARCHAR), new Column("batch_no", Types.VARCHAR));
         columnMappings.put(new Column("ARVQty_", Types.DATE), new Column("units_in", Types.DECIMAL));
         columnMappings.put(new Column("ARVQty_", Types.VARCHAR), new Column("units_out", Types.DECIMAL));
@@ -669,7 +669,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("Expirydate", Types.DATE), new Column("date_of_expiry", Types.DATE));
 
         Column patientId = new Column("transaction_item_id", Types.INTEGER);
-        patientId.setReference(new Reference("transaction_item", "legacy_pk", "S", false));
+        patientId.setReference(new Reference("transaction_item", "legacy_pk", "Stck", false));
         columnMappings.put(new Column("StockTranNo", Types.VARCHAR), patientId);
 
         oto.setQuery("SELECT StockTranNo, Npacks, PackSize, BatchNo, Expirydate \n"
@@ -693,7 +693,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("duration_", Types.INTEGER), new Column("duration", Types.INTEGER));
 
         Column transactionItemId = new Column("transaction_item_id", Types.INTEGER);
-        transactionItemId.setReference(new Reference("transaction_item", "legacy_pk", "P", false));
+        transactionItemId.setReference(new Reference("transaction_item", "legacy_pk", "Prsn", false));
         columnMappings.put(new Column("PatientTranNo_", Types.VARCHAR), transactionItemId);
 
         Column dosage = new Column("dosage_id", Types.INTEGER);
