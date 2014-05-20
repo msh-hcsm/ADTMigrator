@@ -1,12 +1,13 @@
 package com.intellisoftkenya.onetooner.business;
 
-import com.intellisoftkenya.onetooner.api.imp.translator.DrugCategoryValueTranslator;
-import com.intellisoftkenya.onetooner.api.imp.translator.AccountTypeValueTranslator;
+import com.intellisoftkenya.onetooner.api.imp.processor.Account99Includer;
 import com.intellisoftkenya.onetooner.api.imp.processor.IdentifierTypeCreator;
 import com.intellisoftkenya.onetooner.api.imp.processor.LookupValuePkProcessor;
 import com.intellisoftkenya.onetooner.api.imp.processor.UnitsInOutUpdater;
 import com.intellisoftkenya.onetooner.api.imp.processor.VisitUpdater;
+import com.intellisoftkenya.onetooner.api.imp.translator.AccountTypeValueTranslator;
 import com.intellisoftkenya.onetooner.api.imp.translator.AccountValueInferrer;
+import com.intellisoftkenya.onetooner.api.imp.translator.DrugCategoryValueTranslator;
 import com.intellisoftkenya.onetooner.data.Column;
 import com.intellisoftkenya.onetooner.data.LookupValue;
 import com.intellisoftkenya.onetooner.data.OneToOne;
@@ -108,7 +109,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("SourceorDestination_", Types.VARCHAR), accountTypeId);
 
         oto.setColumnMappings(columnMappings);
-
+        oto.addPostProcessor(new Account99Includer());
         oto.setQuery("SELECT MIN(SDNo) AS SDNo_, MIN(SourceorDestination) AS SourceorDestination_\n"
                 + "FROM tblARVStockTranSourceorDestination WHERE SourceorDestination IS NOT NULL\n"
                 + "GROUP BY SDNo\n"

@@ -11,6 +11,11 @@ import com.intellisoftkenya.onetooner.data.OneToOne;
  * {@link OneToOne#setPreProcessor(com.intellisoftkenya.onetooner.business.api.ExtraProcessor)}
  * and
  * {@link OneToOne#setPostProcessor(com.intellisoftkenya.onetooner.business.api.ExtraProcessor)}.
+ * 
+ * If you ask for any instances of {@link SqlExecutor} or it's subclasses, in your
+ * implementations of this interface, do not close them. The {@link OneToOneMigrator} 
+ * object will complain. Let it take care of that business.
+ * them in 
  *
  * @author gitahi
  */
