@@ -2,6 +2,7 @@ package com.intellisoftkenya.onetooner.data;
 
 import com.intellisoftkenya.onetooner.api.translator.ValueInferrer;
 import com.intellisoftkenya.onetooner.api.translator.ValueTranslator;
+import com.intellisoftkenya.onetooner.business.OneToOneMigrator;
 
 /**
  * A reference to an Destination database table to which this column is a
@@ -38,8 +39,9 @@ public class Reference {
      * when a source column contains legacy data that is not part of an existing
      * referential relationship.
      *
-     * Defaults to false if not set. Setting this value to true automatically
-     * sets creatable and borrowable to false.
+     * Defaults to false if not set. This strategy is used first i.e. if reading
+     * out of a lookup table produces null. See {@link OneToOneMigrator#setParameterFromReference(
+     * com.intellisoftkenya.onetooner.data.Reference, java.lang.String) }
      */
     private boolean inferable = false;
 
@@ -49,8 +51,9 @@ public class Reference {
      * table allowing insertion to column alone. If for instance there are other
      * non-nullable columns which do not have defaults, creation will fail.
      *
-     * Defaults to false if not set. Setting this value to true automatically
-     * sets inferable and borrowable to false.
+     * Defaults to false if not set. This strategy is used second i.e. if the
+     * inferring strategy produces null or is turned off. See {@link OneToOneMigrator#setParameterFromReference(
+     * com.intellisoftkenya.onetooner.data.Reference, java.lang.String) }
      */
     private boolean creatable = false;
 
@@ -61,10 +64,19 @@ public class Reference {
      * one-to-many relationships. Records from the many side of the relationship
      * must be ordered by the referencing column for this to work correctly.
      *
-     * Defaults to false if not set. Setting this value to true automatically
-     * sets inferable and creatable to false.
+     * Defaults to false if not set. This strategy is used last i.e. if the
+     * create and borrow strategies produce no values or are turned off. See {@link OneToOneMigrator#setParameterFromReference(
+     * com.intellisoftkenya.onetooner.data.Reference, java.lang.String) }
      */
     private boolean borrowable = false;
+
+    /**
+     * Whether or not a reference value must be found either from by reading it
+     * out of a lookup table, inferring it, creating it or borrowing it, in that
+     * order. If set to false then an exception is thrown if none of these
+     * strategies produces a value.
+     */
+    private boolean optional = true;
 
     /**
      * A {@link ValueTranslator} to process a reference value to be used as the
@@ -94,14 +106,20 @@ public class Reference {
         this.valueTranslator = valueTranslator;
     }
 
+    public Reference(String table, boolean creatable, boolean optional, ValueTranslator valueTranslator) {
+        this(table, creatable);
+        this.optional = optional;
+        this.valueTranslator = valueTranslator;
+    }
+
     public Reference(String table, String column) {
         this(table);
         this.column = column;
     }
 
-    public Reference(String table, String column, boolean borrowable) {
+    public Reference(String table, String column, boolean optional) {
         this(table, column);
-        this.borrowable = borrowable;
+        this.optional = optional;
     }
 
     public Reference(String table, String column, String prefix) {
@@ -109,10 +127,21 @@ public class Reference {
         this.prefix = prefix;
     }
 
+    public Reference(String table, String column, String prefix, boolean optional) {
+        this(table, column);
+        this.prefix = prefix;
+        this.optional = optional;
+    }
+
     public Reference(String table, String column, boolean borrowable, String prefix) {
         this(table, column);
         this.borrowable = borrowable;
         this.prefix = prefix;
+    }
+
+    public Reference(String table, String column, boolean borrowable, String prefix, boolean optional) {
+        this(table, column, borrowable, prefix);
+        this.optional = optional;
     }
 
     public String getTable() {
@@ -149,10 +178,6 @@ public class Reference {
 
     public void setInferable(boolean inferable) {
         this.inferable = inferable;
-        if (inferable) {
-            creatable = false;
-            borrowable = false;
-        }
     }
 
     public boolean isCreatable() {
@@ -161,10 +186,6 @@ public class Reference {
 
     public void setCreatable(boolean creatable) {
         this.creatable = creatable;
-        if (creatable) {
-            inferable = false;
-            borrowable = false;
-        }
     }
 
     public boolean isBorrowable() {
@@ -173,10 +194,14 @@ public class Reference {
 
     public void setBorrowable(boolean borrowable) {
         this.borrowable = borrowable;
-        if (borrowable) {
-            inferable = false;
-            creatable = false;
-        }
+    }
+
+    public boolean isOptional() {
+        return optional;
+    }
+
+    public void setOptional(boolean optional) {
+        this.optional = optional;
     }
 
     public ValueTranslator getValueTranslator() {

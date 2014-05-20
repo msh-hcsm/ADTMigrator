@@ -7,7 +7,6 @@ import com.intellisoftkenya.onetooner.dao.SqlExecutor;
 import com.intellisoftkenya.onetooner.data.Column;
 import com.intellisoftkenya.onetooner.data.OneToOne;
 import com.intellisoftkenya.onetooner.data.Reference;
-import com.intellisoftkenya.onetooner.data.Table;
 import com.intellisoftkenya.onetooner.log.LoggerFactory;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -103,8 +102,13 @@ public class OneToOneMigrator {
     /**
      * Migrate a given {@link OneToOne} table from the Source to its Destination
      * equivalent.
+     *
+     * @param oto the {@link OneToOne} object representing the migration
+     * table/column mappings
+     *
+     * @throws java.lang.Exception if migration fails
      */
-    public void migrateOneToOne(OneToOne oto) throws SQLException, Exception {
+    public void migrateOneToOne(OneToOne oto) throws Exception {
 
         if (!isEmptyEnough(oto)) {
             if (!muteMigration) {
@@ -189,15 +193,6 @@ public class OneToOneMigrator {
             LOGGER.log(Level.INFO, "Migrated {0} row(s) from ''{1}'' "
                     + "to ''{2}''.", new Object[]{totalRowCount - skippedRowCount, oto.getSourceTable(), oto.getDestinationTable()});
         }
-    }
-
-    /**
-     * @return true if the Destination table is empty.
-     */
-    private boolean destinationIsEmpty(Table destinationTable) throws SQLException {
-        String select = "SELECT * FROM " + destinationTable.getName();
-        ResultSet rs = dse.executeQuery(select);
-        return !rs.next();
     }
 
     /**
@@ -363,7 +358,7 @@ public class OneToOneMigrator {
             }
             pStmt.setString(1, stringValue);
 
-            LOGGER.log(Level.FINEST, "Setting parameter from reference using select statement: ''{0}'' : {1}", 
+            LOGGER.log(Level.FINEST, "Setting parameter from reference using select statement: ''{0}'' : {1}",
                     new Object[]{select, stringValue});
 
             ResultSet rs = pStmt.executeQuery();
@@ -376,7 +371,8 @@ public class OneToOneMigrator {
             } else {
                 if (ref.isInferable() && ref.getValueInferrer() != null) {
                     value = ref.getValueInferrer().infer(stringValue);
-                } else if (ref.isCreatable()) {
+                }
+                if (value == null && ref.isCreatable()) {
                     String insert = "INSERT INTO "
                             + ref.getTable() + "(" + ref.getColumn() + ", uuid, created_by, created_on) "
                             + "VALUES('" + stringValue + "', '" + auditValues.uuid()
@@ -386,11 +382,16 @@ public class OneToOneMigrator {
 
                     value = dse.executeUpdate(insert, true);
                     referenceCache.put(referenceKey, value);
-                } else {
-                    if (ref.isBorrowable()) {
-                        value = borrowableValue;
+                }
+                if (value == null && ref.isBorrowable()) {
+                      value = borrowableValue;
                         referenceCache.put(referenceKey, value);
-                    }
+                }
+                if (value == null && !ref.isOptional()) {
+                    LOGGER.log(Level.SEVERE, "A lookup table is missing a referenced value and the value could not be "
+                            + "inferred, created or borrowed. The associated select statement is:\n ''{0}'' : {1}",
+                    new Object[]{select, stringValue});
+                    throw new Exception("Required reference to lookup table value not satisfied.");
                 }
             }
         }
