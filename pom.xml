@@ -82,4 +82,17 @@
         <url>scm:git:git@bitbucket.org:fdt_developers/onetooner.git</url>
         <tag>HEAD</tag>
     </scm>
+    
+    <distributionManagement>
+        <snapshotRepository>
+            <id>onetooner-repo-snapshots</id>
+            <name>Onetooner Snapshots</name>
+            <url>file:///home/gitahi/Development/NetBeansProjects/snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>onetooner-repo-releases</id>
+            <name>Onetooner Releases</name>
+            <url>file:///home/gitahi/Development/NetBeansProjects/releases/</url>
+        </repository>
+    </distributionManagement>
 </project>
