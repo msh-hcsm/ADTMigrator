@@ -11,6 +11,7 @@ import com.intellisoftkenya.onetooner.api.imp.translator.DrugCategoryValueTransl
 import com.intellisoftkenya.onetooner.data.Column;
 import com.intellisoftkenya.onetooner.data.LookupValue;
 import com.intellisoftkenya.onetooner.data.OneToOne;
+import com.intellisoftkenya.onetooner.data.Parameter;
 import com.intellisoftkenya.onetooner.data.ParameterizedQuery;
 import com.intellisoftkenya.onetooner.data.Reference;
 import com.intellisoftkenya.onetooner.data.Table;
@@ -112,7 +113,7 @@ public class TableConfigurator {
 
         oto.setColumnMappings(columnMappings);
         oto.addPostProcessor(new Account99Includer());
-        
+
         oto.setParameterizedQuery("SELECT MIN(SDNo) AS SDNo_, MIN(SourceorDestination) AS SourceorDestination_\n"
                 + "FROM tblARVStockTranSourceorDestination WHERE SourceorDestination IS NOT NULL\n"
                 + "GROUP BY SDNo\n"
@@ -628,8 +629,8 @@ public class TableConfigurator {
                 + "WHERE Remarks NOT LIKE ? OR Remarks IS NULL\n"
                 + "GROUP BY StockTranNo\n"
                 + "ORDER BY StockTranNo ASC";
-        Map<Object, Integer> params = new LinkedHashMap<>();
-        params.put("Dispensed to Patient No: %", Types.VARCHAR);
+        List<Parameter> params = new ArrayList<>();
+        params.add(new Parameter("Dispensed to Patient No: %", Types.VARCHAR));
         oto.setParameterizedQuery(new ParameterizedQuery(sql, params));
         oto.setColumnMappings(columnMappings);
 
@@ -697,9 +698,9 @@ public class TableConfigurator {
                 + "AND PackSize IS NOT NULL\n"
                 + "AND Npacks IS NOT NULL\n"
                 + "ORDER BY StockTranNo ASC";
-        Map<Object, Integer> params = new LinkedHashMap<>();
-        params.put("Dispensed to Patient No: %", Types.VARCHAR);
-        
+        List<Parameter> params = new ArrayList<>();
+        params.add(new Parameter("Dispensed to Patient No: %", Types.VARCHAR));
+
         oto.setParameterizedQuery(new ParameterizedQuery(sql, params));
         oto.setColumnMappings(columnMappings);
         return oto;

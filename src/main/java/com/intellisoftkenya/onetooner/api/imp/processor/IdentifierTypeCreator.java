@@ -6,11 +6,12 @@ import com.intellisoftkenya.onetooner.api.processor.ExtraProcessor;
 import com.intellisoftkenya.onetooner.dao.DestinationSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SqlExecutor;
 import com.intellisoftkenya.onetooner.data.OneToOne;
+import com.intellisoftkenya.onetooner.data.Parameter;
 import com.intellisoftkenya.onetooner.log.LoggerFactory;
 import java.sql.ResultSet;
 import java.sql.Types;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,9 +41,9 @@ public class IdentifierTypeCreator implements ExtraProcessor {
 
         String sql = "SELECT id FROM identifier_type WHERE id IN (?, ?)";
 
-        Map<Object, Integer> params = new LinkedHashMap<>();
-        params.put(Constants.ART_IDENTIFIER_TYPE_ID, Types.INTEGER);
-        params.put(Constants.OPIP_IDENTIFIER_TYPE_ID, Types.INTEGER);
+        List<Parameter> params = new ArrayList<>();
+        params.add(new Parameter(Constants.ART_IDENTIFIER_TYPE_ID, Types.INTEGER));
+        params.add(new Parameter(Constants.OPIP_IDENTIFIER_TYPE_ID, Types.INTEGER));
 
         ResultSet rs = dse.executeQuery(sql, params);
         while (rs.next()) {
@@ -55,23 +56,25 @@ public class IdentifierTypeCreator implements ExtraProcessor {
         }
         String update = "INSERT INTO `identifier_type`"
                 + "(`id`, `name`, `uuid`, `created_by`, `created_on`) "
-                + "VALUES(?, ?, ?, ?)";
+                + "VALUES(?, ?, ?, ?, ?)";
         if (addArtId) {
-            params = new LinkedHashMap<>();
-            params.put(Constants.ART_IDENTIFIER_TYPE_ID, Types.INTEGER);
-            params.put(auditValues.uuid(), Types.VARCHAR);
-            params.put(auditValues.createdBy(), Types.INTEGER);
-            params.put(auditValues.createdOn(), Types.DATE);
+            params = new ArrayList<>();
+            params.add(new Parameter(Constants.ART_IDENTIFIER_TYPE_ID, Types.INTEGER));
+            params.add(new Parameter("ART ID", Types.VARCHAR));
+            params.add(new Parameter(auditValues.uuid(), Types.VARCHAR));
+            params.add(new Parameter(auditValues.createdBy(), Types.INTEGER));
+            params.add(new Parameter(auditValues.createdOn(), Types.DATE));
             dse.executeUpdate(update, params, false);
 
             LOGGER.log(Level.INFO, "Created ART ID identifier type.");
         }
         if (addOpdIpdId) {
-            params = new LinkedHashMap<>();
-            params.put(Constants.OPIP_IDENTIFIER_TYPE_ID, Types.INTEGER);
-            params.put(auditValues.uuid(), Types.VARCHAR);
-            params.put(auditValues.createdBy(), Types.INTEGER);
-            params.put(auditValues.createdOn(), Types.DATE);
+            params = new ArrayList<>();
+            params.add(new Parameter(Constants.OPIP_IDENTIFIER_TYPE_ID, Types.INTEGER));
+            params.add(new Parameter("OPDIPD ID", Types.VARCHAR));
+            params.add(new Parameter(auditValues.uuid(), Types.VARCHAR));
+            params.add(new Parameter(auditValues.createdBy(), Types.INTEGER));
+            params.add(new Parameter(auditValues.createdOn(), Types.DATE));
             dse.executeUpdate(update, params, false);
 
             LOGGER.log(Level.INFO, "Created OPDIPD ID identifier type.");

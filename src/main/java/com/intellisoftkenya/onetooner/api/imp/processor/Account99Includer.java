@@ -6,11 +6,12 @@ import com.intellisoftkenya.onetooner.business.LookupValueReader;
 import com.intellisoftkenya.onetooner.dao.DestinationSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SqlExecutor;
 import com.intellisoftkenya.onetooner.data.OneToOne;
+import com.intellisoftkenya.onetooner.data.Parameter;
 import com.intellisoftkenya.onetooner.log.LoggerFactory;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,12 +34,12 @@ public class Account99Includer implements ExtraProcessor {
         int adjustmentAccountType = new LookupValueReader().readId("account_type", "name", "Store");
         String insert = "INSERT INTO `account`(`name`, `account_type_id`, `uuid`, `created_by`, `created_on`) "
                 + "VALUES(?, ?, ?, ?, ?)";
-        Map<Object, Integer> params = new LinkedHashMap<>();
-        params.put("99", Types.VARCHAR);
-        params.put(adjustmentAccountType, Types.INTEGER);
-        params.put(auditValues.uuid(), Types.VARCHAR);
-        params.put(auditValues.createdBy(), Types.INTEGER);
-        params.put(auditValues.createdOn(), Types.DATE);
+        List<Parameter> params = new ArrayList<>();
+        params.add(new Parameter("99", Types.VARCHAR));
+        params.add(new Parameter(adjustmentAccountType, Types.INTEGER));
+        params.add(new Parameter(auditValues.uuid(), Types.VARCHAR));
+        params.add(new Parameter(auditValues.createdBy(), Types.INTEGER));
+        params.add(new Parameter(auditValues.createdOn(), Types.DATE));
         try {
             dse.executeUpdate(insert, params, false);
             LOGGER.log(Level.FINEST, "Added account named 99");

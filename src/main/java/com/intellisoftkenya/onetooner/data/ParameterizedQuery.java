@@ -1,6 +1,6 @@
 package com.intellisoftkenya.onetooner.data;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * An SQL query along with its parameters.
@@ -17,13 +17,13 @@ public class ParameterizedQuery {
     /**
      * The parameters for the SQL query.
      */
-    private Map<Object, Integer> parameters;
+    private List<Parameter> parameters;
 
     public ParameterizedQuery(String sql) {
         this.sql = sql;
     }
 
-    public ParameterizedQuery(String sql, Map<Object, Integer> parameters) {
+    public ParameterizedQuery(String sql, List<Parameter> parameters) {
         this.sql = sql;
         this.parameters = parameters;
     }
@@ -32,11 +32,11 @@ public class ParameterizedQuery {
         return sql;
     }
 
-    public Map<Object, Integer> getParameters() {
+    public List<Parameter> getParameters() {
         return parameters;
     }
 
-    public void setParameters(Map<Object, Integer> parameters) {
+    public void setParameters(List<Parameter> parameters) {
         this.parameters = parameters;
     }
 }

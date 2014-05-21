@@ -6,6 +6,7 @@ import com.intellisoftkenya.onetooner.dao.SourceSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SqlExecutor;
 import com.intellisoftkenya.onetooner.data.Column;
 import com.intellisoftkenya.onetooner.data.OneToOne;
+import com.intellisoftkenya.onetooner.data.Parameter;
 import com.intellisoftkenya.onetooner.data.Reference;
 import com.intellisoftkenya.onetooner.data.WhereCondition;
 import com.intellisoftkenya.onetooner.log.LoggerFactory;
@@ -383,11 +384,11 @@ public class OneToOneMigrator {
                     String insert = "INSERT INTO `"
                             + ref.getTable() + "`(`" + ref.getColumn() + "`, `uuid`, `created_by`, `created_on`) "
                             + "VALUES(?, ?, ? ,?)";
-                    Map<Object, Integer> params = new LinkedHashMap<>();
-                    params.put(stringValue, Types.VARCHAR);
-                    params.put(auditValues.uuid(), Types.VARCHAR);
-                    params.put(auditValues.createdBy(), Types.INTEGER);
-                    params.put(auditValues.createdOn(), Types.DATE);
+                    List<Parameter> params = new ArrayList<>();
+                    params.add(new Parameter(stringValue, Types.VARCHAR));
+                    params.add(new Parameter(auditValues.uuid(), Types.VARCHAR));
+                    params.add(new Parameter(auditValues.createdBy(), Types.INTEGER));
+                    params.add(new Parameter(auditValues.createdOn(), Types.DATE));
 
                     value = dse.executeUpdate(insert, params, true);
                     referenceCache.put(referenceKey, value);
@@ -410,7 +411,7 @@ public class OneToOneMigrator {
 
     public int deleteOneToOne(OneToOne oto) throws SQLException {
         String delete = "DELETE FROM " + oto.getDestinationTable().getName();
-        Map<Object, Integer> params = new LinkedHashMap<>();
+        List<Parameter> params = new ArrayList<>();
         delete += createWhereClause(oto.getWhereConditions(), params);
         return dse.executeUpdate(delete, params, false);
     }
@@ -428,7 +429,7 @@ public class OneToOneMigrator {
         }
 
         String skipIfQuery = "SELECT * FROM " + oto.getDestinationTable().getName();
-        Map<Object, Integer> params = new LinkedHashMap<>();
+        List<Parameter> params = new ArrayList<>();
         skipIfQuery += createWhereClause(oto.getWhereConditions(), params);
 
         ResultSet rs = dse.executeQuery(skipIfQuery, params);
@@ -445,7 +446,7 @@ public class OneToOneMigrator {
      * @param params the parameter map
      */
     private String createWhereClause(List<WhereCondition> whereConditions,
-            Map<Object, Integer> params) {
+            List<Parameter> params) {
         String whereClause = "";
         if (whereConditions == null || whereConditions.isEmpty()) {
             return whereClause;
@@ -455,7 +456,7 @@ public class OneToOneMigrator {
         }
         for (WhereCondition wc : whereConditions) {
             whereClause = (" WHERE " + wc.getColumnAndOperator() + " ?");
-            params.put(wc.getValue(), wc.getValueType());
+            params.add(new Parameter(wc.getValue(), wc.getValueType()));
         }
         return whereClause;
     }

@@ -1,11 +1,13 @@
 package com.intellisoftkenya.onetooner.dao;
 
+import com.intellisoftkenya.onetooner.data.Parameter;
 import com.intellisoftkenya.onetooner.log.LoggerFactory;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,13 +45,13 @@ public abstract class SqlExecutor {
      *
      * @throws java.sql.SQLException
      */
-    public ResultSet executeQuery(String sql, Map<Object, Integer> params) throws SQLException {
+    public ResultSet executeQuery(String sql, List<Parameter> params) throws SQLException {
         PreparedStatement pStmt = connection.prepareStatement(sql);
         String paramString = "";
         if (params != null) {
             int i = 1;
-            for (Object param : params.keySet()) {
-                pStmt.setObject(i, param, params.get(param));
+            for (Parameter param : params) {
+                pStmt.setObject(i, param.getValue(), param.getType());
                 paramString += param.toString() + ", ";
                 i++;
             }
@@ -89,7 +91,7 @@ public abstract class SqlExecutor {
      * affected rows otherwise.
      * @throws java.sql.SQLException
      */
-    public int executeUpdate(String sql, Map<Object, Integer> params,
+    public int executeUpdate(String sql, List<Parameter> params,
             boolean generatedValue) throws SQLException {
         ResultSet rs;
         int ret;
@@ -102,8 +104,8 @@ public abstract class SqlExecutor {
         }
         if (params != null) {
             int i = 1;
-            for (Object param : params.keySet()) {
-                pStmt.setObject(i, param, params.get(param));
+            for (Parameter param : params) {
+                pStmt.setObject(i, param.getValue(), param.getType());
                 paramString += param.toString() + ", ";
                 i++;
             }

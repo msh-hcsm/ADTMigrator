@@ -2,11 +2,12 @@ package com.intellisoftkenya.onetooner.business;
 
 import com.intellisoftkenya.onetooner.dao.DestinationSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SqlExecutor;
+import com.intellisoftkenya.onetooner.data.Parameter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Reads the primary key of a given item in a destination database lookup table.
@@ -59,8 +60,8 @@ public class LookupValueReader {
         Integer id = null;
         String query = "SELECT " + pk + " FROM " + table
                 + " WHERE " + column + " = ?";
-        Map<Object, Integer> params = new LinkedHashMap<>();
-        params.put(value, Types.VARCHAR);
+       List<Parameter> params = new ArrayList<>();
+        params.add(new Parameter(value, Types.VARCHAR));
         ResultSet rs = dse.executeQuery(query, params);
         if (rs.next()) {
             id = rs.getInt("id");

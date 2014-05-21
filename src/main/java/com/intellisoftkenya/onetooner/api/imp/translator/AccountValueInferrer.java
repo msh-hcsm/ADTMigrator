@@ -5,12 +5,14 @@ import com.intellisoftkenya.onetooner.business.LookupValueReader;
 import com.intellisoftkenya.onetooner.dao.DestinationSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SourceSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SqlExecutor;
+import com.intellisoftkenya.onetooner.data.Parameter;
 import com.intellisoftkenya.onetooner.log.LoggerFactory;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,8 +56,8 @@ public class AccountValueInferrer implements ValueInferrer {
             String select = "SELECT MIN(SDNo) AS SDNo_, MIN(SourceorDestination) AS SourceorDestination_\n"
                     + "FROM tblARVStockTranSourceorDestination WHERE SourceorDestination IS NOT NULL\n"
                     + "AND SDNo = ? GROUP BY SDNo";
-            Map<Object, Integer> params = new LinkedHashMap<>();
-            params.put(intValue, Types.INTEGER);
+            List<Parameter> params = new ArrayList<>();
+            params.add(new Parameter(intValue, Types.INTEGER));
             ResultSet rs = null;
             try {
                 rs = sse.executeQuery(select, params);
