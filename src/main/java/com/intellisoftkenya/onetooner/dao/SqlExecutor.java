@@ -6,7 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,9 +17,9 @@ import java.util.logging.Logger;
  * @author gitahi
  */
 public abstract class SqlExecutor {
-
+    
     private static final Logger LOGGER = LoggerFactory.getLoger(SqlExecutor.class.getName());
-
+    
     public static final int TRANSACTION_BATCH_SIZE = 1000;
     protected Connection connection;
 
@@ -46,23 +45,24 @@ public abstract class SqlExecutor {
      */
     public ResultSet executeQuery(String sql, Map<Object, Integer> params) throws SQLException {
         PreparedStatement pStmt = connection.prepareStatement(sql);
+        String paramString = "";
         if (params != null) {
             int i = 1;
-            for (Object object : params.keySet()) {
-                pStmt.setObject(i, object, params.get(object));
+            for (Object param : params.keySet()) {
+                pStmt.setObject(i, param, params.get(param));
+                paramString += param.toString() + ", ";
                 i++;
             }
         }
-
-        LOGGER.log(Level.FINEST, sql);
-
+        
+        LOGGER.log(Level.FINEST, "{0} : {1}", new Object[]{sql, paramString});
+        
         ResultSet rs = pStmt.executeQuery();
-        LOGGER.log(Level.FINEST, sql);
         return rs;
     }
 
     /**
-     * Executes am SQL query using a PreparedStatement with no parameters.
+     * Executes an SQL query using a PreparedStatement with no parameters.
      *
      * @param sql the SQL query
      *
@@ -94,6 +94,7 @@ public abstract class SqlExecutor {
         ResultSet rs;
         int ret;
         PreparedStatement pStmt;
+        String paramString = "";
         if (generatedValue) {
             pStmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         } else {
@@ -101,14 +102,15 @@ public abstract class SqlExecutor {
         }
         if (params != null) {
             int i = 1;
-            for (Object object : params.keySet()) {
-                pStmt.setObject(i, object, params.get(object));
+            for (Object param : params.keySet()) {
+                pStmt.setObject(i, param, params.get(param));
+                paramString += param.toString() + ", ";
                 i++;
             }
         }
-
-        LOGGER.log(Level.FINEST, sql);
-
+        
+        LOGGER.log(Level.FINEST, "{0} : {1}", new Object[]{sql, paramString});
+        
         ret = pStmt.executeUpdate();
         if (generatedValue) {
             rs = pStmt.getGeneratedKeys();
@@ -124,7 +126,7 @@ public abstract class SqlExecutor {
     }
 
     /**
-     * Executes an insert or sql statement using a PreparedStatement with no
+     * Executes an insert or select statement using a PreparedStatement with no
      * parameters. This method will call connection.commit() if
      * connection.getAutoCommit() returns false.
      *
@@ -151,6 +153,7 @@ public abstract class SqlExecutor {
      * @throws java.sql.SQLException
      */
     public PreparedStatement createPreparedStatement(String sql) throws SQLException {
+        LOGGER.log(Level.FINEST, "Preparing statement: {0}", sql);
         return connection.prepareStatement(sql);
     }
 

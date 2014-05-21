@@ -140,8 +140,6 @@ public class OneToOneMigrator {
 
         LOGGER.log(Level.FINE, "Beginning migration from ''{0}'' to ''{1}.",
                 new Object[]{oto.getSourceTable(), oto.getDestinationTable()});
-        LOGGER.log(Level.FINEST, "Using select statement: ''{0}''", select);
-        LOGGER.log(Level.FINEST, "Using insert statement: ''{0}''", insert);
 
         ResultSet rs;
 
@@ -370,9 +368,6 @@ public class OneToOneMigrator {
             }
             pStmt.setString(1, stringValue);
 
-            LOGGER.log(Level.FINEST, "Setting parameter from reference using select statement: ''{0}'' : {1}",
-                    new Object[]{select, stringValue});
-
             ResultSet rs = pStmt.executeQuery();
             if (rs.next()) {
                 value = rs.getInt(ref.getPk());
@@ -393,8 +388,6 @@ public class OneToOneMigrator {
                     params.put(auditValues.uuid(), Types.VARCHAR);
                     params.put(auditValues.createdBy(), Types.INTEGER);
                     params.put(auditValues.createdOn(), Types.DATE);
-
-                    LOGGER.log(Level.FINEST, "Adding parameter to reference using insert statement: ''{0}''", insert);
 
                     value = dse.executeUpdate(insert, params, true);
                     referenceCache.put(referenceKey, value);

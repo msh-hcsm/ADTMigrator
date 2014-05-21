@@ -514,22 +514,22 @@ public class TableConfigurator {
         patientId.setReference(new Reference("patient", "legacy_pk", false));
         columnMappings.put(new Column("ARTID", Types.VARCHAR), patientId);
 
-        oto.setParameterizedQuery("SELECT "
-                + "MIN(PatientTranNo) AS PatientTranNo_, "
-                + "DateofVisit, "
-                + "MIN(TransactionCode) AS TransactionCode_, "
-                + "MIN(Weight) AS Weight_, "
-                + "MIN(pillCount) AS pillCount_, "
-                + "MIN(Adherence) AS Adherence_, "
+        oto.setParameterizedQuery("SELECT\n"
+                + "MIN(PatientTranNo) AS PatientTranNo_,\n"
+                + "DateofVisit,\n"
+                + "MIN(TransactionCode) AS TransactionCode_,\n"
+                + "MIN(Weight) AS Weight_,\n"
+                + "MIN(pillCount) AS pillCount_,\n"
+                + "MIN(Adherence) AS Adherence_,\n"
                 + "MIN(Comment) AS Comment_,"
-                + "MIN(Indication) AS Indication_, "
-                + "MIN(Regimen) AS Regimen_, "
-                + "MIN(ReasonsForChange) AS ReasonsForChange_, "
-                + "ARTID "
-                + "FROM "
-                + "tblARTPatientTransactions "
-                + "GROUP BY "
-                + "DateofVisit, ARTID "
+                + "MIN(Indication) AS Indication_,\n"
+                + "MIN(Regimen) AS Regimen_,\n"
+                + "MIN(ReasonsForChange) AS ReasonsForChange_,\n"
+                + "ARTID\n"
+                + "FROM\n"
+                + "tblARTPatientTransactions\n"
+                + "GROUP BY\n"
+                + "DateofVisit, ARTID\n"
                 + "ORDER BY MIN(PatientTranNo)");
         oto.setColumnMappings(columnMappings);
         oto.addPostProcessor(new VisitUpdater());
@@ -581,15 +581,15 @@ public class TableConfigurator {
         columnMappings.put(new Column("DateofVisit", Types.DATE), new Column("date", Types.DATE));
         columnMappings.put(new Column("Comment_", Types.VARCHAR), new Column("comments", Types.VARCHAR));
 
-        oto.setParameterizedQuery("SELECT "
-                + "MIN(PatientTranNo) AS PatientTranNo_, "
-                + "DateofVisit, "
-                + "MIN(Comment) AS Comment_,"
-                + "ARTID "
-                + "FROM "
-                + "tblARTPatientTransactions "
-                + "GROUP BY "
-                + "DateofVisit, ARTID "
+        oto.setParameterizedQuery("SELECT\n"
+                + "MIN(PatientTranNo) AS PatientTranNo_,\n"
+                + "DateofVisit,\n"
+                + "MIN(Comment) AS Comment_,\n"
+                + "ARTID\n"
+                + "FROM\n"
+                + "tblARTPatientTransactions\n"
+                + "GROUP BY\n"
+                + "DateofVisit, ARTID\n"
                 + "ORDER BY MIN(PatientTranNo)");
         oto.setColumnMappings(columnMappings);
         oto.addPreProcessor(new LookupValuePkProcessor());
@@ -660,14 +660,14 @@ public class TableConfigurator {
         columnMappings.put(new Column("ARVQty_", Types.DATE), new Column("units_in", Types.DECIMAL));
         columnMappings.put(new Column("ARVQty_", Types.VARCHAR), new Column("units_out", Types.DECIMAL));
 
-        oto.setParameterizedQuery("SELECT "
-                + "MIN(PatientTranNo) AS PatientTranNo_, "
-                + "MIN(Drugname) AS Drugname_, "
-                + "MIN(BatchNo) AS BatchNo_, "
-                + "MIN(ARVQty) AS ARVQty_ "
-                + "FROM "
-                + "tblARTPatientTransactions "
-                + "GROUP BY PatientTranNo "
+        oto.setParameterizedQuery("SELECT\n"
+                + "MIN(PatientTranNo) AS PatientTranNo_,\n"
+                + "MIN(Drugname) AS Drugname_,\n"
+                + "MIN(BatchNo) AS BatchNo_,\n"
+                + "MIN(ARVQty) AS ARVQty_\n"
+                + "FROM\n"
+                + "tblARTPatientTransactions\n"
+                + "GROUP BY PatientTranNo\n"
                 + "ORDER BY PatientTranNo ASC");
         oto.setColumnMappings(columnMappings);
 
@@ -722,13 +722,13 @@ public class TableConfigurator {
         dosage.setReference(new Reference("dosage", true));
         columnMappings.put(new Column("Dose_", Types.VARCHAR), dosage);
 
-        oto.setParameterizedQuery("SELECT "
-                + "MIN(PatientTranNo) AS PatientTranNo_, "
-                + "MIN(duration) AS duration_, "
-                + "MIN(Dose) AS Dose_ "
-                + "FROM "
-                + "tblARTPatientTransactions "
-                + "GROUP BY PatientTranNo "
+        oto.setParameterizedQuery("SELECT\n"
+                + "MIN(PatientTranNo) AS PatientTranNo_,\n"
+                + "MIN(duration) AS duration_,\n"
+                + "MIN(Dose) AS Dose_\n"
+                + "FROM\n"
+                + "tblARTPatientTransactions\n"
+                + "GROUP BY PatientTranNo\n"
                 + "ORDER BY PatientTranNo ASC");
         oto.setColumnMappings(columnMappings);
         return oto;
