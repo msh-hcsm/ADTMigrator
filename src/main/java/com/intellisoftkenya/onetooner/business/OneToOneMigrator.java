@@ -134,7 +134,7 @@ public class OneToOneMigrator {
 
         boolean useCustomQuery = (oto.getParameterizedQuery() != null);
 
-        String select = useCustomQuery ? oto.getParameterizedQuery().getSql() 
+        String select = useCustomQuery ? oto.getParameterizedQuery().getSql()
                 : statements.getKey();
         String insert = statements.getValue();
 
@@ -409,7 +409,10 @@ public class OneToOneMigrator {
     }
 
     public int deleteOneToOne(OneToOne oto) throws SQLException {
-        return dse.executeUpdate("DELETE FROM " + oto.getDestinationTable().getName(), false);
+        String delete = "DELETE FROM " + oto.getDestinationTable().getName();
+        Map<Object, Integer> params = new LinkedHashMap<>();
+        delete += createWhereClause(oto.getWhereConditions(), params);
+        return dse.executeUpdate(delete, params, false);
     }
 
     public void close() {
@@ -423,21 +426,37 @@ public class OneToOneMigrator {
                     new Object[]{oto.getSourceTable().getName(), oto.getDestinationTable().getName()});
             return false;
         }
-        
+
         String skipIfQuery = "SELECT * FROM " + oto.getDestinationTable().getName();
         Map<Object, Integer> params = new LinkedHashMap<>();
-        
-        if (oto.getWhereConditions().size() > 1) {
-            throw new UnsupportedOperationException("Multiple where conditions not supported yet!");
-        }
-        for (WhereCondition wc : oto.getWhereConditions()) {
-            skipIfQuery += (" WHERE " + wc.getColumnAndOperator() + " ?");
-            params.put(wc.getValue(), wc.getValueType());
-        }
-        
+        skipIfQuery += createWhereClause(oto.getWhereConditions(), params);
+
         ResultSet rs = dse.executeQuery(skipIfQuery, params);
         boolean emptyEnough = !rs.next();
         dse.close(rs);
         return emptyEnough;
+    }
+
+    /**
+     * Creates an SQL WHERE clause from a list of {@link WhereCondition}s and
+     * adds the requisite parameters to the parameter map.
+     *
+     * @param whereConditions the {@link WhereCondition}s
+     * @param params the parameter map
+     */
+    private String createWhereClause(List<WhereCondition> whereConditions,
+            Map<Object, Integer> params) {
+        String whereClause = "";
+        if (whereConditions == null || whereConditions.isEmpty()) {
+            return whereClause;
+        }
+        if (whereConditions.size() > 1) {
+            throw new UnsupportedOperationException("Multiple where conditions not supported yet!");
+        }
+        for (WhereCondition wc : whereConditions) {
+            whereClause = (" WHERE " + wc.getColumnAndOperator() + " ?");
+            params.put(wc.getValue(), wc.getValueType());
+        }
+        return whereClause;
     }
 }
