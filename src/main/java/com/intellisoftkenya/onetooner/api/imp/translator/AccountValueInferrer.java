@@ -1,13 +1,16 @@
 package com.intellisoftkenya.onetooner.api.imp.translator;
 
 import com.intellisoftkenya.onetooner.api.translator.ValueInferrer;
+import com.intellisoftkenya.onetooner.business.LookupValueReader;
 import com.intellisoftkenya.onetooner.dao.DestinationSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SourceSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SqlExecutor;
 import com.intellisoftkenya.onetooner.log.LoggerFactory;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,7 +35,7 @@ public class AccountValueInferrer implements ValueInferrer {
     public Integer infer(String value) throws Exception {
         String name = readName(value);
         if (name != null) {
-            return readId(name);
+            return new LookupValueReader().readId("account", "legacy_pk", value);
         }
         return null;
     }
@@ -44,42 +47,21 @@ public class AccountValueInferrer implements ValueInferrer {
             try {
                 intValue = Integer.parseInt(value);
             } catch (NumberFormatException ex) {
-                LOGGER.log(Level.WARNING, "The value " + value 
+                LOGGER.log(Level.WARNING, "The value " + value
                         + " cannot be inferred since it is not an integer. Returning null.", ex);
                 return null;
             }
             String select = "SELECT MIN(SDNo) AS SDNo_, MIN(SourceorDestination) AS SourceorDestination_\n"
                     + "FROM tblARVStockTranSourceorDestination WHERE SourceorDestination IS NOT NULL\n"
-                    + "AND SDNo = " + intValue + "\n"
-                    + "GROUP BY SDNo";
+                    + "AND SDNo = ? GROUP BY SDNo";
+            Map<Object, Integer> params = new LinkedHashMap<>();
+            params.put(intValue, Types.INTEGER);
             ResultSet rs = null;
             try {
-                rs = sse.executeQuery(select);
+                rs = sse.executeQuery(select, params);
                 if (rs.next()) {
                     ret = rs.getString("SourceorDestination_");
                     nameCache.put(value, ret);
-                }
-            } finally {
-                dse.close(rs);
-            }
-        }
-        return ret;
-    }
-
-    /**
-     * Read the FDT integer database id for this name value in the account
-     * table.
-     */
-    private Integer readId(String value) throws SQLException {
-        Integer ret = idCache.get(value);
-        if (ret == null) {
-            String select = "SELECT id FROM account WHERE name = '" + value + "'";
-            ResultSet rs = null;
-            try {
-                rs = dse.executeQuery(select);
-                if (rs.next()) {
-                    ret = rs.getInt("id");
-                    idCache.put(value, ret);
                 }
             } finally {
                 dse.close(rs);

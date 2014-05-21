@@ -31,18 +31,18 @@ public class OneToOne implements Comparable<OneToOne> {
 
     /**
      * The column = value to be used in an SQL where clause for the destination
-     * table associated with this object to determine if the table is sufficiently
-     * empty for migration to proceed. See 
+     * table associated with this object to determine if the table is
+     * sufficiently empty for migration to proceed. See 
      * {@link OneToOneMigrator#isEmptyEnough(com.intellisoftkenya.onetooner.data.OneToOne) }
      */
-    private String emptinessCondition;
+    private List<WhereCondition> whereConditions;
 
     /**
-     * A custom select query to be used to read from the Source table instead of
-     * constructing one from the tables and column mappings described in this
-     * instance.
+     * A custom select parameterizedQuery to be used to read from the Source
+     * table instead of constructing one from the tables and column mappings
+     * described in this instance.
      */
-    private String query;
+    private ParameterizedQuery parameterizedQuery;
 
     /**
      * The {@link ExtraProcessor} to execute before running
@@ -69,12 +69,6 @@ public class OneToOne implements Comparable<OneToOne> {
         this.destinationTable = destinationTable;
     }
 
-    public OneToOne(Integer deletionOrder, Table sourceTable, Table destinationTable,
-            String requireEmpty) {
-        this(deletionOrder, sourceTable, destinationTable);
-        this.emptinessCondition = requireEmpty;
-    }
-
     public Table getSourceTable() {
         return sourceTable;
     }
@@ -91,20 +85,32 @@ public class OneToOne implements Comparable<OneToOne> {
         this.columnMappings = columnMappings;
     }
 
-    public String getQuery() {
-        return query;
+    public ParameterizedQuery getParameterizedQuery() {
+        return parameterizedQuery;
     }
 
-    public void setQuery(String query) {
-        this.query = query;
+    public void setParameterizedQuery(ParameterizedQuery parameterizedQuery) {
+        this.parameterizedQuery = parameterizedQuery;
     }
 
-    public String getEmptinessCondition() {
-        return emptinessCondition;
+    /**
+     * Sets {@link OneToOne#parameterizedQuery} with no parameters.
+     *
+     * @param sql the SQL for the {@link OneToOne#parameterizedQuery}
+     */
+    public void setParameterizedQuery(String sql) {
+        this.parameterizedQuery = new ParameterizedQuery(sql);
     }
 
-    public void setEmptinessCondition(String emptinessCondition) {
-        this.emptinessCondition = emptinessCondition;
+    public List<WhereCondition> getWhereConditions() {
+        if (whereConditions == null) {
+            whereConditions = new ArrayList<>();
+        }
+        return whereConditions;
+    }
+
+    public void addWhereCondition(WhereCondition whereCondition) {
+        getWhereConditions().add(whereCondition);
     }
 
     public List<ExtraProcessor> getPreProcessors() {

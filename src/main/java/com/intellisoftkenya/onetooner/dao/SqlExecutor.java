@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,25 +35,53 @@ public abstract class SqlExecutor {
     }
 
     /**
-     * Executes am SQL query.
+     * Executes am SQL query using a PreparedStatement.
      *
-     * @param query the query to execute
+     * @param sql the SQL query
+     * @param params the parameters for this SQL query
      *
      * @return the ResultSet returned by the query
+     *
      * @throws java.sql.SQLException
      */
-    public ResultSet executeQuery(String query) throws SQLException {
-        Statement stmt = createStatement();
-        ResultSet rs = stmt.executeQuery(query);
-        LOGGER.log(Level.FINEST, query);
+    public ResultSet executeQuery(String sql, Map<Object, Integer> params) throws SQLException {
+        PreparedStatement pStmt = connection.prepareStatement(sql);
+        if (params != null) {
+            int i = 1;
+            for (Object object : params.keySet()) {
+                pStmt.setObject(i, object, params.get(object));
+                i++;
+            }
+        }
+
+        LOGGER.log(Level.FINEST, sql);
+
+        ResultSet rs = pStmt.executeQuery();
+        LOGGER.log(Level.FINEST, sql);
         return rs;
     }
 
     /**
-     * Executes an insert or update statement. This method will call
-     * connection.commit() if connection.getAutoCommit() returns false;
+     * Executes am SQL query using a PreparedStatement with no parameters.
      *
-     * @param update the statement to execute.
+     * @param sql the SQL query
+     *
+     * @return the ResultSet returned by the query
+     *
+     * @throws java.sql.SQLException
+     */
+    public ResultSet executeQuery(String sql) throws SQLException {
+        return executeQuery(sql, null);
+    }
+
+    /**
+     * Executes an insert or sql statement using a PreparedStatement. This
+     * method will call connection.commit() if connection.getAutoCommit()
+     * returns false.
+     *
+     * @param sql the statement to execute.
+     * @param params the parameter values for this statement mapped to their SQL
+     * types
      * @param generatedValue whether or not to return the auto-generated integer
      * value of an auto-increment database column
      *
@@ -59,16 +89,29 @@ public abstract class SqlExecutor {
      * affected rows otherwise.
      * @throws java.sql.SQLException
      */
-    public int executeUpdate(String update, boolean generatedValue) throws SQLException {
+    public int executeUpdate(String sql, Map<Object, Integer> params,
+            boolean generatedValue) throws SQLException {
         ResultSet rs;
         int ret;
-        Statement stmt = createStatement();
-        if (!generatedValue) {
-            ret = stmt.executeUpdate(update);
+        PreparedStatement pStmt;
+        if (generatedValue) {
+            pStmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         } else {
-            ret = stmt.executeUpdate(update, Statement.RETURN_GENERATED_KEYS);
-            LOGGER.log(Level.FINEST, update);
-            rs = stmt.getGeneratedKeys();
+            pStmt = connection.prepareStatement(sql);
+        }
+        if (params != null) {
+            int i = 1;
+            for (Object object : params.keySet()) {
+                pStmt.setObject(i, object, params.get(object));
+                i++;
+            }
+        }
+
+        LOGGER.log(Level.FINEST, sql);
+
+        ret = pStmt.executeUpdate();
+        if (generatedValue) {
+            rs = pStmt.getGeneratedKeys();
             if (rs.next()) {
                 ret = rs.getInt(1);
             }
@@ -76,7 +119,26 @@ public abstract class SqlExecutor {
         if (!connection.getAutoCommit()) {
             connection.commit();
         }
+        close(pStmt);
         return ret;
+    }
+
+    /**
+     * Executes an insert or sql statement using a PreparedStatement with no
+     * parameters. This method will call connection.commit() if
+     * connection.getAutoCommit() returns false.
+     *
+     * @param sql the statement to execute.
+     * @param generatedValue whether or not to return the auto-generated integer
+     * value of an auto-increment database column
+     *
+     * @return the auto-generated integer value if specified, the number of
+     * affected rows otherwise.
+     * @throws java.sql.SQLException
+     */
+    public int executeUpdate(String sql,
+            boolean generatedValue) throws SQLException {
+        return executeUpdate(sql, null, generatedValue);
     }
 
     /**
@@ -101,7 +163,7 @@ public abstract class SqlExecutor {
      *
      * @return an array of integers containing the number of rows affected by
      * each command.
-     * 
+     *
      * @throws java.sql.SQLException
      */
     public int[] executeBatch(PreparedStatement pStmt) throws SQLException {

@@ -4,6 +4,9 @@ import com.intellisoftkenya.onetooner.dao.DestinationSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SqlExecutor;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Reads the primary key of a given item in a destination database lookup table.
@@ -16,9 +19,9 @@ public class LookupValueReader {
 
     /**
      * Reads the integer primary key value of a lookup table. The primary key
-     * column name is assumed to be id. The column name by which to query for 
+     * column name is assumed to be id. The column name by which to query for
      * value is assumed to be name.
-     * 
+     *
      * @param table the lookup table
      * @param value the value to look for in column
      * @return the integer primary value
@@ -31,7 +34,7 @@ public class LookupValueReader {
     /**
      * Reads the integer primary key value of a lookup table. The primary key
      * column name is assumed to be id.
-     * 
+     *
      * @param table the lookup table
      * @param column the column by which to query for value
      * @param value the value to look for in column
@@ -44,7 +47,7 @@ public class LookupValueReader {
 
     /**
      * Reads the integer primary key value of a lookup table.
-     * 
+     *
      * @param table the lookup table
      * @param pk the name of the primary key column
      * @param column the column by which to query for value
@@ -55,8 +58,10 @@ public class LookupValueReader {
     public Integer readId(String table, String pk, String column, String value) throws SQLException {
         Integer id = null;
         String query = "SELECT " + pk + " FROM " + table
-                + " WHERE " + column + " = '" + value + "'";
-        ResultSet rs = dse.executeQuery(query);
+                + " WHERE " + column + " = ?";
+        Map<Object, Integer> params = new LinkedHashMap<>();
+        params.put(value, Types.VARCHAR);
+        ResultSet rs = dse.executeQuery(query, params);
         if (rs.next()) {
             id = rs.getInt("id");
         }

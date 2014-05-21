@@ -8,6 +8,9 @@ import com.intellisoftkenya.onetooner.dao.SqlExecutor;
 import com.intellisoftkenya.onetooner.data.OneToOne;
 import com.intellisoftkenya.onetooner.log.LoggerFactory;
 import java.sql.SQLException;
+import java.sql.Types;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,15 +30,21 @@ public class Account99Includer implements ExtraProcessor {
 
     @Override
     public void process(OneToOne oto) throws Exception {
-        int adjustmentAccountType = new LookupValueReader().readId("account_type", "name", "Adjustment");
-        String insert = "INSERT INTO `account`(name, account_type_id, uuid, created_by, created_on) "
-                + "VALUES('99', " + adjustmentAccountType + ", '" + auditValues.uuid()
-                + "'," + auditValues.createdBy() + " , '" + auditValues.createdOn() + "')";
+        int adjustmentAccountType = new LookupValueReader().readId("account_type", "name", "Store");
+        String insert = "INSERT INTO `account`(`name`, `account_type_id`, `uuid`, `created_by`, `created_on`) "
+                + "VALUES(?, ?, ?, ?, ?)";
+        Map<Object, Integer> params = new LinkedHashMap<>();
+        params.put("99", Types.VARCHAR);
+        params.put(adjustmentAccountType, Types.INTEGER);
+        params.put(auditValues.uuid(), Types.VARCHAR);
+        params.put(auditValues.createdBy(), Types.INTEGER);
+        params.put(auditValues.createdOn(), Types.DATE);
         try {
-            dse.executeUpdate(insert, false);
+            dse.executeUpdate(insert, params, false);
             LOGGER.log(Level.FINEST, "Added account named 99 with statement:\n''{0}''", insert);
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, "Failed to add account named 99 with statement: \n'" + insert + "'", ex);
+            throw ex;
         }
     }
 }

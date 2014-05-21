@@ -7,6 +7,7 @@ import com.intellisoftkenya.onetooner.dao.SqlExecutor;
 import com.intellisoftkenya.onetooner.data.Column;
 import com.intellisoftkenya.onetooner.data.OneToOne;
 import com.intellisoftkenya.onetooner.data.Reference;
+import com.intellisoftkenya.onetooner.data.WhereCondition;
 import com.intellisoftkenya.onetooner.log.LoggerFactory;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,6 +17,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -129,7 +131,11 @@ public class OneToOneMigrator {
         }
 
         Map.Entry<String, String> statements = createStatements(oto);
-        String select = oto.getQuery() == null ? statements.getKey() : oto.getQuery();
+
+        boolean useCustomQuery = (oto.getParameterizedQuery() != null);
+
+        String select = useCustomQuery ? oto.getParameterizedQuery().getSql() 
+                : statements.getKey();
         String insert = statements.getValue();
 
         LOGGER.log(Level.FINE, "Beginning migration from ''{0}'' to ''{1}.",
@@ -137,7 +143,13 @@ public class OneToOneMigrator {
         LOGGER.log(Level.FINEST, "Using select statement: ''{0}''", select);
         LOGGER.log(Level.FINEST, "Using insert statement: ''{0}''", insert);
 
-        ResultSet rs = sse.executeQuery(select);
+        ResultSet rs;
+
+        if (useCustomQuery) {
+            rs = sse.executeQuery(select, oto.getParameterizedQuery().getParameters());
+        } else {
+            rs = sse.executeQuery(select);
+        }
         if (rs != null) {
             PreparedStatement pStmt = dse.createPreparedStatement(insert);
 
@@ -373,25 +385,29 @@ public class OneToOneMigrator {
                     value = ref.getValueInferrer().infer(stringValue);
                 }
                 if (value == null && ref.isCreatable()) {
-                    String insert = "INSERT INTO "
-                            + ref.getTable() + "(" + ref.getColumn() + ", uuid, created_by, created_on) "
-                            + "VALUES('" + stringValue + "', '" + auditValues.uuid()
-                            + "'," + auditValues.createdBy() + " , '" + auditValues.createdOn() + "')";
+                    String insert = "INSERT INTO `"
+                            + ref.getTable() + "`(`" + ref.getColumn() + "`, `uuid`, `created_by`, `created_on`) "
+                            + "VALUES(?, ?, ? ,?)";
+                    Map<Object, Integer> params = new LinkedHashMap<>();
+                    params.put(stringValue, Types.VARCHAR);
+                    params.put(auditValues.uuid(), Types.VARCHAR);
+                    params.put(auditValues.createdBy(), Types.INTEGER);
+                    params.put(auditValues.createdOn(), Types.DATE);
 
                     LOGGER.log(Level.FINEST, "Adding parameter to reference using insert statement: ''{0}''", insert);
 
-                    value = dse.executeUpdate(insert, true);
+                    value = dse.executeUpdate(insert, params, true);
                     referenceCache.put(referenceKey, value);
                 }
                 if (value == null && ref.isBorrowable()) {
-                      value = borrowableValue;
-                        referenceCache.put(referenceKey, value);
+                    value = borrowableValue;
+                    referenceCache.put(referenceKey, value);
                 }
                 if (value == null && !ref.isOptional()) {
                     LOGGER.log(Level.SEVERE, "A lookup table is missing a referenced value and the value could not be "
                             + "inferred, created or borrowed. The associated select statement is:\n ''{0}'' : {1}. "
                             + "Could the record have been skipped?",
-                    new Object[]{select, stringValue});
+                            new Object[]{select, stringValue});
                     throw new Exception("Required reference to lookup table value not satisfied.");
                 }
             }
@@ -414,11 +430,19 @@ public class OneToOneMigrator {
                     new Object[]{oto.getSourceTable().getName(), oto.getDestinationTable().getName()});
             return false;
         }
+        
         String skipIfQuery = "SELECT * FROM " + oto.getDestinationTable().getName();
-        if (oto.getEmptinessCondition() != null) {
-            skipIfQuery += (" WHERE " + oto.getEmptinessCondition());
+        Map<Object, Integer> params = new LinkedHashMap<>();
+        
+        if (oto.getWhereConditions().size() > 1) {
+            throw new UnsupportedOperationException("Multiple where conditions not supported yet!");
         }
-        ResultSet rs = dse.executeQuery(skipIfQuery);
+        for (WhereCondition wc : oto.getWhereConditions()) {
+            skipIfQuery += (" WHERE " + wc.getColumnAndOperator() + " ?");
+            params.put(wc.getValue(), wc.getValueType());
+        }
+        
+        ResultSet rs = dse.executeQuery(skipIfQuery, params);
         boolean emptyEnough = !rs.next();
         dse.close(rs);
         return emptyEnough;

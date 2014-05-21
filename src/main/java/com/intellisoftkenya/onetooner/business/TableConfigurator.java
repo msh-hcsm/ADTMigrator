@@ -11,8 +11,10 @@ import com.intellisoftkenya.onetooner.api.imp.translator.DrugCategoryValueTransl
 import com.intellisoftkenya.onetooner.data.Column;
 import com.intellisoftkenya.onetooner.data.LookupValue;
 import com.intellisoftkenya.onetooner.data.OneToOne;
+import com.intellisoftkenya.onetooner.data.ParameterizedQuery;
 import com.intellisoftkenya.onetooner.data.Reference;
 import com.intellisoftkenya.onetooner.data.Table;
+import com.intellisoftkenya.onetooner.data.WhereCondition;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -110,7 +112,8 @@ public class TableConfigurator {
 
         oto.setColumnMappings(columnMappings);
         oto.addPostProcessor(new Account99Includer());
-        oto.setQuery("SELECT MIN(SDNo) AS SDNo_, MIN(SourceorDestination) AS SourceorDestination_\n"
+        
+        oto.setParameterizedQuery("SELECT MIN(SDNo) AS SDNo_, MIN(SourceorDestination) AS SourceorDestination_\n"
                 + "FROM tblARVStockTranSourceorDestination WHERE SourceorDestination IS NOT NULL\n"
                 + "GROUP BY SDNo\n"
                 + "UNION\n"
@@ -237,7 +240,7 @@ public class TableConfigurator {
         columnMappings.put(
                 new Column("Region_", Types.VARCHAR), new Column("name", Types.VARCHAR));
 
-        oto.setQuery("SELECT MIN(Rcode) AS Rcode_, MIN(Region) AS Region_\n"
+        oto.setParameterizedQuery("SELECT MIN(Rcode) AS Rcode_, MIN(Region) AS Region_\n"
                 + "FROM tblRegion GROUP BY Rcode ORDER BY Rcode");
         oto.setColumnMappings(columnMappings);
         return oto;
@@ -293,7 +296,7 @@ public class TableConfigurator {
         columnMappings.put(
                 new Column("TypeofService_", Types.VARCHAR), new Column("name", Types.VARCHAR));
 
-        oto.setQuery("SELECT MIN(TypeOfServiceID) AS TypeOfServiceID_, MIN(TypeofService) AS TypeofService_\n"
+        oto.setParameterizedQuery("SELECT MIN(TypeOfServiceID) AS TypeOfServiceID_, MIN(TypeofService) AS TypeofService_\n"
                 + "FROM tblTypeOfService GROUP BY TypeOfServiceID ORDER BY TypeOfServiceID");
         oto.setColumnMappings(columnMappings);
         return oto;
@@ -441,7 +444,9 @@ public class TableConfigurator {
 
     private OneToOne configurePatientIdentifier_ArtId() {
         OneToOne oto = new OneToOne(1, new Table("tblARTPatientMasterInformation", Table.orderBy("ArtID")),
-                new Table("patient_identifier"), "identifier_type_id = " + Constants.ART_IDENTIFIER_TYPE_ID);
+                new Table("patient_identifier"));
+        oto.addWhereCondition(new WhereCondition("identifier_type_id =", Constants.ART_IDENTIFIER_TYPE_ID, Types.INTEGER));
+
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column("ArtID", Types.VARCHAR), new Column("identifier", Types.VARCHAR));
@@ -458,7 +463,9 @@ public class TableConfigurator {
 
     private OneToOne configurePatientIdentifier_OpipdId() {
         OneToOne oto = new OneToOne(1, new Table("tblARTPatientMasterInformation", Table.orderBy("OPIPNO")),
-                new Table("patient_identifier"), "identifier_type_id = " + Constants.OPIP_IDENTIFIER_TYPE_ID);
+                new Table("patient_identifier"));
+        oto.addWhereCondition(new WhereCondition("identifier_type_id =", Constants.OPIP_IDENTIFIER_TYPE_ID, Types.INTEGER));
+
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column("OPIPNO", Types.VARCHAR), new Column("identifier", Types.VARCHAR));
@@ -469,7 +476,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("ArtID", Types.VARCHAR), patientId);
 
         oto.setColumnMappings(columnMappings);
-        oto.setQuery("SELECT ArtID, OPIPNO FROM tblARTPatientMasterInformation WHERE OPIPNO IS NOT NULL ORDER BY OPIPNO");
+        oto.setParameterizedQuery("SELECT ArtID, OPIPNO FROM tblARTPatientMasterInformation WHERE OPIPNO IS NOT NULL ORDER BY OPIPNO");
         oto.addPreProcessor(new IdentifierTypeCreator());
         return oto;
     }
@@ -507,7 +514,7 @@ public class TableConfigurator {
         patientId.setReference(new Reference("patient", "legacy_pk", false));
         columnMappings.put(new Column("ARTID", Types.VARCHAR), patientId);
 
-        oto.setQuery("SELECT "
+        oto.setParameterizedQuery("SELECT "
                 + "MIN(PatientTranNo) AS PatientTranNo_, "
                 + "DateofVisit, "
                 + "MIN(TransactionCode) AS TransactionCode_, "
@@ -531,7 +538,9 @@ public class TableConfigurator {
 
     private OneToOne configureTransaction_Stock() {
         OneToOne oto = new OneToOne(9, new Table("tblARVDrugStockTransactions", Table.orderBy("StockTranNo")),
-                new Table("transaction"), "legacy_pk LIKE 'S%'");
+                new Table("transaction"));
+        oto.addWhereCondition(new WhereCondition("legacy_pk LIKE", "Stck%", Types.VARCHAR));
+
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         Column transactionTypeId = new Column("transaction_type_id", Types.INTEGER);
@@ -543,7 +552,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("TranDate_", Types.DATE), new Column("date", Types.DATE));
         columnMappings.put(new Column("Remarks_", Types.VARCHAR), new Column("comments", Types.VARCHAR));
 
-        oto.setQuery("SELECT MIN(StockTranNo) AS StockTranNo_, MIN(TransactionType) AS TransactionType_,\n"
+        oto.setParameterizedQuery("SELECT MIN(StockTranNo) AS StockTranNo_, MIN(TransactionType) AS TransactionType_,\n"
                 + "MIN(RefOrderNo) AS RefOrderNo_, MIN(TranDate) AS TranDate_, MIN(Remarks) AS Remarks_\n"
                 + "FROM tblARVDrugStockTransactions WHERE Remarks NOT LIKE 'Dispensed to Patient No: %'\n"
                 + "OR Remarks IS NULL\n"
@@ -555,11 +564,13 @@ public class TableConfigurator {
 
     private OneToOne configureTransaction_Patient() throws SQLException {
         OneToOne oto = new OneToOne(9, new Table("tblARTPatientTransactions", Table.orderBy("MIN(PatientTranNo)")),
-                new Table("transaction"), "legacy_pk LIKE 'P%'");
+                new Table("transaction"));
+        oto.addWhereCondition(new WhereCondition("legacy_pk LIKE", "Prsn%", Types.VARCHAR));
+
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column(null, Types.VARCHAR),
-                new Column("transaction_type_id", Types.INTEGER, 
+                new Column("transaction_type_id", Types.INTEGER,
                         new LookupValue("transaction_type", "Dispensed to Patients")));
         columnMappings.put(new Column("PatientTranNo_", Types.INTEGER), new Column("legacy_pk", Types.VARCHAR, "Prsn"));
 
@@ -570,7 +581,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("DateofVisit", Types.DATE), new Column("date", Types.DATE));
         columnMappings.put(new Column("Comment_", Types.VARCHAR), new Column("comments", Types.VARCHAR));
 
-        oto.setQuery("SELECT "
+        oto.setParameterizedQuery("SELECT "
                 + "MIN(PatientTranNo) AS PatientTranNo_, "
                 + "DateofVisit, "
                 + "MIN(Comment) AS Comment_,"
@@ -587,7 +598,9 @@ public class TableConfigurator {
 
     private OneToOne configureTransactionItem_Stock() {
         OneToOne oto = new OneToOne(8, new Table("tblARVDrugStockTransactions", Table.orderBy("StockTranNo")),
-                new Table("transaction_item"), "legacy_pk LIKE 'S%'");
+                new Table("transaction_item"));
+        oto.addWhereCondition(new WhereCondition("legacy_pk LIKE", "Stck%", Types.VARCHAR));
+
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         Column drugId = new Column("drug_id", Types.INTEGER);
@@ -610,11 +623,14 @@ public class TableConfigurator {
         columnMappings.put(new Column("Qty_", Types.DATE), new Column("units_in", Types.DECIMAL));
         columnMappings.put(new Column("Qty_", Types.VARCHAR), new Column("units_out", Types.DECIMAL));
 
-        oto.setQuery("SELECT MIN(StockTranNo) AS StockTranNo_, MIN(ARVDrugsID) AS ARVDrugsID_, MIN(SourceorDestination)\n"
+        String sql = "SELECT MIN(StockTranNo) AS StockTranNo_, MIN(ARVDrugsID) AS ARVDrugsID_, MIN(SourceorDestination)\n"
                 + "AS SourceorDestination_, MIN(BatchNo) AS BatchNo_, MIN(Qty) AS Qty_ FROM tblARVDrugStockTransactions\n"
-                + "WHERE Remarks NOT LIKE 'Dispensed to Patient No: %' OR Remarks IS NULL\n"
+                + "WHERE Remarks NOT LIKE ? OR Remarks IS NULL\n"
                 + "GROUP BY StockTranNo\n"
-                + "ORDER BY StockTranNo ASC");
+                + "ORDER BY StockTranNo ASC";
+        Map<Object, Integer> params = new LinkedHashMap<>();
+        params.put("Dispensed to Patient No: %", Types.VARCHAR);
+        oto.setParameterizedQuery(new ParameterizedQuery(sql, params));
         oto.setColumnMappings(columnMappings);
 
         return oto;
@@ -622,7 +638,9 @@ public class TableConfigurator {
 
     private OneToOne configureTransactionItem_Patient() throws SQLException {
         OneToOne oto = new OneToOne(8, new Table("tblARTPatientTransactions", Table.orderBy("PatientTranNo")),
-                new Table("transaction_item"), "legacy_pk LIKE 'P%'");
+                new Table("transaction_item"));
+        oto.addWhereCondition(new WhereCondition("legacy_pk LIKE", "Prsn%", Types.VARCHAR));
+
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         Column drugId = new Column("drug_id", Types.INTEGER);
@@ -634,7 +652,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("PatientTranNo_", Types.INTEGER), transactionId);
 
         columnMappings.put(new Column(null, Types.VARCHAR),
-                new Column("account_id", Types.INTEGER, 
+                new Column("account_id", Types.INTEGER,
                         new LookupValue("account", "PATIENTS")));
 
         columnMappings.put(new Column("PatientTranNo_", Types.INTEGER), new Column("legacy_pk", Types.VARCHAR, "Prsn"));
@@ -642,7 +660,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("ARVQty_", Types.DATE), new Column("units_in", Types.DECIMAL));
         columnMappings.put(new Column("ARVQty_", Types.VARCHAR), new Column("units_out", Types.DECIMAL));
 
-        oto.setQuery("SELECT "
+        oto.setParameterizedQuery("SELECT "
                 + "MIN(PatientTranNo) AS PatientTranNo_, "
                 + "MIN(Drugname) AS Drugname_, "
                 + "MIN(BatchNo) AS BatchNo_, "
@@ -672,13 +690,17 @@ public class TableConfigurator {
         patientId.setReference(new Reference("transaction_item", "legacy_pk", "Stck", false));
         columnMappings.put(new Column("StockTranNo", Types.VARCHAR), patientId);
 
-        oto.setQuery("SELECT StockTranNo, Npacks, PackSize, BatchNo, Expirydate \n"
+        String sql = "SELECT StockTranNo, Npacks, PackSize, BatchNo, Expirydate \n"
                 + "FROM tblARVDrugStockTransactions\n"
-                + "WHERE (Remarks NOT LIKE 'Dispensed to Patient No: %'\n"
+                + "WHERE (Remarks NOT LIKE ?\n"
                 + "OR Remarks IS NULL)\n"
                 + "AND PackSize IS NOT NULL\n"
                 + "AND Npacks IS NOT NULL\n"
-                + "ORDER BY StockTranNo ASC");
+                + "ORDER BY StockTranNo ASC";
+        Map<Object, Integer> params = new LinkedHashMap<>();
+        params.put("Dispensed to Patient No: %", Types.VARCHAR);
+        
+        oto.setParameterizedQuery(new ParameterizedQuery(sql, params));
         oto.setColumnMappings(columnMappings);
         return oto;
     }
@@ -700,7 +722,7 @@ public class TableConfigurator {
         dosage.setReference(new Reference("dosage", true));
         columnMappings.put(new Column("Dose_", Types.VARCHAR), dosage);
 
-        oto.setQuery("SELECT "
+        oto.setParameterizedQuery("SELECT "
                 + "MIN(PatientTranNo) AS PatientTranNo_, "
                 + "MIN(duration) AS duration_, "
                 + "MIN(Dose) AS Dose_ "
