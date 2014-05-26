@@ -495,10 +495,6 @@ public class TableConfigurator {
         columnMappings.put(new Column("Adherence_", Types.DECIMAL), new Column("adherence", Types.DECIMAL));
         columnMappings.put(new Column("Comment_", Types.VARCHAR), new Column("comments", Types.VARCHAR));
 
-        Column indication = new Column("indication_id", Types.INTEGER);
-        indication.setReference(new Reference("indication", "legacy_pk"));
-        columnMappings.put(new Column("Indication_", Types.VARCHAR), indication);
-
         Column visitType = new Column("visit_type_id", Types.INTEGER);
         visitType.setReference(new Reference("visit_type", "legacy_pk"));
         columnMappings.put(new Column("TransactionCode_", Types.INTEGER), visitType);
@@ -579,6 +575,10 @@ public class TableConfigurator {
         visitId.setReference(new Reference("visit", "legacy_pk"));
         columnMappings.put(new Column("PatientTranNo_", Types.INTEGER), visitId);
 
+        Column indication = new Column("indication_id", Types.INTEGER);
+        indication.setReference(new Reference("indication", "legacy_pk"));
+        columnMappings.put(new Column("Indication_", Types.VARCHAR), indication);
+
         columnMappings.put(new Column("DateofVisit", Types.DATE), new Column("date", Types.DATE));
         columnMappings.put(new Column("Comment_", Types.VARCHAR), new Column("comments", Types.VARCHAR));
 
@@ -586,6 +586,7 @@ public class TableConfigurator {
                 + "MIN(PatientTranNo) AS PatientTranNo_,\n"
                 + "DateofVisit,\n"
                 + "MIN(Comment) AS Comment_,\n"
+                + "MIN(Indication) AS Indication_,\n"
                 + "ARTID\n"
                 + "FROM\n"
                 + "tblARTPatientTransactions\n"
