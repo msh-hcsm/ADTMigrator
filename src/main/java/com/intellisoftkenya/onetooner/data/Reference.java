@@ -11,6 +11,19 @@ import com.intellisoftkenya.onetooner.business.OneToOneMigrator;
 public class Reference {
 
     /**
+     * Defines the set of actions that may be be taken if the reference is null after
+     * all strategies configured for it have been exhausted. Supported strategies
+     * are read from lookup table, infer from lookup table, create new value or
+     * borrow value from preceeding record.
+     */
+    public enum NullAction {
+
+        THROW_EXCEPTION,
+        LOG_WARNING,
+        DO_NOTHING
+    }
+
+    /**
      * Name of the referenced table
      */
     private final String table;
@@ -76,7 +89,7 @@ public class Reference {
      * order. If set to false then an exception is thrown if none of these
      * strategies produces a value.
      */
-    private boolean optional = true;
+    private NullAction nullAction = NullAction.DO_NOTHING;
 
     /**
      * A {@link ValueTranslator} to process a reference value to be used as the
@@ -95,7 +108,12 @@ public class Reference {
     public Reference(String table) {
         this.table = table;
     }
-
+    
+    public Reference(String table, NullAction nullAction) {
+        this(table);
+        this.nullAction = nullAction;
+    }
+    
     public Reference(String table, boolean creatable) {
         this(table);
         this.creatable = creatable;
@@ -106,9 +124,9 @@ public class Reference {
         this.valueTranslator = valueTranslator;
     }
 
-    public Reference(String table, boolean creatable, boolean optional, ValueTranslator valueTranslator) {
+    public Reference(String table, boolean creatable, NullAction nullAction, ValueTranslator valueTranslator) {
         this(table, creatable);
-        this.optional = optional;
+        this.nullAction = nullAction;
         this.valueTranslator = valueTranslator;
     }
 
@@ -117,9 +135,9 @@ public class Reference {
         this.column = column;
     }
 
-    public Reference(String table, String column, boolean optional) {
+    public Reference(String table, String column, NullAction nullAction) {
         this(table, column);
-        this.optional = optional;
+        this.nullAction = nullAction;
     }
 
     public Reference(String table, String column, String prefix) {
@@ -127,10 +145,10 @@ public class Reference {
         this.prefix = prefix;
     }
 
-    public Reference(String table, String column, String prefix, boolean optional) {
+    public Reference(String table, String column, String prefix, NullAction nullAction) {
         this(table, column);
         this.prefix = prefix;
-        this.optional = optional;
+        this.nullAction = nullAction;
     }
 
     public Reference(String table, String column, boolean borrowable, String prefix) {
@@ -139,9 +157,9 @@ public class Reference {
         this.prefix = prefix;
     }
 
-    public Reference(String table, String column, boolean borrowable, String prefix, boolean optional) {
+    public Reference(String table, String column, boolean borrowable, String prefix, NullAction nullAction) {
         this(table, column, borrowable, prefix);
-        this.optional = optional;
+        this.nullAction = nullAction;
     }
 
     public String getTable() {
@@ -196,12 +214,12 @@ public class Reference {
         this.borrowable = borrowable;
     }
 
-    public boolean isOptional() {
-        return optional;
+    public NullAction getNullAction() {
+        return nullAction;
     }
 
-    public void setOptional(boolean optional) {
-        this.optional = optional;
+    public void setNullAction(NullAction nullAction) {
+        this.nullAction = nullAction;
     }
 
     public ValueTranslator getValueTranslator() {

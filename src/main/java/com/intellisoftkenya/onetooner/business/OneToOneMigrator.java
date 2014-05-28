@@ -164,7 +164,7 @@ public class OneToOneMigrator {
 
                     for (Map.Entry<Column, Column> columnMapping
                             : oto.getColumnMappings().entrySet()) {
-                        execute = setParameter(rs, pStmt, columnMapping, index, readValues) || execute;
+                        execute = setParameter(rs, pStmt, columnMapping, index, readValues, oto) || execute;
                         index++;
                     }
                     pStmt.setString(index++, auditValues.uuid());
@@ -294,7 +294,8 @@ public class OneToOneMigrator {
      * previously because this results in an exception.
      */
     private boolean setParameter(ResultSet rs, PreparedStatement pStmt,
-            Map.Entry<Column, Column> columnMapping, int index, Map<String, Object> alreadyRead)
+            Map.Entry<Column, Column> columnMapping, int index, Map<String, 
+                    Object> alreadyRead, OneToOne oto)
             throws SQLException, Exception {
 
         Column sourceColumn = columnMapping.getKey();
@@ -314,7 +315,7 @@ public class OneToOneMigrator {
         }
         if (destinationColumn.getReference() != null) {
             if (value != null) {
-                value = setParameterFromReference(destinationColumn.getReference(), value.toString());
+                value = setParameterFromReference(destinationColumn.getReference(), value.toString(), oto);
             }
         }
 
@@ -346,7 +347,7 @@ public class OneToOneMigrator {
      * deduced or created based on a table relationship as described by a
      * {@link Column} {@link Reference}.
      */
-    private Integer setParameterFromReference(Reference ref, String stringValue) throws SQLException, Exception {
+    private Integer setParameterFromReference(Reference ref, String stringValue, OneToOne oto) throws SQLException, Exception {
         String referenceKey = ref.getTable() + "-"
                 + ref.getColumn() + stringValue;
         Integer value = referenceCache.get(referenceKey);
@@ -396,16 +397,18 @@ public class OneToOneMigrator {
                     value = borrowableValue;
                     referenceCache.put(referenceKey, value);
                 }
-                if (value == null && !ref.isOptional()) {
-                    LOGGER.log(Level.SEVERE, "A lookup table is missing a required referenced value and the value could not be "
-                            + "inferred, created or borrowed. The associated select statement is:\n ''{0}'' : {1}. "
-                            + "Could the record have been skipped?",
-                            new Object[]{select, stringValue});
-                    throw new Exception("Required reference to lookup table value not satisfied.");
-                } else {
-                    LOGGER.log(Level.WARNING, "A lookup table is missing a non-required referenced value. The associated "
-                            + "select statement is: ''{0}'' : {1}.",
-                            new Object[]{select, stringValue});
+                if (value == null) {
+                    if (ref.getNullAction() == Reference.NullAction.THROW_EXCEPTION) {
+                        LOGGER.log(Level.SEVERE, "A lookup table is missing a required referenced value and the value could not be "
+                                + "inferred, created or borrowed. The associated select statement is:\n ''{0}'' : {1}. "
+                                + "Could the record have been skipped?",
+                                new Object[]{select, stringValue});
+                        throw new Exception("Required reference to lookup table value not satisfied.");
+                    } else if (ref.getNullAction() == Reference.NullAction.LOG_WARNING) {
+                        //Log statement specific for ADT-FDT migration.
+                        LOGGER.log(Level.WARNING, "Un-coded dosage ''{0}'' value in table ''{1}''. Null will be used instead.",
+                                new Object[]{stringValue, oto.getSourceTable().getName()});
+                    }
                 }
             }
         }

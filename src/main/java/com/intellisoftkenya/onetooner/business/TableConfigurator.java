@@ -108,7 +108,7 @@ public class TableConfigurator {
                 new Column("SourceorDestination_", Types.VARCHAR), new Column("name", Types.VARCHAR));
 
         Column accountTypeId = new Column("account_type_id", Types.INTEGER);
-        accountTypeId.setReference(new Reference("account_type", true, false, new AccountTypeValueTranslator()));
+        accountTypeId.setReference(new Reference("account_type", true, Reference.NullAction.THROW_EXCEPTION, new AccountTypeValueTranslator()));
         columnMappings.put(new Column("SourceorDestination_", Types.VARCHAR), accountTypeId);
 
         oto.setColumnMappings(columnMappings);
@@ -361,7 +361,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("GenericName", Types.VARCHAR), genericName);
 
         Column dosage = new Column("dosage_id", Types.INTEGER);
-        dosage.setReference(new Reference("dosage"));
+        dosage.setReference(new Reference("dosage", Reference.NullAction.LOG_WARNING));
         columnMappings.put(new Column("StdDose", Types.VARCHAR), dosage);
 
         oto.setColumnMappings(columnMappings);
@@ -399,7 +399,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("AlternateContact", Types.VARCHAR), new Column("tel_no2", Types.VARCHAR));
 
         Column patientId = new Column("person_id", Types.INTEGER);
-        patientId.setReference(new Reference("person", "legacy_pk", false));
+        patientId.setReference(new Reference("person", "legacy_pk", Reference.NullAction.THROW_EXCEPTION));
         columnMappings.put(new Column("ArtID", Types.VARCHAR), patientId);
 
         oto.setColumnMappings(columnMappings);
@@ -420,7 +420,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("PatientDrinkAlcohol", Types.BOOLEAN), new Column("drinker", Types.BOOLEAN));
 
         Column patientId = new Column("person_id", Types.INTEGER);
-        patientId.setReference(new Reference("person", "legacy_pk", false));
+        patientId.setReference(new Reference("person", "legacy_pk", Reference.NullAction.THROW_EXCEPTION));
         columnMappings.put(new Column("ArtID", Types.VARCHAR), patientId);
 
         Column patientSource = new Column("patient_source_id", Types.INTEGER);
@@ -454,7 +454,7 @@ public class TableConfigurator {
         columnMappings.put(new Column(null, Types.INTEGER), new Column("identifier_type_id", Types.INTEGER, Constants.ART_IDENTIFIER_TYPE_ID));
 
         Column patientId = new Column("patient_id", Types.INTEGER);
-        patientId.setReference(new Reference("patient", "legacy_pk", false));
+        patientId.setReference(new Reference("patient", "legacy_pk", Reference.NullAction.THROW_EXCEPTION));
         columnMappings.put(new Column("ArtID", Types.VARCHAR), patientId);
 
         oto.setColumnMappings(columnMappings);
@@ -473,7 +473,7 @@ public class TableConfigurator {
         columnMappings.put(new Column(null, Types.INTEGER), new Column("identifier_type_id", Types.INTEGER, Constants.OPIP_IDENTIFIER_TYPE_ID));
 
         Column patientId = new Column("patient_id", Types.INTEGER);
-        patientId.setReference(new Reference("patient", "legacy_pk", false));
+        patientId.setReference(new Reference("patient", "legacy_pk", Reference.NullAction.THROW_EXCEPTION));
         columnMappings.put(new Column("ArtID", Types.VARCHAR), patientId);
 
         oto.setColumnMappings(columnMappings);
@@ -508,7 +508,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("ReasonsForChange_", Types.VARCHAR), regimenChangeReason);
 
         Column patientId = new Column("patient_id", Types.INTEGER);
-        patientId.setReference(new Reference("patient", "legacy_pk", false));
+        patientId.setReference(new Reference("patient", "legacy_pk", Reference.NullAction.THROW_EXCEPTION));
         columnMappings.put(new Column("ARTID", Types.VARCHAR), patientId);
 
         oto.setParameterizedQuery("SELECT\n"
@@ -541,7 +541,7 @@ public class TableConfigurator {
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         Column transactionTypeId = new Column("transaction_type_id", Types.INTEGER);
-        transactionTypeId.setReference(new Reference("transaction_type", "legacy_pk", false));
+        transactionTypeId.setReference(new Reference("transaction_type", "legacy_pk", Reference.NullAction.THROW_EXCEPTION));
         columnMappings.put(new Column("TransactionType_", Types.VARCHAR), transactionTypeId);
 
         columnMappings.put(new Column("StockTranNo_", Types.INTEGER), new Column("legacy_pk", Types.VARCHAR, "Stck"));
@@ -606,15 +606,15 @@ public class TableConfigurator {
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         Column drugId = new Column("drug_id", Types.INTEGER);
-        drugId.setReference(new Reference("drug", "name", false));
+        drugId.setReference(new Reference("drug", "name", Reference.NullAction.THROW_EXCEPTION));
         columnMappings.put(new Column("ARVDrugsID_", Types.VARCHAR), drugId);
 
         Column transactionId = new Column("transaction_id", Types.INTEGER);
-        transactionId.setReference(new Reference("transaction", "legacy_pk", "Stck", false));
+        transactionId.setReference(new Reference("transaction", "legacy_pk", "Stck", Reference.NullAction.THROW_EXCEPTION));
         columnMappings.put(new Column("StockTranNo_", Types.INTEGER), transactionId);
 
         Column accountId = new Column("account_id", Types.INTEGER);
-        Reference reference = new Reference("account", "name", false);
+        Reference reference = new Reference("account", "name", Reference.NullAction.THROW_EXCEPTION);
         reference.setInferable(true);
         reference.setValueInferrer(new AccountValueInferrer());
         accountId.setReference(reference);
@@ -646,11 +646,11 @@ public class TableConfigurator {
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         Column drugId = new Column("drug_id", Types.INTEGER);
-        drugId.setReference(new Reference("drug", "name", false));
+        drugId.setReference(new Reference("drug", "name", Reference.NullAction.THROW_EXCEPTION));
         columnMappings.put(new Column("Drugname_", Types.VARCHAR), drugId);
 
         Column transactionId = new Column("transaction_id", Types.INTEGER);
-        transactionId.setReference(new Reference("transaction", "legacy_pk", true, "Prsn", false));
+        transactionId.setReference(new Reference("transaction", "legacy_pk", true, "Prsn", Reference.NullAction.THROW_EXCEPTION));
         columnMappings.put(new Column("PatientTranNo_", Types.INTEGER), transactionId);
 
         columnMappings.put(new Column(null, Types.VARCHAR),
@@ -689,7 +689,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("Expirydate", Types.DATE), new Column("date_of_expiry", Types.DATE));
 
         Column patientId = new Column("transaction_item_id", Types.INTEGER);
-        patientId.setReference(new Reference("transaction_item", "legacy_pk", "Stck", false));
+        patientId.setReference(new Reference("transaction_item", "legacy_pk", "Stck", Reference.NullAction.THROW_EXCEPTION));
         columnMappings.put(new Column("StockTranNo", Types.VARCHAR), patientId);
 
         String sql = "SELECT StockTranNo, Npacks, PackSize, BatchNo, Expirydate \n"
@@ -717,11 +717,11 @@ public class TableConfigurator {
         columnMappings.put(new Column("duration_", Types.INTEGER), new Column("duration", Types.INTEGER));
 
         Column transactionItemId = new Column("transaction_item_id", Types.INTEGER);
-        transactionItemId.setReference(new Reference("transaction_item", "legacy_pk", "Prsn", false));
+        transactionItemId.setReference(new Reference("transaction_item", "legacy_pk", "Prsn", Reference.NullAction.THROW_EXCEPTION));
         columnMappings.put(new Column("PatientTranNo_", Types.VARCHAR), transactionItemId);
 
         Column dosage = new Column("dosage_id", Types.INTEGER);
-        dosage.setReference(new Reference("dosage"));
+        dosage.setReference(new Reference("dosage", Reference.NullAction.LOG_WARNING));
         columnMappings.put(new Column("Dose_", Types.VARCHAR), dosage);
 
         oto.setParameterizedQuery("SELECT\n"
