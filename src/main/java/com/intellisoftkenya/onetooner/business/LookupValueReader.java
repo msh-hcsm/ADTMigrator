@@ -60,7 +60,7 @@ public class LookupValueReader {
         Integer id = null;
         String query = "SELECT " + pk + " FROM " + table
                 + " WHERE " + column + " = ?";
-       List<Parameter> params = new ArrayList<>();
+        List<Parameter> params = new ArrayList<>();
         params.add(new Parameter(value, Types.VARCHAR));
         ResultSet rs = dse.executeQuery(query, params);
         if (rs.next()) {

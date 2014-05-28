@@ -1,6 +1,7 @@
 package com.intellisoftkenya.onetooner.business;
 
 import com.intellisoftkenya.onetooner.api.imp.processor.Account99Includer;
+import com.intellisoftkenya.onetooner.api.imp.processor.DrugSupporterProcessor;
 import com.intellisoftkenya.onetooner.api.imp.processor.IdentifierTypeCreator;
 import com.intellisoftkenya.onetooner.api.imp.processor.LookupValuePkProcessor;
 import com.intellisoftkenya.onetooner.api.imp.processor.UnitsInOutUpdater;
@@ -365,6 +366,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("StdDose", Types.VARCHAR), dosage);
 
         oto.setColumnMappings(columnMappings);
+        oto.addPostProcessor(new DrugSupporterProcessor());
         return oto;
     }
 
