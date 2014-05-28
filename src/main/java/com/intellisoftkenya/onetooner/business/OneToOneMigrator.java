@@ -397,11 +397,15 @@ public class OneToOneMigrator {
                     referenceCache.put(referenceKey, value);
                 }
                 if (value == null && !ref.isOptional()) {
-                    LOGGER.log(Level.SEVERE, "A lookup table is missing a referenced value and the value could not be "
+                    LOGGER.log(Level.SEVERE, "A lookup table is missing a required referenced value and the value could not be "
                             + "inferred, created or borrowed. The associated select statement is:\n ''{0}'' : {1}. "
                             + "Could the record have been skipped?",
                             new Object[]{select, stringValue});
                     throw new Exception("Required reference to lookup table value not satisfied.");
+                } else {
+                    LOGGER.log(Level.WARNING, "A lookup table is missing a non-required referenced value. The associated "
+                            + "select statement is: ''{0}'' : {1}.",
+                            new Object[]{select, stringValue});
                 }
             }
         }
