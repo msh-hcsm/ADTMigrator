@@ -725,6 +725,8 @@ public class TableConfigurator {
         Column dosage = new Column("dosage_id", Types.INTEGER);
         dosage.setReference(new Reference("dosage", Reference.NullAction.LOG_WARNING));
         columnMappings.put(new Column("Dose_", Types.VARCHAR), dosage);
+        
+        columnMappings.put(new Column("Dose_", Types.VARCHAR), new Column("dosage_name", Types.VARCHAR));
 
         oto.setParameterizedQuery("SELECT\n"
                 + "MIN(PatientTranNo) AS PatientTranNo_,\n"
