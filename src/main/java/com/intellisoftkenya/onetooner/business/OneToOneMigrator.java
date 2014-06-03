@@ -294,8 +294,7 @@ public class OneToOneMigrator {
      * previously because this results in an exception.
      */
     private boolean setParameter(ResultSet rs, PreparedStatement pStmt,
-            Map.Entry<Column, Column> columnMapping, int index, Map<String, 
-                    Object> alreadyRead, OneToOne oto)
+            Map.Entry<Column, Column> columnMapping, int index, Map<String, Object> alreadyRead, OneToOne oto)
             throws SQLException, Exception {
 
         Column sourceColumn = columnMapping.getKey();
@@ -416,6 +415,11 @@ public class OneToOneMigrator {
     }
 
     public int deleteOneToOne(OneToOne oto) throws SQLException {
+        if (!oto.getPreDeletes().isEmpty()) {
+            for (String del : oto.getPreDeletes()) {
+                dse.executeUpdate(del, false);
+            }
+        }
         String delete = "DELETE FROM " + oto.getDestinationTable().getName();
         List<Parameter> params = new ArrayList<>();
         delete += createWhereClause(oto.getWhereConditions(), params);

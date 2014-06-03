@@ -63,6 +63,13 @@ public class OneToOne implements Comparable<OneToOne> {
      */
     private final Integer deletionOrder;
 
+    /**
+     * A list of delete queries to execute before deleting this {@link OneToOne}
+     * object. Typically this would be junction tables that depend on the table
+     * represented by this object.
+     */
+    private List<String> preDeletes;
+
     public OneToOne(Integer deletionOrder, Table sourceTable, Table destinationTable) {
         this.deletionOrder = deletionOrder;
         this.sourceTable = sourceTable;
@@ -133,6 +140,17 @@ public class OneToOne implements Comparable<OneToOne> {
 
     public void addPostProcessor(ExtraProcessor postProcessor) {
         getPostProcessors().add(postProcessor);
+    }
+
+    public List<String> getPreDeletes() {
+        if (preDeletes == null) {
+            preDeletes = new ArrayList<>();
+        }
+        return preDeletes;
+    }
+
+    public void addPreDelete(String preDelete) {
+        getPreDeletes().add(preDelete);
     }
 
     @Override

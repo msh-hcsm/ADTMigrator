@@ -367,6 +367,8 @@ public class TableConfigurator {
 
         oto.setColumnMappings(columnMappings);
         oto.addPostProcessor(new DrugSupporterProcessor());
+        
+        oto.addPreDelete("DELETE FROM `drug_supporting_organization`");
         return oto;
     }
 
