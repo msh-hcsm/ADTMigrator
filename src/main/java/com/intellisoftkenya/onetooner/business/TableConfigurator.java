@@ -362,7 +362,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("GenericName", Types.VARCHAR), genericName);
 
         Column dosage = new Column("dosage_id", Types.INTEGER);
-        dosage.setReference(new Reference("dosage", Reference.NullAction.LOG_WARNING));
+        dosage.setReference(new Reference("dosage"));
         columnMappings.put(new Column("StdDose", Types.VARCHAR), dosage);
 
         oto.setColumnMappings(columnMappings);
@@ -725,7 +725,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("PatientTranNo_", Types.VARCHAR), transactionItemId);
 
         Column dosage = new Column("dosage_id", Types.INTEGER);
-        dosage.setReference(new Reference("dosage", Reference.NullAction.LOG_WARNING));
+        dosage.setReference(new Reference("dosage"));
         columnMappings.put(new Column("Dose_", Types.VARCHAR), dosage);
         
         columnMappings.put(new Column("Dose_", Types.VARCHAR), new Column("dosage_name", Types.VARCHAR));

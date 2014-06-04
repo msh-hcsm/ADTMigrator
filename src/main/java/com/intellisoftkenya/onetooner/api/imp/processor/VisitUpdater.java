@@ -77,7 +77,7 @@ public class VisitUpdater implements ExtraProcessor {
         }
         dse.executeBatch(pStmt);
 
-        LOGGER.log(Level.INFO, "Updated {0} visit(s) with baseline information.",
+        LOGGER.log(Level.FINE, "Updated {0} visit(s) with baseline information.",
                 new Object[]{counter});
     }
 

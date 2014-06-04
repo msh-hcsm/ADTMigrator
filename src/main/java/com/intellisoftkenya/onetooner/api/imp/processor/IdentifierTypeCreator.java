@@ -66,7 +66,7 @@ public class IdentifierTypeCreator implements ExtraProcessor {
             params.add(new Parameter(auditValues.createdOn(), Types.DATE));
             dse.executeUpdate(update, params, false);
 
-            LOGGER.log(Level.INFO, "Created ART ID identifier type.");
+            LOGGER.log(Level.FINE, "Created ART ID identifier type.");
         }
         if (addOpdIpdId) {
             params = new ArrayList<>();
@@ -77,7 +77,7 @@ public class IdentifierTypeCreator implements ExtraProcessor {
             params.add(new Parameter(auditValues.createdOn(), Types.DATE));
             dse.executeUpdate(update, params, false);
 
-            LOGGER.log(Level.INFO, "Created OPDIPD ID identifier type.");
+            LOGGER.log(Level.FINE, "Created OPDIPD ID identifier type.");
         }
     }
 }

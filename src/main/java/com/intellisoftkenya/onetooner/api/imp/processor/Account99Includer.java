@@ -42,7 +42,7 @@ public class Account99Includer implements ExtraProcessor {
         params.add(new Parameter(auditValues.createdOn(), Types.DATE));
         try {
             dse.executeUpdate(insert, params, false);
-            LOGGER.log(Level.FINEST, "Added account named 99");
+            LOGGER.log(Level.FINE, "Added account named 99");
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, "Failed to add account named 99");
             throw ex;

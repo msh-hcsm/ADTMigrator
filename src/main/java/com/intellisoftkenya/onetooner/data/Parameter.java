@@ -31,4 +31,12 @@ public class Parameter {
     public int getType() {
         return type;
     }
+
+    @Override
+    public String toString() {
+        if (value != null) {
+            return value.toString();
+        }
+        return super.toString();
+    }
 }

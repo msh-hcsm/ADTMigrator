@@ -84,10 +84,10 @@ public class UnitsInOutUpdater implements ExtraProcessor {
             inPStmt.clearBatch();
             outPStmt.clearBatch();
 
-            LOGGER.log(Level.INFO, "Nullified {0} transaction_item units_in values.",
+            LOGGER.log(Level.FINE, "Nullified {0} transaction_item units_in values.",
                     new Object[]{inRowCount});
 
-            LOGGER.log(Level.INFO, "Nullified {0} transaction_item units_out values.",
+            LOGGER.log(Level.FINE, "Nullified {0} transaction_item units_out values.",
                     new Object[]{outRowCount});
         } finally {
             dse.close(rs);

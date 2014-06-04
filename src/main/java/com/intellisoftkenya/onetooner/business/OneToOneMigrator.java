@@ -314,7 +314,7 @@ public class OneToOneMigrator {
         }
         if (destinationColumn.getReference() != null) {
             if (value != null) {
-                value = setParameterFromReference(destinationColumn.getReference(), value.toString(), oto);
+                value = setParameterFromReference(destinationColumn.getReference(), value.toString());
             }
         }
 
@@ -346,7 +346,7 @@ public class OneToOneMigrator {
      * deduced or created based on a table relationship as described by a
      * {@link Column} {@link Reference}.
      */
-    private Integer setParameterFromReference(Reference ref, String stringValue, OneToOne oto) throws SQLException, Exception {
+    private Integer setParameterFromReference(Reference ref, String stringValue) throws SQLException, Exception {
         String referenceKey = ref.getTable() + "-"
                 + ref.getColumn() + stringValue;
         Integer value = referenceCache.get(referenceKey);
@@ -398,15 +398,13 @@ public class OneToOneMigrator {
                 }
                 if (value == null) {
                     if (ref.getNullAction() == Reference.NullAction.THROW_EXCEPTION) {
-                        LOGGER.log(Level.SEVERE, "A lookup table is missing a required referenced value and the value could not be "
-                                + "inferred, created or borrowed. The associated select statement is:\n ''{0}'' : {1}. "
-                                + "Could the record have been skipped?",
-                                new Object[]{select, stringValue});
+                        LOGGER.log(Level.SEVERE, "The referenced value ''{0}'' from the table ''{1}'' is missing and could not be "
+                                + "inferred, created or borrowed. Could the record have been skipped?",
+                                new Object[]{stringValue, ref.getTable()});
                         throw new Exception("Required reference to lookup table value not satisfied.");
                     } else if (ref.getNullAction() == Reference.NullAction.LOG_WARNING) {
-                        //Log statement specific for ADT-FDT migration.
-                        LOGGER.log(Level.WARNING, "Un-coded dosage ''{0}'' value in table ''{1}''. Null will be used instead.",
-                                new Object[]{stringValue, oto.getSourceTable().getName()});
+                        LOGGER.log(Level.WARNING, "The referenced value ''{0}'' from the table ''{1}'' is missing. Null will be used instead.",
+                                new Object[]{stringValue, ref.getTable()});
                     }
                 }
             }

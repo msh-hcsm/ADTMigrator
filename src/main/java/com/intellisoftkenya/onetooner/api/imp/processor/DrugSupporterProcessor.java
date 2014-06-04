@@ -91,10 +91,6 @@ public class DrugSupporterProcessor implements ExtraProcessor {
             Set<Integer> supporterIds = destinationDrugMap.get(drugId);
             for (Integer supporterId : supporterIds) {
                 rowCount++;
-                System.out.println("********************************************************** - " + rowCount);
-                if (rowCount == 158) {
-                    System.out.println("pause");
-                }
                 pStmt.setInt(1, drugId);
                 pStmt.setInt(2, supporterId);
                 pStmt.addBatch();
@@ -109,7 +105,7 @@ public class DrugSupporterProcessor implements ExtraProcessor {
 
         dse.executeBatch(pStmt);
         pStmt.clearBatch();
-        LOGGER.log(Level.INFO, "Created {0} drug-to-supporting organization associations.",
+        LOGGER.log(Level.FINE, "Created {0} drug-to-supporting_organization associations.",
                 new Object[]{rowCount});
     }
 }
