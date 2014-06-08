@@ -167,6 +167,7 @@ public class TableConfigurator {
         columnMappings.put(
                 new Column("District", Types.VARCHAR), new Column("district", Types.VARCHAR));
         oto.setColumnMappings(columnMappings);
+        oto.setDeletable(false);
         return oto;
     }
 
@@ -367,7 +368,7 @@ public class TableConfigurator {
 
         oto.setColumnMappings(columnMappings);
         oto.addPostProcessor(new DrugSupporterProcessor());
-        
+
         oto.addPreDelete("DELETE FROM `drug_supporting_organization`");
         return oto;
     }
@@ -727,7 +728,7 @@ public class TableConfigurator {
         Column dosage = new Column("dosage_id", Types.INTEGER);
         dosage.setReference(new Reference("dosage"));
         columnMappings.put(new Column("Dose_", Types.VARCHAR), dosage);
-        
+
         columnMappings.put(new Column("Dose_", Types.VARCHAR), new Column("dosage_name", Types.VARCHAR));
 
         oto.setParameterizedQuery("SELECT\n"

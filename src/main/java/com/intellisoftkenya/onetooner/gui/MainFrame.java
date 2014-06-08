@@ -398,8 +398,10 @@ public class MainFrame extends javax.swing.JFrame {
                                     new Object[]{destination});
                             try {
                                 int affected = migrator.deleteOneToOne(oto);
-                                LOGGER.log(Level.INFO, "Deleted {0} records from ''{1}''. Fix the errors and re-run the process.",
-                                        new Object[]{affected, destination});
+                                if (affected != -1) {
+                                    LOGGER.log(Level.INFO, "Deleted {0} records from ''{1}''. Fix the errors and re-run the process.",
+                                            new Object[]{affected, destination});
+                                }
                             } catch (SQLException sex) {
                                 LOGGER.log(Level.INFO, "Deleting from from ''{0}'' failed. Manually delete records "
                                         + "from ''{0}''. fix the errors and re-run the process.",
@@ -462,8 +464,10 @@ public class MainFrame extends javax.swing.JFrame {
                 for (OneToOne oto : otos) {
                     try {
                         int affected = migrator.deleteOneToOne(oto);
-                        LOGGER.log(Level.INFO, "Deleted {0} records from ''{1}''.",
-                                new Object[]{affected, oto.getDestinationTable().getName()});
+                        if (affected != -1) {
+                            LOGGER.log(Level.INFO, "Deleted {0} records from ''{1}''.",
+                                    new Object[]{affected, oto.getDestinationTable().getName()});
+                        }
                         i++;
                         publish(i);
                         showStatus("Executed step " + i + " of " + n, Color.BLACK);

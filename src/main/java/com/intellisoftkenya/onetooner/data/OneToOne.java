@@ -69,7 +69,16 @@ public class OneToOne implements Comparable<OneToOne> {
      * represented by this object.
      */
     private List<String> preDeletes;
-
+    
+    /**
+     * Whether or not the associated destination table should actually be deleted
+     * when clearing the database for migration. Useful for universally maintained
+     * metadata that is not migrated for each database but is preset instead.
+     * 
+     * Set to true by default.
+     */
+    private boolean deletable = true;
+    
     public OneToOne(Integer deletionOrder, Table sourceTable, Table destinationTable) {
         this.deletionOrder = deletionOrder;
         this.sourceTable = sourceTable;
@@ -151,6 +160,14 @@ public class OneToOne implements Comparable<OneToOne> {
 
     public void addPreDelete(String preDelete) {
         getPreDeletes().add(preDelete);
+    }
+
+    public boolean isDeletable() {
+        return deletable;
+    }
+
+    public void setDeletable(boolean deletable) {
+        this.deletable = deletable;
     }
 
     @Override

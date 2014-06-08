@@ -83,8 +83,10 @@ public class OneToOneMigrator {
                             new Object[]{destination});
                     try {
                         int affected = deleteOneToOne(oneToOne);
-                        LOGGER.log(Level.INFO, "Deleted {0} records from ''{1}''. Fix the errors and re-run the process.",
-                                new Object[]{affected, destination});
+                        if (affected != -1) {
+                            LOGGER.log(Level.INFO, "Deleted {0} records from ''{1}''. Fix the errors and re-run the process.",
+                                    new Object[]{affected, destination});
+                        }
                     } catch (SQLException sex) {
                         LOGGER.log(Level.INFO, "Deleting from from ''{0}'' failed. Manually delete records "
                                 + "from ''{0}''. fix the errors and re-run the process.",
@@ -418,10 +420,13 @@ public class OneToOneMigrator {
                 dse.executeUpdate(del, false);
             }
         }
-        String delete = "DELETE FROM " + oto.getDestinationTable().getName();
-        List<Parameter> params = new ArrayList<>();
-        delete += createWhereClause(oto.getWhereConditions(), params);
-        return dse.executeUpdate(delete, params, false);
+        if (oto.isDeletable()) {
+            String delete = "DELETE FROM " + oto.getDestinationTable().getName();
+            List<Parameter> params = new ArrayList<>();
+            delete += createWhereClause(oto.getWhereConditions(), params);
+            return dse.executeUpdate(delete, params, false);
+        }
+        return -1;
     }
 
     public void close() {
