@@ -143,6 +143,7 @@ public class TableConfigurator {
         columnMappings.put(
                 new Column("frequency", Types.INTEGER), new Column("frequency", Types.INTEGER));
         oto.setColumnMappings(columnMappings);
+        oto.setDeletable(false);
         return oto;
     }
 
@@ -320,6 +321,7 @@ public class TableConfigurator {
         columnMappings.put(
                 new Column("Unit", Types.VARCHAR), new Column("name", Types.VARCHAR));
         oto.setColumnMappings(columnMappings);
+        oto.setDeletable(false);
         return oto;
     }
 
