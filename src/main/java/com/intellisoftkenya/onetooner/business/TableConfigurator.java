@@ -2,6 +2,7 @@ package com.intellisoftkenya.onetooner.business;
 
 import com.intellisoftkenya.onetooner.api.imp.processor.Account99Includer;
 import com.intellisoftkenya.onetooner.api.imp.processor.DrugSupporterProcessor;
+import com.intellisoftkenya.onetooner.api.imp.processor.DrugsInRegimenProcessor;
 import com.intellisoftkenya.onetooner.api.imp.processor.IdentifierTypeCreator;
 import com.intellisoftkenya.onetooner.api.imp.processor.LookupValuePkProcessor;
 import com.intellisoftkenya.onetooner.api.imp.processor.UnitsInOutUpdater;
@@ -377,6 +378,7 @@ public class TableConfigurator {
 
         oto.setColumnMappings(columnMappings);
         oto.addPostProcessor(new DrugSupporterProcessor());
+        oto.addPostProcessor(new DrugsInRegimenProcessor());
 
         oto.addPreDelete("DELETE FROM `drug_supporting_organization`");
         oto.setDeletable(false);
