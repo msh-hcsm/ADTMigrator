@@ -1,6 +1,7 @@
 package com.intellisoftkenya.onetooner.api.imp.processor;
 
 import com.intellisoftkenya.onetooner.api.processor.ExtraProcessor;
+import com.intellisoftkenya.onetooner.business.LookupValueReader;
 import com.intellisoftkenya.onetooner.dao.DestinationSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SourceSqlExecutor;
 import com.intellisoftkenya.onetooner.dao.SqlExecutor;
@@ -52,6 +53,7 @@ public class VisitUpdater implements ExtraProcessor {
         int counter = 0;
         int batchNo = 1;
 
+        LookupValueReader lvr = new LookupValueReader();
         for (Map<String, Object> patient : patientMap.values()) {
             counter++;
             List<Map<String, Object>> visits = (List<Map<String, Object>>) patient.get("visits");
@@ -61,7 +63,14 @@ public class VisitUpdater implements ExtraProcessor {
                     pStmt.setBoolean(1, (Boolean) patient.get("Pregnant"));
                     pStmt.setString(2, (String) patient.get("OtherDrugs"));
                     pStmt.setBoolean(3, (Boolean) patient.get("TB"));
-                    pStmt.setInt(4, 232);
+
+                    Integer newStatusId = null;
+                    Integer oldStatusId = (Integer) patient.get("CurrentStatus");
+                    if (oldStatusId != null) {
+                        newStatusId = lvr.readId("patient_status", "legacy_pk", String.valueOf(oldStatusId));
+                    }
+                    pStmt.setInt(4, newStatusId);
+                    
                     Date date = (Date) patient.get("DateOfNextAppointment");
                     pStmt.setDate(5, date == null ? null : new java.sql.Date(date.getTime()));
                     pStmt.setInt(6, (Integer) lastVisit.get("PatientTranNo"));
