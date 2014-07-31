@@ -1,6 +1,7 @@
 package com.intellisoftkenya.onetooner.api.processor;
 
 import com.intellisoftkenya.onetooner.business.OneToOneMigrator;
+import com.intellisoftkenya.onetooner.dao.SqlExecutor;
 import com.intellisoftkenya.onetooner.data.OneToOne;
 
 /**
@@ -8,9 +9,9 @@ import com.intellisoftkenya.onetooner.data.OneToOne;
  * that is not provided by {@link OneToOneMigrator}. Such processing may be
  * executed before or after the processing provided by {@link OneToOneMigrator}
  * according to the methods 
- * {@link OneToOne#setPreProcessor(com.intellisoftkenya.onetooner.business.api.ExtraProcessor)}
+ * {@link OneToOne#addPreProcessor(com.intellisoftkenya.onetooner.api.processor.ExtraProcessor) }
  * and
- * {@link OneToOne#setPostProcessor(com.intellisoftkenya.onetooner.business.api.ExtraProcessor)}.
+ * {@link OneToOne#addPostProcessor(com.intellisoftkenya.onetooner.api.processor.ExtraProcessor) }.
  * 
  * If you ask for any instances of {@link SqlExecutor} or it's subclasses, in your
  * implementations of this interface, do not close them. The {@link OneToOneMigrator} 

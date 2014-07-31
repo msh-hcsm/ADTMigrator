@@ -17,8 +17,8 @@ public class SettingsDialog extends javax.swing.JDialog {
     /**
      * Creates new form SettingsDialog
      *
-     * @param parent
-     * @param modal
+     * @param parent this dialogs parent
+     * @param modal if true, dialog covers parent
      */
     public SettingsDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);

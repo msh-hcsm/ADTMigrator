@@ -33,8 +33,8 @@ public class Table extends NamedDatabaseObject {
     }
 
     /**
-     * A convenience method creating a {@link Column#orderBy} set with only one
-     * column.
+     * A convenience method for adding a single {@link Column} by which to
+     * order.
      *
      * @param column the column to order by
      *

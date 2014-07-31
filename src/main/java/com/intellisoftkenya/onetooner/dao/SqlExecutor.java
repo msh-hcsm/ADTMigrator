@@ -8,7 +8,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,14 +35,14 @@ public abstract class SqlExecutor {
     }
 
     /**
-     * Executes am SQL query using a PreparedStatement.
+     * Executes an SQL query using a PreparedStatement.
      *
      * @param sql the SQL query
      * @param params the parameters for this SQL query
      *
      * @return the ResultSet returned by the query
      *
-     * @throws java.sql.SQLException
+     * @throws java.sql.SQLException if any database related problem occures
      */
     public ResultSet executeQuery(String sql, List<Parameter> params) throws SQLException {
         PreparedStatement pStmt = connection.prepareStatement(sql);
@@ -70,7 +69,7 @@ public abstract class SqlExecutor {
      *
      * @return the ResultSet returned by the query
      *
-     * @throws java.sql.SQLException
+     * @throws java.sql.SQLException if any database related problem occures
      */
     public ResultSet executeQuery(String sql) throws SQLException {
         return executeQuery(sql, null);
@@ -89,7 +88,7 @@ public abstract class SqlExecutor {
      *
      * @return the auto-generated integer value if specified, the number of
      * affected rows otherwise.
-     * @throws java.sql.SQLException
+     * @throws java.sql.SQLException if any database related problem occures
      */
     public int executeUpdate(String sql, List<Parameter> params,
             boolean generatedValue) throws SQLException {
@@ -138,7 +137,7 @@ public abstract class SqlExecutor {
      *
      * @return the auto-generated integer value if specified, the number of
      * affected rows otherwise.
-     * @throws java.sql.SQLException
+     * @throws java.sql.SQLException if any database related problem occures
      */
     public int executeUpdate(String sql,
             boolean generatedValue) throws SQLException {
@@ -152,7 +151,7 @@ public abstract class SqlExecutor {
      *
      * @return the PreparedStatement
      *
-     * @throws java.sql.SQLException
+     * @throws java.sql.SQLException if any database related problem occures
      */
     public PreparedStatement createPreparedStatement(String sql) throws SQLException {
         LOGGER.log(Level.FINEST, "Preparing statement: {0}", sql);
@@ -169,7 +168,7 @@ public abstract class SqlExecutor {
      * @return an array of integers containing the number of rows affected by
      * each command.
      *
-     * @throws java.sql.SQLException
+     * @throws java.sql.SQLException if any database related problem occures
      */
     public int[] executeBatch(PreparedStatement pStmt) throws SQLException {
         int[] ret;
