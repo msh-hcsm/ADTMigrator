@@ -37,9 +37,9 @@ public class DrugsInRegimenProcessor implements ExtraProcessor {
     private Map<String, Set<String>> fillSourceRegimenMap() throws SQLException {
         Map<String, Set<String>> sourceDrugMap = new LinkedHashMap<>();
 
-        String query = "SELECT MIN(Regimencode) AS Regimencode_, MIN(Combinations) AS Combinations_\n"
+        String query = "SELECT Regimencode AS Regimencode_, Combinations AS Combinations_\n"
                 + "FROM tblDrugsInRegimen\n"
-                + "GROUP BY(Regimencode) ORDER BY Regimencode ASC";
+                + "ORDER BY Regimencode ASC";
         ResultSet rs = sse.executeQuery(query);
 
         String currentRegimenId = null;
@@ -53,7 +53,7 @@ public class DrugsInRegimenProcessor implements ExtraProcessor {
                 drugIds = sourceDrugMap.get(regimenId);
             }
             String drugId = rs.getString("Combinations_");
-            if (drugId != null) {
+            if (drugIds != null) {
                 drugIds.add(drugId);
             }
         }
