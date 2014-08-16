@@ -385,6 +385,7 @@ public class TableConfigurator {
         oto.addPostProcessor(new DrugsInRegimenProcessor());
 
         oto.addPreDelete("DELETE FROM `drug_supporting_organization`");
+        oto.addPreDelete("DELETE FROM `regimen_drug`");
         
         return oto;
     }

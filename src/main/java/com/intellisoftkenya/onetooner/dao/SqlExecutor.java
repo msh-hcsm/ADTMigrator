@@ -18,9 +18,9 @@ import java.util.logging.Logger;
  * @author gitahi
  */
 public abstract class SqlExecutor {
-    
+
     private static final Logger LOGGER = LoggerFactory.getLoger(SqlExecutor.class.getName());
-    
+
     public static final int TRANSACTION_BATCH_SIZE = 1000;
     protected Connection connection;
 
@@ -46,18 +46,16 @@ public abstract class SqlExecutor {
      */
     public ResultSet executeQuery(String sql, List<Parameter> params) throws SQLException {
         PreparedStatement pStmt = connection.prepareStatement(sql);
-        String paramString = "";
         if (params != null) {
             int i = 1;
             for (Parameter param : params) {
                 pStmt.setObject(i, param.getValue(), param.getType());
-                paramString += param.toString() + ", ";
                 i++;
             }
         }
-        
-        LOGGER.log(Level.FINEST, "{0} : {1}", new Object[]{sql, paramString});
-        
+
+        logPreparedStatement(pStmt);
+
         ResultSet rs = pStmt.executeQuery();
         return rs;
     }
@@ -107,9 +105,9 @@ public abstract class SqlExecutor {
                 i++;
             }
         }
-        
-        LOGGER.log(Level.FINEST, pStmt.toString());
-        
+
+        logPreparedStatement(pStmt);
+
         ret = pStmt.executeUpdate();
         if (generatedValue) {
             rs = pStmt.getGeneratedKeys();
@@ -175,6 +173,18 @@ public abstract class SqlExecutor {
         }
         pStmt.clearBatch();
         return ret;
+    }
+
+    /**
+     * Logs the SQL statement returned by pStmt.toString() if available.
+     * 
+     * @param pStmt the PreparedStatement to log
+     */
+    public void logPreparedStatement(PreparedStatement pStmt) {
+        String[] tokens = pStmt.toString().split(":");
+        if (tokens.length == 2) {
+            LOGGER.log(Level.FINEST, tokens[1]);
+        }
     }
 
     /**

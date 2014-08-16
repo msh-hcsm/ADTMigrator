@@ -75,7 +75,7 @@ public class VisitUpdater implements ExtraProcessor {
                     pStmt.setDate(5, date == null ? null : new java.sql.Date(date.getTime()));
                     pStmt.setInt(6, (Integer) lastVisit.get("PatientTranNo"));
                     pStmt.addBatch();
-                    LOGGER.log(Level.FINEST, pStmt.toString());
+                    dse.logPreparedStatement(pStmt);
                 }
             }
             if (counter % SqlExecutor.TRANSACTION_BATCH_SIZE == 0) {
