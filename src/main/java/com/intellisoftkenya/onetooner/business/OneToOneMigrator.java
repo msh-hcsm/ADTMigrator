@@ -424,7 +424,8 @@ public class OneToOneMigrator {
         if (oto.isDeletable()) {
             String delete = "DELETE FROM " + oto.getDestinationTable().getName();
             List<Parameter> params = new ArrayList<>();
-            delete += createWhereClause(oto.getWhereConditions(), params);
+            delete += " ";
+            delete += createWhereClause(oto, params);
             return dse.executeUpdate(delete, params, false);
         }
         return -1;
@@ -444,7 +445,8 @@ public class OneToOneMigrator {
 
         String skipIfQuery = "SELECT * FROM " + oto.getDestinationTable().getName();
         List<Parameter> params = new ArrayList<>();
-        skipIfQuery += createWhereClause(oto.getWhereConditions(), params);
+        skipIfQuery += " ";
+        skipIfQuery += createWhereClause(oto, params);
 
         ResultSet rs = dse.executeQuery(skipIfQuery, params);
         boolean emptyEnough = !rs.next();
@@ -459,19 +461,25 @@ public class OneToOneMigrator {
      * @param whereConditions the {@link WhereCondition}s
      * @param params the parameter map
      */
-    private String createWhereClause(List<WhereCondition> whereConditions,
+    private String createWhereClause(OneToOne oto,
             List<Parameter> params) {
-        String whereClause = "";
-        if (whereConditions == null || whereConditions.isEmpty()) {
+        String whereClause = oto.getExplicitWhereConditions();
+        if (whereClause != null) {
             return whereClause;
+        } else {
+            if (oto.getWhereConditions().isEmpty()) {
+                return "";
+            } else {
+                if (oto.getWhereConditions().size() > 1) {
+                    throw new UnsupportedOperationException("Multiple where conditions not supported yet!");
+                } else {
+                    for (WhereCondition wc : oto.getWhereConditions()) {
+                        whereClause = ("WHERE " + wc.getColumnAndOperator() + " ?");
+                        params.add(new Parameter(wc.getValue(), wc.getValueType()));
+                    }
+                    return whereClause;
+                }
+            }
         }
-        if (whereConditions.size() > 1) {
-            throw new UnsupportedOperationException("Multiple where conditions not supported yet!");
-        }
-        for (WhereCondition wc : whereConditions) {
-            whereClause = (" WHERE " + wc.getColumnAndOperator() + " ?");
-            params.add(new Parameter(wc.getValue(), wc.getValueType()));
-        }
-        return whereClause;
     }
 }

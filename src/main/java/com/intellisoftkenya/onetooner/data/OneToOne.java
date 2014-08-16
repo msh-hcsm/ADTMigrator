@@ -79,6 +79,14 @@ public class OneToOne implements Comparable<OneToOne> {
      */
     private boolean deletable = true;
     
+    /**
+     * Analogous to {@link OneToOne#whereConditions} except that here the
+     * where conditions are specified explicitly. Useful for more complex
+     * conditions that are not yet supported for dynamic generation. This
+     * setting takes precedence over {@link OneToOne#whereConditions}.
+     */
+    private String explicitWhereConditions;
+    
     public OneToOne(Integer deletionOrder, Table sourceTable, Table destinationTable) {
         this.deletionOrder = deletionOrder;
         this.sourceTable = sourceTable;
@@ -168,6 +176,14 @@ public class OneToOne implements Comparable<OneToOne> {
 
     public void setDeletable(boolean deletable) {
         this.deletable = deletable;
+    }
+
+    public String getExplicitWhereConditions() {
+        return explicitWhereConditions;
+    }
+
+    public void setExplicitWhereConditions(String explicitWhereConditions) {
+        this.explicitWhereConditions = explicitWhereConditions;
     }
 
     @Override

@@ -303,6 +303,7 @@ public class TableConfigurator {
     private OneToOne configureServiceType() {
         OneToOne oto = new OneToOne(18, new Table("tblTypeOfService", Table.orderBy("TypeOfServiceID")),
                 new Table("service_type"));
+        oto.setExplicitWhereConditions("WHERE id NOT IN (SELECT DISTINCT service_type_id FROM drug WHERE standard = 1)");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
                 new Column("TypeOfServiceID_", Types.INTEGER), new Column("legacy_pk", Types.INTEGER));
@@ -318,6 +319,7 @@ public class TableConfigurator {
     private OneToOne configureDispensingUnit() {
         OneToOne oto = new OneToOne(19, new Table("tblUnit", Table.orderBy("Unit")),
                 new Table("dispensing_unit"));
+        oto.setExplicitWhereConditions("WHERE id NOT IN (SELECT DISTINCT dispensing_unit_id FROM drug WHERE standard = 1)");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
                 new Column("Unit", Types.VARCHAR), new Column("name", Types.VARCHAR));
@@ -355,6 +357,7 @@ public class TableConfigurator {
     private OneToOne configureDrug() {
         OneToOne oto = new OneToOne(11, new Table("tblARVDrugStockMain", Table.orderBy("ARVDrugsID")),
                 new Table("drug"));
+        oto.addWhereCondition(new WhereCondition("standard =",false, Types.BOOLEAN));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column("ARVDrugsID", Types.VARCHAR), new Column("name", Types.VARCHAR));

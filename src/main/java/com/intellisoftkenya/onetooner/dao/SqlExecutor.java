@@ -113,7 +113,7 @@ public abstract class SqlExecutor {
         }
 
         if (!logPreparedStatement(pStmt)) {
-        LOGGER.log(Level.FINEST, "{0} : {1}", new Object[]{sql, paramString});
+            LOGGER.log(Level.FINEST, "{0} : {1}", new Object[]{sql, paramString});
         }
         ret = pStmt.executeUpdate();
         if (generatedValue) {

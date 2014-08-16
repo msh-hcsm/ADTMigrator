@@ -41,11 +41,6 @@ public class MasterDrugListImporter implements ExtraProcessor {
     private final SqlExecutor dse = DestinationSqlExecutor.getInstance();
     private final AuditValues auditValues = new AuditValues();
 
-    public static void main(String[] args) throws Exception {
-        MasterDrugListImporter importer = new MasterDrugListImporter();
-        importer.process(null);
-    }
-
     @Override
     public void process(OneToOne oto) throws Exception {
         if (noStandardDrugs()) {
@@ -143,7 +138,7 @@ public class MasterDrugListImporter implements ExtraProcessor {
 
     private Integer getLookupValue(String table, String value) throws SQLException {
         Integer id = null;
-        if (value != null && !"".equals("value") && !"TBD".equals("value")) {
+        if (value != null && !"".equals(value) && !"TBD".equals(value)) {
             id = new LookupValueReader().readId(table, value);
             if (id == null) {
                 List<Parameter> params = new ArrayList<>();
