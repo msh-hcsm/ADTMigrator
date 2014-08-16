@@ -46,15 +46,19 @@ public abstract class SqlExecutor {
      */
     public ResultSet executeQuery(String sql, List<Parameter> params) throws SQLException {
         PreparedStatement pStmt = connection.prepareStatement(sql);
+        String paramString = "";
         if (params != null) {
             int i = 1;
             for (Parameter param : params) {
                 pStmt.setObject(i, param.getValue(), param.getType());
+                paramString += param.toString() + ", ";
                 i++;
             }
         }
 
-        logPreparedStatement(pStmt);
+        if (!logPreparedStatement(pStmt)) {
+            LOGGER.log(Level.FINEST, "{0} : {1}", new Object[]{sql, paramString});
+        }
 
         ResultSet rs = pStmt.executeQuery();
         return rs;
@@ -86,13 +90,14 @@ public abstract class SqlExecutor {
      *
      * @return the auto-generated integer value if specified, the number of
      * affected rows otherwise.
-     * @throws java.sql.SQLException if any database related problem occurs
+     * @throws java.sql.SQLException if any database related problem occures
      */
     public int executeUpdate(String sql, List<Parameter> params,
             boolean generatedValue) throws SQLException {
         ResultSet rs;
         int ret;
         PreparedStatement pStmt;
+        String paramString = "";
         if (generatedValue) {
             pStmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         } else {
@@ -102,12 +107,14 @@ public abstract class SqlExecutor {
             int i = 1;
             for (Parameter param : params) {
                 pStmt.setObject(i, param.getValue(), param.getType());
+                paramString += param.toString() + ", ";
                 i++;
             }
         }
 
-        logPreparedStatement(pStmt);
-
+        if (!logPreparedStatement(pStmt)) {
+        LOGGER.log(Level.FINEST, "{0} : {1}", new Object[]{sql, paramString});
+        }
         ret = pStmt.executeUpdate();
         if (generatedValue) {
             rs = pStmt.getGeneratedKeys();
@@ -177,14 +184,18 @@ public abstract class SqlExecutor {
 
     /**
      * Logs the SQL statement returned by pStmt.toString() if available.
-     * 
+     *
      * @param pStmt the PreparedStatement to log
+     *
+     * @return true if logging was successful and false otherwise.
      */
-    public void logPreparedStatement(PreparedStatement pStmt) {
+    public boolean logPreparedStatement(PreparedStatement pStmt) {
         String[] tokens = pStmt.toString().split(":");
         if (tokens.length == 2) {
             LOGGER.log(Level.FINEST, tokens[1]);
+            return true;
         }
+        return false;
     }
 
     /**
