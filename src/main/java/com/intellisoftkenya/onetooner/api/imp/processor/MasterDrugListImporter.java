@@ -126,6 +126,7 @@ public class MasterDrugListImporter implements ExtraProcessor {
             pStmt.setObject(18, auditValues.createdOn());
 
             pStmt.addBatch();
+            LOGGER.log(Level.FINEST, pStmt.toString());
             if (rowCount != 0 && rowCount % SqlExecutor.TRANSACTION_BATCH_SIZE == 0) {
                 dse.executeBatch(pStmt);
                 LOGGER.log(Level.FINER, "Commited transaction batch #{0}.",

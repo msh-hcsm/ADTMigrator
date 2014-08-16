@@ -174,6 +174,7 @@ public class OneToOneMigrator {
                     pStmt.setDate(index++, auditValues.createdOn());
                     if (execute) {
                         pStmt.addBatch();
+                        LOGGER.log(Level.FINEST, pStmt.toString());
                     } else {
                         skippedRowCount++;
                     }

@@ -88,14 +88,13 @@ public abstract class SqlExecutor {
      *
      * @return the auto-generated integer value if specified, the number of
      * affected rows otherwise.
-     * @throws java.sql.SQLException if any database related problem occures
+     * @throws java.sql.SQLException if any database related problem occurs
      */
     public int executeUpdate(String sql, List<Parameter> params,
             boolean generatedValue) throws SQLException {
         ResultSet rs;
         int ret;
         PreparedStatement pStmt;
-        String paramString = "";
         if (generatedValue) {
             pStmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         } else {
@@ -105,12 +104,11 @@ public abstract class SqlExecutor {
             int i = 1;
             for (Parameter param : params) {
                 pStmt.setObject(i, param.getValue(), param.getType());
-                paramString += param.toString() + ", ";
                 i++;
             }
         }
         
-        LOGGER.log(Level.FINEST, "{0} : {1}", new Object[]{sql, paramString});
+        LOGGER.log(Level.FINEST, pStmt.toString());
         
         ret = pStmt.executeUpdate();
         if (generatedValue) {
@@ -154,7 +152,6 @@ public abstract class SqlExecutor {
      * @throws java.sql.SQLException if any database related problem occures
      */
     public PreparedStatement createPreparedStatement(String sql) throws SQLException {
-        LOGGER.log(Level.FINEST, "Preparing statement: {0}", sql);
         return connection.prepareStatement(sql);
     }
 

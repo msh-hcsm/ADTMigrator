@@ -94,6 +94,7 @@ public class DrugSupporterProcessor implements ExtraProcessor {
                 pStmt.setInt(1, drugId);
                 pStmt.setInt(2, supporterId);
                 pStmt.addBatch();
+                LOGGER.log(Level.FINEST, pStmt.toString());
                 if (rowCount != 0 && rowCount % SqlExecutor.TRANSACTION_BATCH_SIZE == 0) {
                     dse.executeBatch(pStmt);
                     LOGGER.log(Level.FINER, "Commited transaction batch #{0}.",

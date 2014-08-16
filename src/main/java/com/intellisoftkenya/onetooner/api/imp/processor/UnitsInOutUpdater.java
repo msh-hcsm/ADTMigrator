@@ -61,10 +61,12 @@ public class UnitsInOutUpdater implements ExtraProcessor {
                     inRowCount++;
                     inPStmt.setInt(1, txItemId);
                     inPStmt.addBatch();
+                    LOGGER.log(Level.FINEST, inPStmt.toString());
                 } else {
                     outRowCount++;
                     outPStmt.setInt(1, txItemId);
                     outPStmt.addBatch();
+                    LOGGER.log(Level.FINEST, outPStmt.toString());
                 }
                 if (inRowCount != 0 && inRowCount % SqlExecutor.TRANSACTION_BATCH_SIZE == 0) {
                     dse.executeBatch(inPStmt);
