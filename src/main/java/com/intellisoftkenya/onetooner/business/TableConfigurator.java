@@ -5,6 +5,7 @@ import com.intellisoftkenya.onetooner.api.imp.processor.DrugSupporterProcessor;
 import com.intellisoftkenya.onetooner.api.imp.processor.DrugsInRegimenProcessor;
 import com.intellisoftkenya.onetooner.api.imp.processor.IdentifierTypeCreator;
 import com.intellisoftkenya.onetooner.api.imp.processor.LookupValuePkProcessor;
+import com.intellisoftkenya.onetooner.api.imp.processor.MasterDrugListImporter;
 import com.intellisoftkenya.onetooner.api.imp.processor.UnitsInOutUpdater;
 import com.intellisoftkenya.onetooner.api.imp.processor.VisitUpdater;
 import com.intellisoftkenya.onetooner.api.imp.translator.AccountTypeValueTranslator;
@@ -379,6 +380,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("StdDose", Types.VARCHAR), dosage);
 
         oto.setColumnMappings(columnMappings);
+        oto.addPreProcessor(new MasterDrugListImporter());
         oto.addPostProcessor(new DrugSupporterProcessor());
         oto.addPostProcessor(new DrugsInRegimenProcessor());
 
