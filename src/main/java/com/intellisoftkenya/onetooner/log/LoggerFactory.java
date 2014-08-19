@@ -14,29 +14,28 @@ import java.util.logging.Logger;
 public class LoggerFactory {
 
     private static List<Handler> handlers;
-    
+    private static final Level level = Level.parse(PropertyManager.getProperty("logging.level"));
+
     public static void addHandler(Handler handler) {
         if (handlers == null) {
             handlers = new ArrayList<>();
         }
         handlers.add(handler);
     }
-    
-    public static void setHandlers(List<Handler> handlers) {
-        if (handlers != null) {
-            LoggerFactory.handlers = handlers;
-        }
-    }
 
     public static Logger getLoger(String name) {
         Logger logger = Logger.getLogger(name);
-        logger.setLevel(Level.parse(PropertyManager.getProperty("logging.level")));
+//        logger.setUseParentHandlers(false);
+        logger.setLevel(level);
         if (handlers != null && !handlers.isEmpty()) {
             for (Handler handler : handlers) {
                 logger.addHandler(handler);
             }
         }
         return logger;
+    }
 
+    public static Level getLevel() {
+        return level;
     }
 }

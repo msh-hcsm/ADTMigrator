@@ -8,10 +8,12 @@ import com.intellisoftkenya.onetooner.data.OneToOne;
 import com.intellisoftkenya.onetooner.log.LoggerFactory;
 import com.intellisoftkenya.onetooner.log.UILogHandler;
 import java.awt.Color;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -276,14 +278,41 @@ public class MainFrame extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     private void registerLogHandlers() {
-        UILogHandler uiLogHandler = new UILogHandler(this);
         SimpleFormatter formatter = new SimpleFormatter();
+
+        UILogHandler uiLogHandler = new UILogHandler(this);
         uiLogHandler.setFormatter(formatter);
-        LoggerFactory.addHandler(uiLogHandler);
+        uiLogHandler.setLevel(Level.INFO);
+
+        FileHandler fileHandler = null;
+        try {
+            fileHandler = new FileHandler("log.txt", 102400, 1);
+            fileHandler.setFormatter(formatter);
+        } catch (IOException | SecurityException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        if (LoggerFactory.getLevel().intValue() >= uiLogHandler.getLevel().intValue()) {
+            LoggerFactory.addHandler(uiLogHandler);
+            clearLogsButton.setEnabled(true);
+        } else {
+            showLog("Logging level is set too high to be shown here. Only Loging level:"
+                    + "INFO or higher can be displayed in the GUI. See the 'log.txt' "
+                    + "file instead.");
+            clearLogsButton.setEnabled(false);
+        }
+        if (fileHandler != null) {
+            LoggerFactory.addHandler(fileHandler);
+        }
     }
 
     public void showLog(final String message) {
         logsTextArea.append(message);
+        this.validate();
+    }
+
+    public void clearLog() {
+        logsTextArea.setText("");
         this.validate();
     }
 

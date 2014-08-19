@@ -6,8 +6,7 @@ import java.util.logging.LogRecord;
 import javax.swing.SwingUtilities;
 
 /**
- * A {@link java.util.logging.Handler} that outputs to the application
- * UI.
+ * A {@link java.util.logging.Handler} that outputs to the application UI.
  *
  * @author gitahi
  */
@@ -36,5 +35,4 @@ public class UILogHandler extends Handler {
     @Override
     public void close() throws SecurityException {
     }
-
 }
