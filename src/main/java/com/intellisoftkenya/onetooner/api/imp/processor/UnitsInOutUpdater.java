@@ -48,7 +48,7 @@ public class UnitsInOutUpdater implements ExtraProcessor {
         try {
             int inRowCount = 0;
             int outRowCount = 0;
-            
+
             int inBatchNo = 1;
             int outBatchNo = 1;
 
@@ -97,7 +97,8 @@ public class UnitsInOutUpdater implements ExtraProcessor {
     }
 
     private boolean nullifyUnitsIn(String txType) {
-        return "Received from".equalsIgnoreCase(txType)
+        return "Dispensed to Patients".equalsIgnoreCase(txType)
+                || "Issued To".equalsIgnoreCase(txType)
                 || "Ajustment (-)".equalsIgnoreCase(txType)
                 || "Returns to (-)".equalsIgnoreCase(txType)
                 || "Losses(-)".equalsIgnoreCase(txType)
