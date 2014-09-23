@@ -65,7 +65,7 @@ public class OneToOneMigrator {
      * Migrate all tables that have a logical one-to-one mapping between the
      * Source and the Destination.
      *
-     * @throws java.sql.SQLException
+     * @throws java.sql.SQLException if any database related problem occurs.
      */
     public void migrate() throws Exception {
         LOGGER.log(Level.INFO, "Process started.");

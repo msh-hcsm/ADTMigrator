@@ -26,7 +26,7 @@ public class LookupValueReader {
      * @param table the lookup table
      * @param value the value to look for in column
      * @return the integer primary value
-     * @throws java.sql.SQLException
+     * @throws java.sql.SQLException if any database related problem occurs.
      */
     public Integer readId(String table, String value) throws SQLException {
         return readId(table, "name", value);
@@ -40,7 +40,7 @@ public class LookupValueReader {
      * @param column the column by which to query for value
      * @param value the value to look for in column
      * @return the integer primary value
-     * @throws java.sql.SQLException
+     * @throws java.sql.SQLException if any database related problem occurs.
      */
     public Integer readId(String table, String column, String value) throws SQLException {
         return readId(table, "id", column, value);
@@ -54,7 +54,7 @@ public class LookupValueReader {
      * @param column the column by which to query for value
      * @param value the value to look for in column
      * @return the integer primary value
-     * @throws java.sql.SQLException
+     * @throws java.sql.SQLException if any database related problem occurs.
      */
     public Integer readId(String table, String pk, String column, String value) throws SQLException {
         Integer id = null;

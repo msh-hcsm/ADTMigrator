@@ -170,7 +170,7 @@ public abstract class SqlExecutor {
      * @return an array of integers containing the number of rows affected by
      * each command.
      *
-     * @throws java.sql.SQLException if any database related problem occures
+     * @throws java.sql.SQLException if any database related problem occurs.
      */
     public int[] executeBatch(PreparedStatement pStmt) throws SQLException {
         int[] ret;
@@ -233,7 +233,7 @@ public abstract class SqlExecutor {
      *
      * @return the Statement created
      *
-     * @throws java.sql.SQLException
+     * @throws java.sql.SQLException if any database related problem occurs.
      */
     protected Statement createStatement() throws SQLException {
         Statement stmt = connection.createStatement();
