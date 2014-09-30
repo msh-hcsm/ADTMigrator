@@ -15,7 +15,7 @@ public class AccountTypeValueTranslator implements ValueTranslator {
             if (value.equalsIgnoreCase("KEMSA")
                     || value.equalsIgnoreCase("MEDS")
                     || value.equalsIgnoreCase("PEPFAR")
-                    ) {
+                    || value.equalsIgnoreCase("KENYA PHARMA")) {
                 return "Supplier";
             } else if (value.equalsIgnoreCase("STOCK TAKE")
                     || value.equalsIgnoreCase("99")) {
