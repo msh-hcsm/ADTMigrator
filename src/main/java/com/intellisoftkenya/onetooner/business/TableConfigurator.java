@@ -6,6 +6,7 @@ import com.intellisoftkenya.onetooner.api.imp.processor.DrugsInRegimenProcessor;
 import com.intellisoftkenya.onetooner.api.imp.processor.IdentifierTypeCreator;
 import com.intellisoftkenya.onetooner.api.imp.processor.LookupValuePkProcessor;
 import com.intellisoftkenya.onetooner.api.imp.processor.MasterDrugListImporter;
+import com.intellisoftkenya.onetooner.api.imp.processor.PatientServiceTypeProcessor;
 import com.intellisoftkenya.onetooner.api.imp.processor.UnitsInOutUpdater;
 import com.intellisoftkenya.onetooner.api.imp.processor.VisitUpdater;
 import com.intellisoftkenya.onetooner.api.imp.translator.AccountTypeValueTranslator;
@@ -313,6 +314,7 @@ public class TableConfigurator {
         oto.setParameterizedQuery("SELECT MIN(TypeOfServiceID) AS TypeOfServiceID_, MIN(TypeofService) AS TypeofService_\n"
                 + "FROM tblTypeOfService GROUP BY TypeOfServiceID ORDER BY TypeOfServiceID");
         oto.setColumnMappings(columnMappings);
+        oto.addPreDelete("DELETE FROM `patient_service_type`");
         return oto;
     }
 
@@ -438,7 +440,6 @@ public class TableConfigurator {
 
         columnMappings.put(new Column("ArtID", Types.VARCHAR), new Column("legacy_pk", Types.VARCHAR));
         columnMappings.put(new Column("DateTherapyStarted", Types.DATE), new Column("enrollment_date", Types.DATE));
-        columnMappings.put(new Column("DateStartedonART", Types.DATE), new Column("service_start_date", Types.DATE));
         columnMappings.put(new Column("OtherDeaseConditions", Types.VARCHAR), new Column("chronic_illnesses", Types.VARCHAR));
         columnMappings.put(new Column("ADRorSideEffects", Types.VARCHAR), new Column("drug_allergies", Types.VARCHAR));
         columnMappings.put(new Column("PatientSmoke", Types.BOOLEAN), new Column("smoker", Types.BOOLEAN));
@@ -452,10 +453,6 @@ public class TableConfigurator {
         patientSource.setReference(new Reference("patient_source", "legacy_pk"));
         columnMappings.put(new Column("SourceofClient", Types.VARCHAR), patientSource);
 
-        Column serviceType = new Column("service_type_id", Types.INTEGER);
-        serviceType.setReference(new Reference("service_type", "legacy_pk"));
-        columnMappings.put(new Column("TypeOfService", Types.VARCHAR), serviceType);
-
         Column supportingOrganization = new Column("supporting_organization_id", Types.INTEGER);
         supportingOrganization.setReference(new Reference("supporting_organization", "legacy_pk"));
         columnMappings.put(new Column("ClientSupportedBy", Types.VARCHAR), supportingOrganization);
@@ -465,6 +462,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("TransferFrom", Types.VARCHAR), transferFromFacility);
 
         oto.setColumnMappings(columnMappings);
+        oto.addPostProcessor(new PatientServiceTypeProcessor());
         return oto;
     }
 

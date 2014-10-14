@@ -24,7 +24,7 @@ import java.util.logging.Logger;
  */
 public class DrugSupporterProcessor implements ExtraProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLoger(Account99Includer.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLoger(DrugSupporterProcessor.class.getName());
 
     private final SqlExecutor sse = SourceSqlExecutor.getInstance();
     private final SqlExecutor dse = DestinationSqlExecutor.getInstance();
