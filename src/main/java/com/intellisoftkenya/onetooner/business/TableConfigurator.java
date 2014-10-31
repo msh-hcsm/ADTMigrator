@@ -99,7 +99,7 @@ public class TableConfigurator {
         columnMappings.put(
                 new Column("CurrentStatus", Types.VARCHAR), new Column("name", Types.VARCHAR));
         oto.setColumnMappings(columnMappings);
-        
+
         return oto;
     }
 
@@ -145,7 +145,7 @@ public class TableConfigurator {
         columnMappings.put(
                 new Column("frequency", Types.INTEGER), new Column("frequency", Types.INTEGER));
         oto.setColumnMappings(columnMappings);
-        
+
         return oto;
     }
 
@@ -158,7 +158,7 @@ public class TableConfigurator {
         columnMappings.put(
                 new Column("GenericName", Types.VARCHAR), new Column("name", Types.VARCHAR));
         oto.setColumnMappings(columnMappings);
-        
+
         return oto;
     }
 
@@ -173,7 +173,7 @@ public class TableConfigurator {
         columnMappings.put(
                 new Column("District", Types.VARCHAR), new Column("district", Types.VARCHAR));
         oto.setColumnMappings(columnMappings);
-        
+
         return oto;
     }
 
@@ -210,7 +210,7 @@ public class TableConfigurator {
         columnMappings.put(
                 new Column("CategoryName", Types.VARCHAR), new Column("name", Types.VARCHAR));
         oto.setColumnMappings(columnMappings);
-        
+
         return oto;
     }
 
@@ -238,7 +238,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("Status", Types.VARCHAR), regimenStatus);
 
         oto.setColumnMappings(columnMappings);
-        
+
         return oto;
     }
 
@@ -254,7 +254,7 @@ public class TableConfigurator {
         oto.setParameterizedQuery("SELECT MIN(Rcode) AS Rcode_, MIN(Region) AS Region_\n"
                 + "FROM tblRegion GROUP BY Rcode ORDER BY Rcode");
         oto.setColumnMappings(columnMappings);
-        
+
         return oto;
     }
 
@@ -272,7 +272,7 @@ public class TableConfigurator {
         columnMappings.put(new Column("Region", Types.VARCHAR), region);
 
         oto.setColumnMappings(columnMappings);
-        
+
         return oto;
     }
 
@@ -297,7 +297,7 @@ public class TableConfigurator {
         columnMappings.put(
                 new Column("SourceOfClient", Types.VARCHAR), new Column("name", Types.VARCHAR));
         oto.setColumnMappings(columnMappings);
-        
+
         return oto;
     }
 
@@ -314,7 +314,6 @@ public class TableConfigurator {
         oto.setParameterizedQuery("SELECT MIN(TypeOfServiceID) AS TypeOfServiceID_, MIN(TypeofService) AS TypeofService_\n"
                 + "FROM tblTypeOfService GROUP BY TypeOfServiceID ORDER BY TypeOfServiceID");
         oto.setColumnMappings(columnMappings);
-        oto.addPreDelete("DELETE FROM `patient_service_type`");
         return oto;
     }
 
@@ -326,7 +325,7 @@ public class TableConfigurator {
         columnMappings.put(
                 new Column("Unit", Types.VARCHAR), new Column("name", Types.VARCHAR));
         oto.setColumnMappings(columnMappings);
-        
+
         return oto;
     }
 
@@ -339,7 +338,7 @@ public class TableConfigurator {
         columnMappings.put(
                 new Column("VisitTranName", Types.VARCHAR), new Column("name", Types.VARCHAR));
         oto.setColumnMappings(columnMappings);
-        
+
         return oto;
     }
 
@@ -352,14 +351,14 @@ public class TableConfigurator {
         columnMappings.put(
                 new Column("TransactionDescription", Types.VARCHAR), new Column("name", Types.VARCHAR));
         oto.setColumnMappings(columnMappings);
-        
+
         return oto;
     }
 
     private OneToOne configureDrug() {
         OneToOne oto = new OneToOne(11, new Table("tblARVDrugStockMain", Table.orderBy("ARVDrugsID")),
                 new Table("drug"));
-        oto.addWhereCondition(new WhereCondition("standard =",false, Types.BOOLEAN));
+        oto.addWhereCondition(new WhereCondition("standard =", false, Types.BOOLEAN));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
 
         columnMappings.put(new Column("ARVDrugsID", Types.VARCHAR), new Column("name", Types.VARCHAR));
@@ -391,7 +390,7 @@ public class TableConfigurator {
 
         oto.addPreDelete("DELETE FROM `drug_supporting_organization`");
         oto.addPreDelete("DELETE FROM `regimen_drug`");
-        
+
         return oto;
     }
 
@@ -463,6 +462,7 @@ public class TableConfigurator {
 
         oto.setColumnMappings(columnMappings);
         oto.addPostProcessor(new PatientServiceTypeProcessor());
+        oto.addPreDelete("DELETE FROM `patient_service_type`");
         return oto;
     }
 

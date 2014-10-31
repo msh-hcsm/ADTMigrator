@@ -44,14 +44,17 @@ public class PatientServiceTypeProcessor implements ExtraProcessor {
         LookupValueReader lvr = new LookupValueReader();
         while (rs.next()) {
             Integer patientId = lvr.readId("patient", "id", "legacy_pk", rs.getString("ArtID"));
-            List<ServiceType> serviceTypeIds = new ArrayList<>();
+            List<ServiceType> serviceTypes = new ArrayList<>();
             if (patientServiceMap.containsKey(patientId)) {
-                serviceTypeIds = patientServiceMap.get(patientId);
+                serviceTypes = patientServiceMap.get(patientId);
             } else {
-                patientServiceMap.put(patientId, serviceTypeIds);
+                patientServiceMap.put(patientId, serviceTypes);
             }
             Integer serviceTypeId = lvr.readId("service_type", "id", "legacy_pk", rs.getString("TypeOfService"));
-            serviceTypeIds.add(new ServiceType(serviceTypeId, rs.getDate("DateStartedonART")));
+            if (serviceTypeId == null) {
+                throw new NullPointerException("Patient ID " + patientId + " has no TypeOfService indicated in ADT.");
+            }
+            serviceTypes.add(new ServiceType(serviceTypeId, rs.getDate("DateStartedonART")));
         }
         return patientServiceMap;
     }
