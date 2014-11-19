@@ -1,6 +1,7 @@
 package com.intellisoftkenya.onetooner.business;
 
 import com.intellisoftkenya.onetooner.api.imp.processor.Account99Includer;
+import com.intellisoftkenya.onetooner.api.imp.processor.DhisIdMapper;
 import com.intellisoftkenya.onetooner.api.imp.processor.DrugSupporterProcessor;
 import com.intellisoftkenya.onetooner.api.imp.processor.DrugsInRegimenProcessor;
 import com.intellisoftkenya.onetooner.api.imp.processor.IdentifierTypeCreator;
@@ -387,6 +388,7 @@ public class TableConfigurator {
         oto.addPreProcessor(new MasterDrugListImporter());
         oto.addPostProcessor(new DrugSupporterProcessor());
         oto.addPostProcessor(new DrugsInRegimenProcessor());
+        oto.addPostProcessor(new DhisIdMapper());
 
         oto.addPreDelete("DELETE FROM `drug_supporting_organization`");
         oto.addPreDelete("DELETE FROM `regimen_drug`");

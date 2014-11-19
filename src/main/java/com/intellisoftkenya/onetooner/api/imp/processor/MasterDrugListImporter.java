@@ -132,7 +132,7 @@ public class MasterDrugListImporter implements ExtraProcessor {
 
         dse.executeBatch(pStmt);
         pStmt.clearBatch();
-        LOGGER.log(Level.FINE, "Migrated {0} drugs and commodities from CSV file.",
+        LOGGER.log(Level.INFO, "Migrated {0} drugs and commodities from CSV file.",
                 new Object[]{rowCount});
     }
 
