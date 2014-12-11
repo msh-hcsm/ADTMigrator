@@ -416,8 +416,8 @@ public class OneToOneMigrator {
     }
 
     public int deleteOneToOne(OneToOne oto) throws SQLException {
-        if (!oto.getPreDeletes().isEmpty()) {
-            for (String del : oto.getPreDeletes()) {
+        if (!oto.getPreUpdates().isEmpty()) {
+            for (String del : oto.getPreUpdates()) {
                 dse.executeUpdate(del, false);
             }
         }
