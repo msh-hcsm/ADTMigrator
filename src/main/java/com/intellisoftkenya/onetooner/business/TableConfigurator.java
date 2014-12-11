@@ -392,6 +392,7 @@ public class TableConfigurator {
 
         oto.addPreDelete("DELETE FROM `drug_supporting_organization`");
         oto.addPreDelete("DELETE FROM `regimen_drug`");
+        oto.addPreDelete("UPDATE `drug` SET `dhis_id` = NULL");
 
         return oto;
     }

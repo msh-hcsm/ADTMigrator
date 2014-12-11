@@ -77,10 +77,12 @@ public class DhisIdMapper implements ExtraProcessor {
 
     private int readDrugId(String name) throws SQLException {
         int id = -1;
-        String query = "SELECT id FROM drug WHERE name = ?";
+        String query = "SELECT id FROM drug WHERE cdrr_name = ? OR name = ?";
         List<Parameter> params = new ArrayList<>();
         params.add(new Parameter(name, Types.VARCHAR));
+        params.add(new Parameter(name, Types.VARCHAR));
         try {
+            if (name.equalsIgnoreCase("Cotrimoxazole 960MG Tablets 100s")) {}
             ResultSet rs = dse.executeQuery(query, params);
             if (rs.next()) {
                 id = rs.getInt("id");
