@@ -7,8 +7,11 @@ import com.intellisoftkenya.onetooner.dao.SqlExecutor;
 import com.intellisoftkenya.onetooner.data.OneToOne;
 import com.intellisoftkenya.onetooner.data.Parameter;
 import com.intellisoftkenya.onetooner.log.LoggerFactory;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,7 +41,7 @@ public class DhisIdMapper implements ExtraProcessor {
         if (noDhisMappings()) {
             LOGGER.log(Level.INFO, "No DHIS ID mappings found. Attempting to map from from CSV file.");
             try {
-                CSVReader reader = new CSVReader(new FileReader("dhis-dataelements.csv"));
+                CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream("dhis-dataelements.csv"), StandardCharsets.UTF_8));
                 Map<String, String> dhisIdToNameMap = new HashMap<>();
                 List<String[]> rows = reader.readAll();
                 for (String[] row : rows) {
@@ -81,8 +84,13 @@ public class DhisIdMapper implements ExtraProcessor {
         List<Parameter> params = new ArrayList<>();
         params.add(new Parameter(name, Types.VARCHAR));
         params.add(new Parameter(name, Types.VARCHAR));
+        if ("HEI tested positive by first PCR at age 6‐8 weeks".equals(name)) {
+            System.out.println("");
+            for (char c : name.toCharArray()) {
+                System.out.println(c + " - " + (int) c);
+            }
+        }
         try {
-            if (name.equalsIgnoreCase("Cotrimoxazole 960MG Tablets 100s")) {}
             ResultSet rs = dse.executeQuery(query, params);
             if (rs.next()) {
                 id = rs.getInt("id");
@@ -93,7 +101,7 @@ public class DhisIdMapper implements ExtraProcessor {
                 throw ex;
             } else {
                 LOGGER.log(Level.WARNING, "Skipping {0} due to encoding problems. "
-                        + "Can't understand the characters.", new Object[]{name});
+                        + "Can't understand some characters.", new Object[]{name});
                 skipped++;
             }
         }
