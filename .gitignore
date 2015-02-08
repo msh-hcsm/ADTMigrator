@@ -64,3 +64,4 @@ nb-configuration.xml
 ### Log file ###
 *.txt
 *.log
+*.lck
