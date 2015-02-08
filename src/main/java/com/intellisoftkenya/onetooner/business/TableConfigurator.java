@@ -9,6 +9,7 @@ import com.intellisoftkenya.onetooner.api.imp.processor.LookupValuePkProcessor;
 import com.intellisoftkenya.onetooner.api.imp.processor.MasterDrugListImporter;
 import com.intellisoftkenya.onetooner.api.imp.processor.PatientServiceTypeProcessor;
 import com.intellisoftkenya.onetooner.api.imp.processor.UnitsInOutUpdater;
+import com.intellisoftkenya.onetooner.api.imp.processor.UnnecessaryARTServiceTypeRemover;
 import com.intellisoftkenya.onetooner.api.imp.processor.VisitUpdater;
 import com.intellisoftkenya.onetooner.api.imp.translator.AccountTypeValueTranslator;
 import com.intellisoftkenya.onetooner.api.imp.translator.AccountValueInferrer;
@@ -315,6 +316,7 @@ public class TableConfigurator {
         oto.setParameterizedQuery("SELECT MIN(TypeOfServiceID) AS TypeOfServiceID_, MIN(TypeofService) AS TypeofService_\n"
                 + "FROM tblTypeOfService GROUP BY TypeOfServiceID ORDER BY TypeOfServiceID");
         oto.setColumnMappings(columnMappings);
+        oto.addPostProcessor(new UnnecessaryARTServiceTypeRemover());
         return oto;
     }
 
