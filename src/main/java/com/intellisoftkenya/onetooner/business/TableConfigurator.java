@@ -462,6 +462,10 @@ public class TableConfigurator {
         supportingOrganization.setReference(new Reference("supporting_organization", "legacy_pk"));
         columnMappings.put(new Column("ClientSupportedBy", Types.VARCHAR), supportingOrganization);
 
+        Column patientStatus = new Column("patient_status_id", Types.INTEGER);
+        patientStatus.setReference(new Reference("patient_status", "legacy_pk"));
+        columnMappings.put(new Column("CurrentStatus", Types.INTEGER), patientStatus);
+
         Column transferFromFacility = new Column("from_facility_id", Types.INTEGER);
         transferFromFacility.setReference(new Reference("facility", "code"));
         columnMappings.put(new Column("TransferFrom", Types.VARCHAR), transferFromFacility);
