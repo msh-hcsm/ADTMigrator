@@ -69,16 +69,16 @@ public class MasterDrugListImporter implements ExtraProcessor {
     private void insert(List<String[]> drugRows) throws SQLException {
         String insert = "INSERT INTO `fdt`.`drug`\n"
                 + "(`name`, `kemsa_name`, `sca1_name`, `sca2_name`, `sca3_name`,\n"
-                + "`abbreviation`, `drug_category_id`, `drug_type_id`, `drug_form_id`,\n"
+                + "`abbreviation`, `drug_category_id`,`cdrr_category_id`, `drug_type_id`, `drug_form_id`,\n"
                 + "`pack_size`, `dispensing_unit_id`, `reorder_point`, `service_type_id`,\n"
                 + "`cdrr_name`, `standard`, `uuid`, `created_by`, `created_on`)\n"
-                + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement pStmt = dse.createPreparedStatement(insert);
         int rowCount = 0;
         int batchNo = 1;
 
-        List<Integer> exclude = new ArrayList<>(Arrays.asList(7, 8, 9, 11, 13, 15, 16, 17, 18));
+        List<Integer> exclude = new ArrayList<>(Arrays.asList(7, 8, 9, 10, 12, 14, 16, 17, 18, 19));
         for (String[] drugRow : drugRows) {
             rowCount++;
             for (int i = 0; i < drugRow.length; i++) {
@@ -88,7 +88,7 @@ public class MasterDrugListImporter implements ExtraProcessor {
                     if ("".equals(value)) {
                         value = null;
                     } else {
-                        if (index == 10) {
+                        if (index == 11) {
                             try {
                                 Integer.parseInt(value);
                             } catch (NumberFormatException ex) {
@@ -97,7 +97,7 @@ public class MasterDrugListImporter implements ExtraProcessor {
                                 value = null;
                             }
                         }
-                        if (index == 12) {
+                        if (index == 13) {
                             try {
                                 Double.parseDouble(value);
                             } catch (NumberFormatException ex) {
@@ -111,14 +111,15 @@ public class MasterDrugListImporter implements ExtraProcessor {
                 }
             }
             pStmt.setObject(7, getLookupValue("drug_category", drugRow[6]));
-            pStmt.setObject(8, getLookupValue("drug_type", drugRow[7]));
-            pStmt.setObject(9, getLookupValue("drug_form", drugRow[8]));
-            pStmt.setObject(11, getLookupValue("dispensing_unit", drugRow[10]));
-            pStmt.setObject(13, getLookupValue("service_type", drugRow[12]));
-            pStmt.setObject(15, true);
-            pStmt.setObject(16, auditValues.uuid());
-            pStmt.setObject(17, auditValues.createdBy());
-            pStmt.setObject(18, auditValues.createdOn());
+            pStmt.setObject(8, getLookupValue("cdrr_category", drugRow[7]));
+            pStmt.setObject(9, getLookupValue("drug_type", drugRow[7]));
+            pStmt.setObject(10, getLookupValue("drug_form", drugRow[8]));
+            pStmt.setObject(12, getLookupValue("dispensing_unit", drugRow[10]));
+            pStmt.setObject(14, getLookupValue("service_type", drugRow[12]));
+            pStmt.setObject(16, true);
+            pStmt.setObject(17, auditValues.uuid());
+            pStmt.setObject(18, auditValues.createdBy());
+            pStmt.setObject(19, auditValues.createdOn());
 
             pStmt.addBatch();
             dse.logPreparedStatement(pStmt);
