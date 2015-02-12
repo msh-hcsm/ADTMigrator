@@ -4,6 +4,7 @@ import com.intellisoftkenya.onetooner.api.imp.processor.Account99Includer;
 import com.intellisoftkenya.onetooner.api.imp.processor.DhisIdMapper;
 import com.intellisoftkenya.onetooner.api.imp.processor.DrugSupporterProcessor;
 import com.intellisoftkenya.onetooner.api.imp.processor.DrugsInRegimenProcessor;
+import com.intellisoftkenya.onetooner.api.imp.processor.DrugsInUseProcessor;
 import com.intellisoftkenya.onetooner.api.imp.processor.IdentifierTypeCreator;
 import com.intellisoftkenya.onetooner.api.imp.processor.LookupValuePkProcessor;
 import com.intellisoftkenya.onetooner.api.imp.processor.MasterDrugListImporter;
@@ -386,11 +387,14 @@ public class TableConfigurator {
         dosage.setReference(new Reference("dosage"));
         columnMappings.put(new Column("StdDose", Types.VARCHAR), dosage);
 
+        columnMappings.put(new Column("InUse", Types.BOOLEAN), new Column("voided", Types.BOOLEAN));
+
         oto.setColumnMappings(columnMappings);
         oto.addPreProcessor(new MasterDrugListImporter());
         oto.addPostProcessor(new DrugSupporterProcessor());
         oto.addPostProcessor(new DrugsInRegimenProcessor());
         oto.addPostProcessor(new DhisIdMapper());
+        oto.addPostProcessor(new DrugsInUseProcessor());
 
         oto.addPreUpdate("DELETE FROM `drug_supporting_organization`");
         oto.addPreUpdate("DELETE FROM drug_category WHERE id NOT IN (SELECT drug_category_id FROM drug)");
@@ -469,6 +473,10 @@ public class TableConfigurator {
         Column transferFromFacility = new Column("from_facility_id", Types.INTEGER);
         transferFromFacility.setReference(new Reference("facility", "code"));
         columnMappings.put(new Column("TransferFrom", Types.VARCHAR), transferFromFacility);
+
+        Column startRegimen = new Column("start_regimen_id", Types.INTEGER);
+        startRegimen.setReference(new Reference("regimen", "code"));
+        columnMappings.put(new Column("RegimenStarted", Types.INTEGER), startRegimen);
 
         oto.setColumnMappings(columnMappings);
         oto.addPostProcessor(new PatientServiceTypeProcessor());
