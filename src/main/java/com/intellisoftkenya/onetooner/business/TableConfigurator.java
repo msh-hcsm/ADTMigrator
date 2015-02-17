@@ -11,6 +11,7 @@ import com.intellisoftkenya.onetooner.api.imp.processor.MasterDrugListImporter;
 import com.intellisoftkenya.onetooner.api.imp.processor.PatientServiceTypeProcessor;
 import com.intellisoftkenya.onetooner.api.imp.processor.UnitsInOutUpdater;
 import com.intellisoftkenya.onetooner.api.imp.processor.UnnecessaryARTServiceTypeRemover;
+import com.intellisoftkenya.onetooner.api.imp.processor.VisitTypeServiceTypeSetter;
 import com.intellisoftkenya.onetooner.api.imp.processor.VisitUpdater;
 import com.intellisoftkenya.onetooner.api.imp.translator.AccountTypeValueTranslator;
 import com.intellisoftkenya.onetooner.api.imp.translator.AccountValueInferrer;
@@ -342,7 +343,7 @@ public class TableConfigurator {
         columnMappings.put(
                 new Column("VisitTranName", Types.VARCHAR), new Column("name", Types.VARCHAR));
         oto.setColumnMappings(columnMappings);
-
+        oto.addPostProcessor(new VisitTypeServiceTypeSetter());
         return oto;
     }
 
