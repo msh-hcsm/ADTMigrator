@@ -115,7 +115,7 @@ public class MasterDrugListImporter implements ExtraProcessor {
             pStmt.setObject(9, getLookupValue("drug_type", drugRow[7]));
             pStmt.setObject(10, getLookupValue("drug_form", drugRow[8]));
             pStmt.setObject(12, getLookupValue("dispensing_unit", drugRow[10]));
-            pStmt.setObject(14, getLookupValue("service_type", drugRow[12]));
+            pStmt.setObject(14, getLookupValue("service_type", drugRow[13]));
             pStmt.setObject(16, true);
             pStmt.setObject(17, auditValues.uuid());
             pStmt.setObject(18, auditValues.createdBy());
