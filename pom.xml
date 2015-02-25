@@ -3,7 +3,7 @@
 
     <groupId>com.intellisoftkenya</groupId>
     <artifactId>onetooner</artifactId>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.4.1</version>
     <packaging>jar</packaging>
 
     <name>onetooner</name>
@@ -84,7 +84,7 @@
         <connection>scm:git:git@bitbucket.org:fdt_developers/onetooner.git</connection>
         <developerConnection>scm:git:git@bitbucket.org:fdt_developers/onetooner.git</developerConnection>
         <url>scm:git:git@bitbucket.org:fdt_developers/onetooner.git</url>
-        <tag>HEAD</tag>
+        <tag>1.4.1</tag>
     </scm>
     
     <distributionManagement>
