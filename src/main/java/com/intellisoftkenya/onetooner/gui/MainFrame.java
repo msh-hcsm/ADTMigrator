@@ -1,6 +1,7 @@
 package com.intellisoftkenya.onetooner.gui;
 
 import com.intellisoftkenya.onetooner.PropertyManager;
+import com.intellisoftkenya.onetooner.api.imp.processor.DeepDeleter;
 import com.intellisoftkenya.onetooner.business.MigrationException;
 import com.intellisoftkenya.onetooner.business.OneToOneMigrator;
 import com.intellisoftkenya.onetooner.business.TableConfigurator;
@@ -514,6 +515,7 @@ public class MainFrame extends javax.swing.JFrame {
                                 oto, ex);
                     }
                 }
+                new DeepDeleter().process(null);
                 showStatus("Completed! (Executed " + i + " out of " + n + " steps)", Color.BLUE);
                 LOGGER.log(Level.INFO, "Process successfully completed!");
             } catch (Exception ex) {

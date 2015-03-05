@@ -401,6 +401,7 @@ public class TableConfigurator {
         
         oto.addPreUpdate("DELETE FROM `drug_supporting_organization`");
         oto.addPreUpdate("DELETE FROM drug_category WHERE id NOT IN (SELECT drug_category_id FROM drug)");
+        oto.addPreUpdate("DELETE FROM drug_type WHERE id NOT IN (SELECT drug_type_id FROM drug)");
         oto.addPreUpdate("DELETE FROM `regimen_drug`");
         oto.addPreUpdate("UPDATE `drug` SET `dhis_id` = NULL");
         

@@ -62,6 +62,8 @@ public class SettingsDialog extends javax.swing.JDialog {
         okButton = new javax.swing.JButton();
         defaultsButton = new javax.swing.JButton();
         closeButton = new javax.swing.JButton();
+        clearDestinationPanel = new javax.swing.JPanel();
+        deepCheckBox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Settings");
@@ -207,7 +209,7 @@ public class SettingsDialog extends javax.swing.JDialog {
                     .addComponent(loggingLevelLabel)
                     .addComponent(loggingLevelComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(loggingLevelScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+                .addComponent(loggingLevelScrollPane)
                 .addContainerGap())
         );
 
@@ -232,6 +234,26 @@ public class SettingsDialog extends javax.swing.JDialog {
             }
         });
 
+        clearDestinationPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Clear destination"));
+
+        deepCheckBox.setText("Deep delete");
+
+        javax.swing.GroupLayout clearDestinationPanelLayout = new javax.swing.GroupLayout(clearDestinationPanel);
+        clearDestinationPanel.setLayout(clearDestinationPanelLayout);
+        clearDestinationPanelLayout.setHorizontalGroup(
+            clearDestinationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(clearDestinationPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(deepCheckBox)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        clearDestinationPanelLayout.setVerticalGroup(
+            clearDestinationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(clearDestinationPanelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(deepCheckBox))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -248,7 +270,8 @@ public class SettingsDialog extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(defaultsButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(closeButton)))
+                        .addComponent(closeButton))
+                    .addComponent(clearDestinationPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -262,8 +285,10 @@ public class SettingsDialog extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(destinationPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(loggingPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(loggingPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(clearDestinationPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(defaultsButton)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -298,7 +323,9 @@ public class SettingsDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_loggingLevelComboBoxActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel clearDestinationPanel;
     private javax.swing.JButton closeButton;
+    private javax.swing.JCheckBox deepCheckBox;
     private javax.swing.JButton defaultsButton;
     private javax.swing.JLabel destinationDriverLabel;
     private javax.swing.JTextField destinationDriverTextField;
@@ -338,6 +365,8 @@ public class SettingsDialog extends javax.swing.JDialog {
         destinationPasswordField.setText(PropertyManager.getProperty("destination.password", def));
 
         loggingLevelComboBox.setSelectedItem(PropertyManager.getProperty("logging.level", def));
+        
+        deepCheckBox.setSelected(Boolean.parseBoolean(PropertyManager.getProperty("deep.delete", def)));
     }
 
     private void setProperties() {
@@ -352,6 +381,8 @@ public class SettingsDialog extends javax.swing.JDialog {
         PropertyManager.setProperty("destination.password", destinationPasswordField.getText());
 
         PropertyManager.setProperty("logging.level", loggingLevelComboBox.getSelectedItem().toString());
+        
+        PropertyManager.setProperty("deep.delete", String.valueOf(deepCheckBox.isSelected()));
     }
 
     private void saveProperties() {
