@@ -142,7 +142,7 @@ public class SettingsDialog extends javax.swing.JDialog {
                     .addComponent(destinationPasswordLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(destinationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(destinationUsernameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 768, Short.MAX_VALUE)
+                    .addComponent(destinationUsernameTextField)
                     .addComponent(destinationDriverTextField)
                     .addComponent(destinationUrlTextField)
                     .addComponent(destinationPasswordField, javax.swing.GroupLayout.Alignment.TRAILING))
@@ -236,7 +236,7 @@ public class SettingsDialog extends javax.swing.JDialog {
 
         clearDestinationPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Clear destination"));
 
-        deepCheckBox.setText("Deep delete");
+        deepCheckBox.setText("Deep delete (Deletes everything, including imported or automatically created data. Does not delete Role Based Access Control and properties tables. Suitable for creating a pre-migration destination template.)");
 
         javax.swing.GroupLayout clearDestinationPanelLayout = new javax.swing.GroupLayout(clearDestinationPanel);
         clearDestinationPanel.setLayout(clearDestinationPanelLayout);

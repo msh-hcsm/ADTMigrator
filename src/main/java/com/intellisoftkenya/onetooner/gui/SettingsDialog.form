@@ -181,7 +181,7 @@
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="destinationUsernameTextField" alignment="0" pref="768" max="32767" attributes="0"/>
+                      <Component id="destinationUsernameTextField" alignment="0" max="32767" attributes="0"/>
                       <Component id="destinationDriverTextField" alignment="0" max="32767" attributes="0"/>
                       <Component id="destinationUrlTextField" alignment="0" max="32767" attributes="0"/>
                       <Component id="destinationPasswordField" alignment="1" max="32767" attributes="0"/>
@@ -388,7 +388,7 @@
       <SubComponents>
         <Component class="javax.swing.JCheckBox" name="deepCheckBox">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Deep delete"/>
+            <Property name="text" type="java.lang.String" value="Deep delete (Deletes everything, including imported or automatically created data. Does not delete Role Based Access Control and properties tables. Suitable for creating a pre-migration destination template.)"/>
           </Properties>
         </Component>
       </SubComponents>
