@@ -22,15 +22,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Imports into the drug table drugs and commodities from the master list CSV file
- * supplied by MSH. All drugs imported this way are marked standard = true. Data
- * for referenced tables such as drug types and dispensing units is created
+ * Imports into the drug table drugs and commodities from the master list CSV
+ * file supplied by MSH. All drugs imported this way are marked standard = true.
+ * Data for referenced tables such as drug types and dispensing units is created
  * if not found. All data created for referenced tables that are part of the
  * "universal metadata" is also marked standard = true.
- * 
+ *
  * The CSV file must be located in the same directory as the migrator executable
  * and named 'msh-drug-list.csv' in order to work.
- * 
+ *
  *
  * @author gitahi
  */
@@ -69,16 +69,16 @@ public class MasterDrugListImporter implements ExtraProcessor {
     private void insert(List<String[]> drugRows) throws SQLException {
         String insert = "INSERT INTO `fdt`.`drug`\n"
                 + "(`name`, `kemsa_name`, `sca1_name`, `sca2_name`, `sca3_name`,\n"
-                + "`abbreviation`, `drug_category_id`,`cdrr_category_id`, `drug_type_id`, `drug_form_id`,\n"
+                + "`abbreviation`, `drug_category_id`,`cdrr_category_id`, `cdrr_index`,`drug_form_id`, `drug_type_id`,\n"
                 + "`pack_size`, `dispensing_unit_id`, `reorder_point`, `service_type_id`,\n"
                 + "`cdrr_name`, `standard`, `uuid`, `created_by`, `created_on`)\n"
-                + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement pStmt = dse.createPreparedStatement(insert);
         int rowCount = 0;
         int batchNo = 1;
 
-        List<Integer> exclude = new ArrayList<>(Arrays.asList(7, 8, 9, 10, 12, 14, 16, 17, 18, 19));
+        List<Integer> exclude = new ArrayList<>(Arrays.asList(7, 8, 10, 11, 13, 15, 17, 18, 19, 20));
         for (String[] drugRow : drugRows) {
             rowCount++;
             for (int i = 0; i < drugRow.length; i++) {
@@ -88,7 +88,7 @@ public class MasterDrugListImporter implements ExtraProcessor {
                     if ("".equals(value)) {
                         value = null;
                     } else {
-                        if (index == 11) {
+                        if (index == 12) {
                             try {
                                 Integer.parseInt(value);
                             } catch (NumberFormatException ex) {
@@ -96,8 +96,7 @@ public class MasterDrugListImporter implements ExtraProcessor {
                                         + "be converted to integer. Ignoring value.", new Object[]{value});
                                 value = null;
                             }
-                        }
-                        if (index == 13) {
+                        } else if (index == 14) {
                             try {
                                 Double.parseDouble(value);
                             } catch (NumberFormatException ex) {
@@ -107,19 +106,32 @@ public class MasterDrugListImporter implements ExtraProcessor {
                             }
                         }
                     }
+                    if (index == 9) {
+                        if (value == null) {
+                            value = "1";
+                        } else {
+                            try {
+                                Double.parseDouble(value);
+                            } catch (NumberFormatException ex) {
+                                LOGGER.log(Level.SEVERE, "Value {0} for column cdrr_idnex could not "
+                                        + "be converted to double.", new Object[]{value});
+                                throw ex;
+                            }
+                        }
+                    }
                     pStmt.setObject(index, value);
                 }
             }
             pStmt.setObject(7, getLookupValue("drug_category", drugRow[6]));
             pStmt.setObject(8, getLookupValue("cdrr_category", drugRow[7]));
-            pStmt.setObject(9, getLookupValue("drug_type", drugRow[7]));
-            pStmt.setObject(10, getLookupValue("drug_form", drugRow[8]));
-            pStmt.setObject(12, getLookupValue("dispensing_unit", drugRow[10]));
-            pStmt.setObject(14, getLookupValue("service_type", drugRow[13]));
-            pStmt.setObject(16, true);
-            pStmt.setObject(17, auditValues.uuid());
-            pStmt.setObject(18, auditValues.createdBy());
-            pStmt.setObject(19, auditValues.createdOn());
+            pStmt.setObject(10, getLookupValue("drug_form", drugRow[7]));
+            pStmt.setObject(11, getLookupValue("drug_type", drugRow[8]));
+            pStmt.setObject(13, getLookupValue("dispensing_unit", drugRow[10]));
+            pStmt.setObject(15, getLookupValue("service_type", drugRow[13]));
+            pStmt.setObject(17, true);
+            pStmt.setObject(18, auditValues.uuid());
+            pStmt.setObject(19, auditValues.createdBy());
+            pStmt.setObject(20, auditValues.createdOn());
 
             pStmt.addBatch();
             dse.logPreparedStatement(pStmt);

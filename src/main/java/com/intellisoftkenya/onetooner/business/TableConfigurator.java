@@ -307,7 +307,7 @@ public class TableConfigurator {
     }
     
     private OneToOne configureServiceType() {
-        OneToOne oto = new OneToOne(18, new Table("tblTypeOfService", Table.orderBy("TypeOfServiceID")),
+        OneToOne oto = new OneToOne(20, new Table("tblTypeOfService", Table.orderBy("TypeOfServiceID")),
                 new Table("service_type"));
         oto.setExplicitWhereConditions("WHERE id NOT IN (SELECT DISTINCT service_type_id FROM drug WHERE standard = 1)");
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
@@ -336,7 +336,7 @@ public class TableConfigurator {
     }
     
     private OneToOne configureVisitType() {
-        OneToOne oto = new OneToOne(20, new Table("tblVisitTransaction", Table.orderBy("TransactionCode")),
+        OneToOne oto = new OneToOne(18, new Table("tblVisitTransaction", Table.orderBy("TransactionCode")),
                 new Table("visit_type"));
         Map<Column, Column> columnMappings = new LinkedHashMap<>();
         columnMappings.put(
