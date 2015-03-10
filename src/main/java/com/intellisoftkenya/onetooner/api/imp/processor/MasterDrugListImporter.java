@@ -81,14 +81,14 @@ public class MasterDrugListImporter implements ExtraProcessor {
         List<Integer> exclude = new ArrayList<>(Arrays.asList(7, 8, 10, 11, 13, 15, 17, 18, 19, 20));
         for (String[] drugRow : drugRows) {
             rowCount++;
-            for (int i = 0; i < drugRow.length; i++) {
-                int index = i + 1;
-                if (!exclude.contains(index)) {
-                    String value = drugRow[i];
+            for (int rowIndex = 0; rowIndex < drugRow.length; rowIndex++) {
+                int paramIndex = rowIndex + 1;
+                if (!exclude.contains(paramIndex)) {
+                    String value = drugRow[rowIndex];
                     if ("".equals(value)) {
                         value = null;
                     } else {
-                        if (index == 12) {
+                        if (paramIndex == 12) {
                             try {
                                 Integer.parseInt(value);
                             } catch (NumberFormatException ex) {
@@ -96,7 +96,7 @@ public class MasterDrugListImporter implements ExtraProcessor {
                                         + "be converted to integer. Ignoring value.", new Object[]{value});
                                 value = null;
                             }
-                        } else if (index == 14) {
+                        } else if (paramIndex == 14) {
                             try {
                                 Double.parseDouble(value);
                             } catch (NumberFormatException ex) {
@@ -106,7 +106,7 @@ public class MasterDrugListImporter implements ExtraProcessor {
                             }
                         }
                     }
-                    if (index == 9) {
+                    if (paramIndex == 9) {
                         if (value == null) {
                             value = "1";
                         } else {
@@ -119,15 +119,15 @@ public class MasterDrugListImporter implements ExtraProcessor {
                             }
                         }
                     }
-                    pStmt.setObject(index, value);
+                    pStmt.setObject(paramIndex, value);
                 }
             }
             pStmt.setObject(7, getLookupValue("drug_category", drugRow[6]));
             pStmt.setObject(8, getLookupValue("cdrr_category", drugRow[7]));
-            pStmt.setObject(10, getLookupValue("drug_form", drugRow[7]));
-            pStmt.setObject(11, getLookupValue("drug_type", drugRow[8]));
-            pStmt.setObject(13, getLookupValue("dispensing_unit", drugRow[10]));
-            pStmt.setObject(15, getLookupValue("service_type", drugRow[13]));
+            pStmt.setObject(10, getLookupValue("drug_form", drugRow[9]));
+            pStmt.setObject(11, getLookupValue("drug_type", drugRow[10]));
+            pStmt.setObject(13, getLookupValue("dispensing_unit", drugRow[12]));
+            pStmt.setObject(15, getLookupValue("service_type", drugRow[14]));
             pStmt.setObject(17, true);
             pStmt.setObject(18, auditValues.uuid());
             pStmt.setObject(19, auditValues.createdBy());
