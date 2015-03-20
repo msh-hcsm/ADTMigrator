@@ -8,7 +8,6 @@ import com.intellisoftkenya.onetooner.data.OneToOne;
 import com.intellisoftkenya.onetooner.data.Parameter;
 import com.intellisoftkenya.onetooner.log.LoggerFactory;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -101,7 +100,7 @@ public class DhisIdMapper implements ExtraProcessor {
                 throw ex;
             } else {
                 LOGGER.log(Level.WARNING, "Skipping {0} due to encoding problems. "
-                        + "Can't understand some characters.", new Object[]{name});
+                        + "Can''t understand some characters.", new Object[]{name});
                 skipped++;
             }
         }

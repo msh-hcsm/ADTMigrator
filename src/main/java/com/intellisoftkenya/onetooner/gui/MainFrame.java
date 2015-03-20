@@ -365,18 +365,21 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     private void showSettings() {
-        settingsTextArea.setText("Logging Level: " + PropertyManager.getProperty("logging.level") + "\n");
+        settingsTextArea.setText("Logging Level: " + PropertyManager.getProperty("logging.level") + "\n\n");
+        
+        settingsTextArea.append("Deep Delete: " + PropertyManager.getProperty("deep.delete") + "\n\n");
 
         settingsTextArea.append("Source Driver: " + PropertyManager.getProperty("source.driver") + "\n");
         settingsTextArea.append("Source URL: " + PropertyManager.getProperty("source.url") + "\n");
         settingsTextArea.append("Source Username: " + PropertyManager.getProperty("source.username") + "\n");
-        settingsTextArea.append("Source Password: " + PropertyManager.getProperty("source.password") + "\n");
+        settingsTextArea.append("Source Password: " + PropertyManager.getProperty("source.password") + "\n\n");
 
         settingsTextArea.append("Destination Driver: " + PropertyManager.getProperty("destination.driver") + "\n");
         settingsTextArea.append("Destination URL: " + PropertyManager.getProperty("destination.url") + "\n");
         settingsTextArea.append("Destination Username: " + PropertyManager.getProperty("destination.username") + "\n");
         settingsTextArea.append("Destination Password: " + PropertyManager.getProperty("destination.password"));
 
+        settingsTextArea.setCaretPosition(0);
     }
 
     @Override
